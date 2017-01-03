@@ -1,0 +1,598 @@
+{% extends 'accounts/team.html' %}
+
+{% load staticfiles %}
+
+{% block body %}
+  <div class="container-fluid no-padding fluid-background">
+   <div class="col-md-2 verticalLine3 no-padding">
+        <div class="col-md-12 inside-left-part no-padding">
+           <strong>  <p id="sport-specific">Sport Specific</p></strong>
+           <strong>  <p id="profile-specific"><span class="color-red">Profile Specific</span></p></strong><span id="profile-arrow"><img src="{% static 'images/ee.png' %}" alt='arrow'></span>
+           <strong>  <p id="certifications">Certifications</p></strong>
+        </div>
+     </div>
+
+
+<!-- contener part -->
+<div class="col-md-10 content-part">
+ <!-- Modal -->
+  {% if messages %}
+      <div class="modal fade" id="verificationpopupModal" role="dialog" tabindex="-1" aria-labelledby="Forgot Password">
+         <div class="modal-dialog">
+            <div class="modal-content margin-top-100px tranzy-background3 center">
+               <h4 class="textcolor">
+
+                  {% for message in messages %}
+                    {{ message }}
+                  {% endfor %}
+
+               </h4>
+               <div class="padding-20px">
+
+                     <button type="button" data-dismiss="modal" id="forgot-password-submit"><h4>ok</h4></button>
+               </div>
+            </div>
+         </div>
+      </div>
+   {% endif %}
+<!-- end of model -->
+<!-- left part of page i.e steps-->
+    <!-- <div class="col-md-2 verticalLine3">
+       <strong>   <p id="sport-specific"><span class="color-red">Profile Specific</p></strong></a><span id="profile-arrow"><img src="{% static 'images/ee.png' %}" alt='arrow'>
+       <strong>  <p id="profile-specific">Sport Specific </p></strong></a>
+       <strong> <p id="certifications">Certifications</p></strong></a>
+     </div>-->
+ <!-- end of left part -->
+
+<!-- verification popup -->
+<!-- Modal -->
+  <div class="modal fade modelbackground" id="verification-popup" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content margin-top-100px no-padding tranzy-background1" >
+       <div class="textcolor" align="center">
+            <div class="xx-large-font">
+
+            </div>
+            <div class="medium-font">
+                Complete your profile in order to begin
+            </div>
+            <div class="medium-font" >
+                <button type="button" id="ok-circle" data-dismiss="modal"> Ok </button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- end of end of verification popup -->
+<!-- end of Model -->
+
+
+ <!-- Right part of page i.e form -->
+    <div class="col-md-offset-1 col-md-10 margin-top-60px" id="contener-2nd-part2">
+
+         <!-- form start -->
+
+         <form action="" method="post"  enctype="multipart/form-data"  name="profile-specific-form" onsubmit="return profileSpecificationValidation()"> {% csrf_token %}
+
+          {% if form.errors.non_field_errors %}
+            {{ form.errors.non_field_errors.0 }}
+          {% endif %}
+            <div class="col-md-12 textcolor">
+                <span class="col-md-4 label-class">
+                   <label for="name"> Name<span class="color-red"> *</span> </label>
+                </span>
+                <span class="col-md-4 inputbackground-team">
+                    {{form.name}}
+                </span>
+                <span class="col-md-4 error" id="errorname">
+                  {% if form.errors.name %}
+                    {{ form.errors.name.0 }}
+                  {% endif %}
+                </span>
+            </div>
+
+            <div class="col-md-12 textcolor">
+                <span class="col-md-4 margin-top-20px label-class">
+                   <label for="email"> Email ID<span class="color-red"> *</span> </label>
+                </span>
+                {% if request.user.registration_source != 2 or request.user.email|slice:":10" != 'dummyemail'  %}
+                <div class="col-md-4 margin-top-20px inputbackground-team" id="email-disabled">
+                    {{form.email}}
+                </div>
+                 {% else %}
+                 <div class="col-md-4 margin-top-20px inputbackground-team" id="email-empty" >
+                    {{form.email}}
+                </div>
+               {% endif %}
+                <div class="col-md-4 text-error" id="erroremail">{% if form.errors.email %}{{ form.errors.email.0 }}{% endif %}</div>
+            </div>
+
+            <div class="col-md-12 textcolor">
+                <span class="col-md-4 margin-top-50px textcolor label-class">
+                   <label for="cover-pic"> Choose display Pic </label>
+                </span>
+                    <!-- <div id="image-cropper">
+                      <div class="cropit-image-preview"></div>
+                      <input type="range" class="cropit-image-zoom-input" />
+                      <input type="file" name="abc" class="cropit-image-input" />
+                      <div class="select-image-btn">Select new image</div>
+                      <div onclick="done()" >done</div>
+                    </div> -->
+
+
+                      <span class="col-md-2 margin-top-50px">
+                        <div id="user-profile-dp-preview" data-toggle="modal" data-target="#dpCroperModal">
+                         </div><div class="col-md-offset-8 col-md-3" style="margin-top: -30px"><i id="display-pic-pencil" class="fa fa-pencil"></i></div>
+                      </span>
+                      <div class="col-md-6 display-disabled" id="profile-file1">
+                         <!-- <button type="button" data-toggle="modal" data-target="#dpCroperModal" id="dp-crop-modal-button"><i class="fa fa-camera-retro"></i>&nbsp;Change</button>-->
+                          <span class="col-md-12 small-font" id="dp-crop-modal-button">Larger than : 150px x 150px </span>
+
+                          <input id="id_display_picture" name="display_picture" type="hidden">
+                      </div>
+                     </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="dpCroperModal" role="dialog" tabindex="-1" aria-labelledby="Change display picture">
+                       <div class="modal-dialog">
+                          <div class="modal-content margin-top-100px tranzy-background3 center">
+                             <h5 class="textcolor">Change your Display Picture</h5>
+                             <div class="padding-20px">
+                                   <div class="margin-top-15px textcolor">
+                                    <div class="row">
+                                      <div class="col-md-12">
+                                        <div id="dp-image-cropper">
+                                          <div class="col-md-8 col-md-offset-2 no-padding">
+                                            <div class="cropit-image-preview" id="dp-preview"></div>
+                                            <span class="col-md-12 small-font" id="dp-crop-modal-button">Larger than : 150px x 150px </span>
+                                              <span id="dp-image-error" class="center color-red font-x-small"></span>
+                                          </div>
+                                          <div class="margin-top-10px col-md-8 col-md-offset-2 range-div">
+                                            <input type="range" class="cropit-image-zoom-input range-input-style" />
+                                          </div>
+                                          <input type="file" name="abc" class="cropit-image-input" />
+                                          <div class="row">
+                                            <div class="col-md-3 col-md-offset-2">
+                                              <button type="button" class="dp-select-image-btn dp-round-button">Upload Image</button>
+                                            </div>
+                                            <div class="col-md-3 col-md-offset-2">
+                                              <button type="button" id="doneDpCrop" class="dp-round-button">Save</button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                   </div>
+                             </div>
+                          </div>
+                       </div>
+                    </div>
+                    {# form.display_picture #}
+            </div>
+
+            <div class="col-md-12 no-padding">
+                <span class="col-md-4 margin-top-50px textcolor label-class">
+                   <label for="cover-pic"> Choose your Cover Pic </label>
+                </span>
+
+                <span class="col-md-6 margin-top-50px no-padding">
+                  <div id="user-profile-cp-preview" data-toggle="modal" data-target="#cpCroperModal" id="cp-crop-modal-button"></div>
+                  <div class="pull-right" style="margin-top: -25px; margin-left: -5px"><i id="cover-pic-pencil" class="fa fa-pencil"></i></div>
+                </span>
+                <div class="col-md-2 display-disabled no-padding" id="profile-file1">
+                    <!--<button type="button" data-toggle="modal" data-target="#cpCroperModal" id="cp-crop-modal-button"><i class="fa fa-camera-retro"></i>&nbsp;Change</button>-->
+                    <span class="col-md-12 no-padding small-font" id="cp-crop-modal-button">Larger than : 300px x 150px </span>
+                    <input id="id_cover_picture" name="cover_picture" type="hidden">
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="cpCroperModal" role="dialog" tabindex="-1" aria-labelledby="Change cover picture">
+                   <div class="modal-dialog">
+                      <div class="modal-content bg-color-pure-black center">
+                         <h5 class="textcolor">Change your Cover Picture</h5>
+                         <div class="padding-20px">
+                               <div class="margin-top-15px textcolor">
+                                <div class="row">
+                                  <div class="col-md-12">
+                                    <div id="cp-image-cropper">
+                                      <div class="col-md-12">
+                                        <div class="cropit-image-preview" id="cp-preview"></div>
+                                        <span class="col-md-12 small-font" id="dp-crop-modal-button">Larger than : 300px x 150px </span>
+                                          <div id="cp-image-error" class="center color-red font-x-small"></div>
+                                      </div>
+                                      <div class="margin-top-10px col-md-6 col-md-offset-3">
+                                        <input type="range" class="cropit-image-zoom-input range-input-style" />
+                                      </div>
+                                      <input type="file" name="abc2" class="cropit-image-input" />
+                                      <div class="row">
+                                        <div class="col-md-3 col-md-offset-2">
+                                          <button type="button" class="cp-select-image-btn cp-round-button">Upload image</button>
+                                        </div>
+                                        <div class="col-md-3 col-md-offset-2">
+                                          <button type="button" id="doneCpCrop" class="cp-round-button">Save</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                               </div>
+                         </div>
+                      </div>
+                   </div>
+                </div>
+                {# form.cover_picture #}
+            </div>
+
+            <div class="col-md-12 textcolor margin-top-20px ">
+                <span class="col-md-3 label-class">
+                  <label for="dob"> Sex <span class="color-red"> *</span></label>
+                </span>
+
+                <span id="gender-id1" class="col-md-8">
+                    {{form.gender}}
+              </span>
+            </div>
+
+            <div class="col-md-12 margin-top-20px ">
+                <span class="col-md-4 label-class textcolor">
+                  <label for="dob"> DOB <span class="color-red"> *</span> </label>
+                </span>
+
+
+                <span id="profile-specific-date-container" class="col-md-4 textcolor inputbackground-team sv-form-select-control date-dropdown-container"  data-ele-id="#profile-specific-date-container" data-date-form-input-id="#id_date_of_birth" data-feature-date="false" data-no-of-prev-year="10" >
+                  {{form.date_of_birth}}
+                  <select name="profile_specific_year" id="year" title="Year" onchange="setDays(month,day,this,'#profile-specific-date-container','#id_date_of_birth',false)">
+                      <option value="0" selected>Year</option>
+                  </select>
+                  <select name="profile_specific_month" id="month" title="Month" onchange="setDays(this,day,year,'#profile-specific-date-container','#id_date_of_birth',false)">
+                        <option value="01">Jan</option>
+                        <option value="02">Feb</option>
+                        <option value="03">Mar</option>
+                        <option value="04">Apr</option>
+                        <option value="05">May</option>
+                        <option value="06">Jun</option>
+                        <option value="07">Jul</option>
+                        <option value="08">Aug</option>
+                        <option value="09">Sep</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                        <option value="0" selected>Month</option>
+                  </select>
+                  <select name="profile_specific_day" id="day" title="Day" onchange="setDays(month,this,year,'#profile-specific-date-container','#id_date_of_birth',false)">
+                      <option value="01">1&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                      <option value="02">2</option>
+                      <option value="03">3</option>
+                      <option value="04">4</option>
+                      <option value="05">5</option>
+                      <option value="06">6</option>
+                      <option value="07">7</option>
+                      <option value="08">8</option>
+                      <option value="09">9</option>
+                      <option value="10">10</option>
+                      <option value="11">11</option>
+                      <option value="12">12</option>
+                      <option value="13">13</option>
+                      <option value="14">14</option>
+                      <option value="15">15</option>
+                      <option value="16">16</option>
+                      <option value="17">17</option>
+                      <option value="18">18</option>
+                      <option value="19">19</option>
+                      <option value="20">20</option>
+                      <option value="21">21</option>
+                      <option value="22">22</option>
+                      <option value="23">23</option>
+                      <option value="24">24</option>
+                      <option value="25">25</option>
+                      <option value="26">26</option>
+                      <option value="27">27</option>
+                      <option value="28">28</option>
+                      <option value="29">29</option>
+                      <option value="30">30</option>
+                      <option value="31">31</option>
+                      <option value="0" selected>Day</option>
+                  </select>
+              </span>
+                </span>
+                <span class="col-md-3 error" id="dateOfBirth-error">
+                  {% if form.errors.date_of_birth %}
+                    {{ form.errors.date_of_birth.0 }}
+                  {% endif %}
+                </span>
+            </div>
+
+            <div class="col-md-12 textcolor margin-top-20px">
+                <span class="col-md-4 label-class">
+                  <label for="country"> Country <span class="color-red"> *</span> </label>
+                </span>
+                <span class="col-md-4 dropdownbackground">
+                    {{form.country}}
+                </span>
+                <span class="col-lg-4 error" id="errorcountery">
+                  {% if form.errors.country %}
+                    {{ form.errors.country.0 }}
+                  {% endif %}
+                </span>
+            </div>
+
+            <div class="col-md-12 textcolor margin-top-20px" id="state-div">
+                <span class="col-md-4 label-class">
+                  <label for="state">State <span class="color-red"> *</span></label>
+                </span>
+                <span id="state_id" class="col-md-4 dropdownbackground">
+                    {{form.state}}
+                </span>
+                <span class="col-lg-4 error" id="state-error">
+                  {% if form.errors.state %}
+                    {{ form.errors.state.0 }}
+                  {% endif %}
+                </span>
+             </div>
+
+            <div class="col-md-12 textcolor margin-top-20px" id="state-text-div">
+                <span class="col-md-4 label-class">
+                  <label for="state">State <span class="color-red"> *</span> </label>
+                </span>
+                <span id="state_id" class="col-md-4 dropdownbackground">
+                    {{form.state_text}}
+                </span>
+                <span class="col=lg-4 error" id="stateText-error">
+                  {% if form.errors.state_text %}
+                    {{ form.errors.state_text.0 }}
+                  {% endif %}
+                </span>
+             </div>
+
+            <div class="col-md-12 textcolor" style="top: 20px;" id="city-disable">
+                <span class="col-md-4 label-class" id="city-label">
+                   <label for="city">Your Playing City<span class="color-red"> *</span> </label>
+                </span>
+                <span class="col-md-4 dropdownbackground">
+                    {{form.city}}
+
+                </span>
+             </div>
+
+            <div class="col-md-12 textcolor" style="top: 20px;" id="city-text-div">
+                <span class="col-md-4 label-class" id="city-label">
+                   <label for="city">Your Playing City  <span class="color-red"> *</span> </label>
+                </span>
+                <span class="col-md-4 inputbackground-team">
+                   {{form.city_text}}
+                </span>
+                <span class="col=lg-4 error" id="cityText-error">
+                  {% if form.errors.city_text %}
+                    {{ form.errors.city_text.0 }}
+                  {% endif %}
+                </span>
+             </div>
+
+            <div class="col-md-12 textcolor" style="margin-top: 30px">
+                <span class="col-md-3 label-class">
+                   <label for="mobileno"> Mobile No </label>
+                    <!--<div class="lgall-font" style="margin-top: -8px">(Optional)</div>-->
+                </span>
+                <span class="col-md-4 inputbackground-team-mobile">
+                  <span class="col-md-offset-1 col-md-4 inputbackground-mobile-code no-padding" id="mobile-code" align="center">+91</span>
+                  <span class="col-md-5 no-padding">
+                    {{form.mobile }}
+                  </span>
+                </span>
+            </div>
+
+            <div class="col-md-12 textcolor margin-top-20px" align=center>
+                <button type="submit" id="save-button">
+                    <h4><strong>Next</strong></h4>
+                </button>
+            </div>
+
+     </form>
+     <!-- end of form -->
+    </div>
+    </div>
+ <!-- end of right part -->
+
+</div>
+<!-- end of container part -->
+</div>
+{% endblock %}
+
+{% block customscript %}
+
+
+<script>
+history.pushState(null, null,"");
+window.addEventListener('popstate', function () {
+    history.pushState(null, null, "");
+});
+
+$(document).ready(function(){
+    if($('#erroremail').is(':empty')){
+        $('#email-disabled > input').prop("readonly", true);
+        $('#email-empty > input').val('');
+    }else{
+        $('#email-disabled').attr('id','email-empty');
+        $('#email-disabled, #email-empty').removeAttr('readonly');
+    }
+});
+
+</script>
+
+
+
+<script type="text/javascript">
+//DP CROPER
+  $('#dp-image-cropper').cropit();
+  $('.dp-select-image-btn').click(function() {
+      $('#dp-image-cropper .cropit-image-input').click();
+  });
+
+  $('#dp-image-cropper .cropit-image-input').change(function(){
+     //Get reference of FileUpload.
+        var fileUpload = $("#dp-image-cropper .cropit-image-input")[0];
+
+        //Check whether the file is valid Image.
+        var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(.jpg|.png|.gif)$");
+        if (regex.test(fileUpload.value.toLowerCase())) {
+            if (typeof (fileUpload.files) != "undefined") {
+                var reader = new FileReader();
+                reader.readAsDataURL(fileUpload.files[0]);
+                reader.onload = function (e) {
+                    var image = new Image();
+                    image.src = e.target.result;
+                    image.onload = function () {
+                        var height = this.height;
+                        var width = this.width;
+                        if (height < 150 || width < 150) {
+                            //alert("Height and Width must not exceed 80 * 80px.");
+                            $('#dp-image-error').text("Image size too small, Upload a larger Image");
+                            return false;
+                        }
+                        //alert("Uploaded image has valid Height and Width.");
+                        return true;
+                    };
+                }
+            } else {
+                alert("This browser does not support HTML5.");
+                return false;
+            }
+        } else {
+            alert("Please select a valid Image file.");
+            return false;
+        }
+
+  });
+
+$('#doneDpCrop').click(function() {
+    var imageData = $('#dp-image-cropper').cropit('export', {
+      type: 'image/jpeg',
+      quality: .9,
+      originalSize: true
+    });
+    if(imageData){
+      $("#id_display_picture").attr("value",imageData);
+      $("#user-profile-dp-preview").css('background-image','url("'+imageData+'")');
+    }
+    $('#dpCroperModal').modal('hide');
+});
+</script>
+
+<script type="text/javascript">
+//CP CROPER
+$('#cp-image-cropper').cropit();
+$('.cp-select-image-btn').click(function() {
+  $('#cp-image-cropper .cropit-image-input').click();
+});
+
+$('#cp-image-cropper .cropit-image-input').change(function(){
+     //Get reference of FileUpload.
+        var fileUpload = $("#cp-image-cropper .cropit-image-input")[0];
+
+        //Check whether the file is valid Image.
+        var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(.jpg|.png|.gif)$");
+        if (regex.test(fileUpload.value.toLowerCase())) {
+            if (typeof (fileUpload.files) != "undefined") {
+                var reader = new FileReader();
+                reader.readAsDataURL(fileUpload.files[0]);
+                reader.onload = function (e) {
+                    var image = new Image();
+                    image.src = e.target.result;
+                    image.onload = function () {
+                        var height = this.height;
+                        var width = this.width;
+                        if (height < 150 || width < 300) {
+                            $('#cp-image-error').text("Image size too small, Upload a larger Image");
+                            return false;
+                        }
+                        //alert("Uploaded image has valid Height and Width.");
+                        return true;
+                    };
+                }
+            } else {
+                alert("This browser does not support HTML5.");
+                return false;
+            }
+        } else {
+            alert("Please select a valid Image file.");
+            return false;
+        }
+  });
+
+$('#doneCpCrop').click(function() {
+    var imageData = $('#cp-image-cropper').cropit('export', {
+      type: 'image/jpeg',
+      quality: .9,
+      originalSize: true
+    });
+    if(imageData){
+      $("#id_cover_picture").attr("value",imageData);
+      $("#user-profile-cp-preview").css('background-image','url("'+imageData+'")');
+    }
+    $('#cpCroperModal').modal('hide');
+});
+</script>
+
+<script type="text/javascript">
+  /*var numDays = {'01': 31, '02': 28, '03': 31, '04': 30, '05': 31, '06': 30,'07': 31, '08': 31, '09': 30, '10': 31, '11': 30, '12': 31};
+
+  function setDays(oMonthSel, oDaysSel, oYearSel)
+  {
+    var nDays, oDaysSelLgth, opt, i = 1;
+    nDays = numDays[oMonthSel[oMonthSel.selectedIndex].value];
+    if (nDays == 28 && oYearSel[oYearSel.selectedIndex].value % 4 == 0)
+      ++nDays;
+    oDaysSelLgth = oDaysSel.length;
+    if (nDays != oDaysSelLgth)
+    {
+      if (nDays < oDaysSelLgth){
+        oDaysSel.length = nDays;
+      }else{
+        for (i; i < nDays - oDaysSelLgth + 1; i++)
+        {
+          opt = new Option(oDaysSelLgth + i, oDaysSelLgth + i);
+          oDaysSel.options[oDaysSel.length] = opt;
+        }
+      }
+    }
+    var oForm = oMonthSel.form;
+    var month = oMonthSel.options[oMonthSel.selectedIndex].value;
+    var day = oDaysSel.options[oDaysSel.selectedIndex].value;
+    var year = oYearSel.options[oYearSel.selectedIndex].value;
+    oForm.date_of_birth.value = year + '-' + month + '-' + day;
+  }
+
+  $(document).ready(function(){
+    var cDate = new Date();
+    var maxYear = cDate.getFullYear()-13;
+    var minYear = cDate.getFullYear()-113;
+    var yearString = '';
+    for (i = maxYear; i>= minYear; i--)
+    {
+      yearString = yearString+'<option value="'+i+'">'+i+'</option>';
+    }
+    yearString = yearString+'<option value="0" selected="1">Year</option>';
+    $("#year").html(yearString);
+    var oldDob = $("#profile-specific-date-container > #id_match_date").val();
+    if (oldDob) {
+      arr = oldDob.split(' ');
+      arr2 = arr[0].split('-');
+      var year = arr2[0];
+      var month = arr2[1];
+      var day = arr2[2];
+      $('#profile-specific-date-container > #day option[value="'+day+'"]').attr("selected","selected");
+      $('#profile-specific-date-container > #month option[value="'+month+'"]').attr("selected","selected");
+      $('#profile-specific-date-container > #year option[value="'+year+'"]').attr("selected","selected");
+
+      var Sday = $('#profile-specific-date-container > #day');
+      var Smonth = $('#profile-specific-date-container > #month');
+      var Syear = $('#profile-specific-date-container > #year');
+      setDays(Smonth[0],Sday[0],Syear[0]);
+    }*/
+
+    // $('.disabled > input').attr('readonly', 'readonly');
+    // $('.empty > input').val('');
+  // });
+</script>
+{% endblock %}

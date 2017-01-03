@@ -1,0 +1,306 @@
+/******************
+* MAIN CSS
+******************/
+
+
+#school-name > h3 {
+    width: 300%;
+    z-index: 1;
+}
+
+/*search*/
+
+#search-wrapper {
+    font-size: 15.5px;
+    padding: 5px;
+    border-bottom: 2px solid #A1A1A1;
+    border-radius: 20px;
+}
+
+/*sidebar*/
+
+#sidebar {
+    height: 100vh;
+    width: 20%;
+    box-shadow : 5px 5px 5px rgb(183, 183, 183);
+    z-index: 1000;
+}
+
+/*profile*/
+
+#profile {
+    padding: 30px 15px;
+}
+
+.margin-top-0px-important input {
+    margin-top: 0px !important;
+}
+
+#profile h4 {
+    margin-bottom: 0;
+}
+
+/* STATUS*/
+
+.fullpage-status {
+    height: 100vh;
+}
+
+.fullpage-status h3 {
+    margin-top: 92vh;
+}
+
+#error404 {
+    background: url('../images/error404laptop.jpg') no-repeat;
+    background-size: 100% 100%;
+}
+
+#error500 {
+    background: url('../images/error_500.jpg') no-repeat;
+    background-size: 100% 100%;
+}
+
+
+/*menu*/
+
+#menu-list {
+    height: 70.9vh;
+    padding: 15px 0;
+    list-style: none;
+    font-size: medium;
+    margin-bottom: 0;
+}
+
+.menu-item {
+    padding: 8px 15px;
+    margin: 10px auto;
+}
+
+.menu-item:hover {
+    background-color: #E6E6E6;
+}
+
+.menu-item img {
+    /*width: 25px;
+    height: 25px;*/
+}
+
+.menu-item span {
+    margin-left: 10px;
+}
+
+/*main content wrapper*/
+
+#main-content-wrapper {
+    width: 80%;
+    height: 100vh;
+}
+
+#main-content-wrapper > header {
+    height: 56px;
+}
+
+#content {
+    height: 91vh;
+}
+
+/*dashboard*/
+
+#dashboard-wrapper > div {
+    perspective: 400px;
+}
+
+@keyframes filcker {
+    25% {
+        transform: rotateX(-30deg);
+    }
+
+    75% {
+        transform: rotateX(30deg);
+    }
+}
+
+.dashboard-icon {
+    text-align: center;
+    line-height: 130px;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+.dashboard-icon:hover {
+    animation: filcker 0.5s ease;
+}
+
+.dashboard-icon h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+
+#login-panel-container {
+    background: url(../images/login.jpg) no-repeat;
+    background-size: cover;
+    height: 100vh;
+}
+
+
+.daseboard-top {
+    margin-top: 150px;
+}
+
+.buy4industry-loader { display: none; }
+.buy4industry-loader { display: block; position: absolute; left: 100px; top: 0; }
+.buy4industry-loader{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background:center no-repeat;
+    /*background: black;*/
+    /*background-image: url(../images/Preloader_3.gif);*/
+
+}
+
+.buy4industry-loader img{
+  margin-top: 350px;
+}
+
+#user-menu {
+    cursor: pointer;
+}
+
+#user-sub-menu {
+    display: none;
+}
+
+.cal-icon > img {
+    height: 18px;
+}
+
+.float-right {
+    float: right;
+}
+
+
+.row-padding {
+    padding :5px 5px 5px 5px;
+}
+
+.quotation-title {
+    line-height: 2;
+}
+
+.quotation-inner-box {
+    cursor: pointer;
+}
+
+.quotation-inner-box:hover{
+    background-color: #D5F1FA;
+}
+
+.margin-top-0px {
+    margin-top:0px;
+}
+
+#quotation-outer-box {
+    height: 100px;
+}
+
+.quotation-form-delete {
+    display: none;
+}
+
+.quotation-form-remove, #quotation-form-add {
+    cursor: pointer;
+}
+
+.form-set-input > input {
+    border:none;
+}
+
+.email-hide {
+    display: none;
+}
+
+.border-button {
+    border-bottom: 1px solid #D8D8D8 !important;
+}
+
+/*.stars > i {
+    color: gray;
+}*/
+
+.color-gold {
+    color: gold;
+}
+
+#customer-profile-img-prv > img, #customer-file-img {
+    cursor: pointer;
+}
+
+#id_image {
+    display: none;
+}
+
+.active-menu {
+    background-color: #E6E6E6;
+}
+
+#persone-details span:last-child {
+    display: none;
+}
+
+.email-no-padding ul {
+    padding: 0;
+}
+
+.quotation-cross > i {
+    margin-top: 12px;
+}
+
+/*#quotation-details-id-0 {
+    background-color: #D5F1FA;
+}*/
+
+.blue-active {
+   background-color: #D5F1FA;
+}
+
+
+.stock-file-span > input, .order-file-span > input {
+    /*display: none;*/
+}
+
+#follwed-by span:last-child {
+    display: none;
+}
+
+#search-result {
+    display: none;
+}
+
+#search-result {
+    position: absolute;
+    margin-top: 33px;
+    z-index: 1000;
+}
+
+#search-result ul {
+    display: block;
+    background: aliceblue;
+    /*padding: 5px;*/
+    border: 1px solid #099a9f;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#search-result ul li {
+    padding: 5px;
+}
+
+#search-result ul li:hover {
+    background-color: #8ed4f5;
+}
+

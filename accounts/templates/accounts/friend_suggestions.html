@@ -1,0 +1,427 @@
+ {% extends 'accounts/my_wall.html' %}
+
+{% load staticfiles %}
+{% load shuffle %}
+{% block body %}
+<body class="body-background1">
+    <!-- container part -->
+    <div class="container-fluid chat-content-part1">
+        <div class="col-md-12 no-padding">
+            <!-- start of chat top -->
+            <div class="row chat-top2 textcolor no-padding">
+                <div class="col-md-3" align="center">
+                    {% if request.user.cricketer.usp == 'BL' %}
+                        {% with overall_bowling=request.user.get_overall_bowling_career_stats %}
+                        <div class="col-md-12">
+                            <span><img src="{% static 'images/ball.png' %}" width="15px" height="15px" alt='ball' id="bat"></span>    USP
+                        </div>
+                        <div class="col-md-12">
+                            {% if overall_bowling.economy %}
+                                <span>Eco-{{overall_bowling.economy|floatformat:2}}</span>
+                            {% else %}
+                                <span>Eco.- ---</span>
+                            {% endif %}
+
+                            {% if overall_bowling.bowling_average %}
+                                <span>Avg.-{{ overall_bowling.bowling_average|floatformat:2 }}</span>
+                            {% else %}
+                              <span>Avg.- ---</span>
+                            {% endif %}
+                        </div>
+                        {% endwith %}
+                    {% else %}
+
+                        {% with overall_batting=request.user.get_overall_batting_career_stats %}
+                            <div class="col-md-12">
+                                <span><img src="{% static 'images/bat.png' %}" width="20px" height="20px" alt='bat' id="bat"></span>    USP
+                            </div>
+
+                            <div class="col-md-12">
+                                {% if overall_batting.batting_strike_rate %}
+                                    <span>S.R.-{{ overall_batting.batting_strike_rate|floatformat:2 }}%</span>
+                                    {% else %}
+                                    <span>S.R.- --- </span>
+                                {% endif %}
+
+                                {% if overall_batting.batting_average %}
+                                    <span>Avg.-{{ overall_batting.batting_average|floatformat:2 }}</span>
+                                {% else %}
+                                    <span>Avg.- ---</span>
+                                {% endif %}
+                            </div>
+                        {% endwith %}
+                    {% endif %}
+                </div>
+
+                <div class="col-md-3" align="center">
+                    <div class="col-md-12">
+                        <a href="{% url 'cricketer_career_performance' request.user.slug %}"><span class="textcolor"> My Performance </span> </a>
+                    </div>
+                </div>
+
+                <div class="col-md-3" align="center" data-toggle="modal" data-target="#best-performance-modal">
+                    <div class="col-md-12" id="performance">
+                         Best Performance
+                    </div>
+                </div>
+
+                <div class="col-md-3" align="center">
+                    <div class="col-md-12">
+                        <a href="{% url 'connections' %}"><span class="textcolor"> My Connections</span></a>
+                    </div>
+                    <div class="col-md-12">
+                        {{ friends_count }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end of chat top -->
+
+        <!-- My connection -->
+        <div class="row col-md-12 margin-top-20px">
+            <div class="col-md-6 medium-font textcolor">
+              <strong> Player Suggestions </strong>
+            </div>
+
+           <!-- <div class="col-md-offset-3 col-md-3">
+                <form action="{% url 'friends_search' %}" method="get">
+                    <div id="header-search1">
+                        <input type="text" name="q" value="" class="my-connections-search1" id="sf2" placeholder="Search friends" autocomplete="off"/>
+                        <button type="button" id="search-button"><i class="fa fa-search"></i></button>
+                    </div>
+                </form>
+                <div class="my-connections-search-popup col-md-12 no-padding">
+                    <div id="my-connections-search-container">
+                        <div class="col-md-12 search-result" ></div>
+                    </div>
+                </div>
+            </div>-->
+        </div>
+        <!-- end of my connection -->
+        <div class="col-md-12">
+            <!-- left part -->
+            <div class="col-md-8" id="left-part-container">
+                <div class="col-md-12 padding-20px">
+
+                    {% for friend_suggestion in friend_suggestions %}
+                        <div class="col-md-offset-3 col-md-8 background-connection user-cotainer-id-{{ friend_suggestion.id }}" id="background-connection">
+                            <div class="col-md-2 no-padding">
+                                <img src="{% if friend_suggestion.display_picture.name %}{{ MEDIA_URL }}{{ friend_suggestion.display_picture }}{% else %}{% static 'images/groups.png' %}{% endif %}" alt='user_picture' id="message-profile-dp">
+                            </div>
+                            <div class="col-md-7  no-padding margin-top-10px">
+                               <a href="{% url 'user_wall' friend_suggestion.slug %}"><span class="textcolor capitalize">{{ friend_suggestion.name }}</span></a>
+                            </div>
+                            <div class="col-md-3 suggestion-image" data-toggle="modal" data-target="#connect-request-popup-{{ friend_suggestion.id }}">
+                                <div title="Send connect request"></div>
+                            </div>
+                        </div>
+                        <!-- Modal -->
+                        <div class="modal fade" id="connect-request-popup-{{ friend_suggestion.id }}" role="dialog" tabindex="-1" aria-labelledby="send connect rquest">
+                            <div class="modal-dialog">
+                                <div class="modal-content margin-top-100px tranzy-background3 center">
+                                    <h5 class="textcolor">Send Request?</h5>
+                                    <div class="row margin-top-15px">
+                                        <div class="col-md-2">
+                                            <img src="{% if friend_suggestion.display_picture %}{{MEDIA_URL}}{{ friend_suggestion.display_picture }}{% else %}{% static 'images/groups.png' %}{% endif %}" id="message-profile-dp">
+                                        </div>
+                                        <div class="col-md-4 padding-5px capitalize suggestion-name">
+                                            <a href="{% url 'user_wall' friend_suggestion.slug %}"><span class="textcolor"><strong>{{ friend_suggestion.name }}</strong></span></a>
+                                        </div>
+                                        <div class="col-md-6 popup-circle-button-container" >
+                                            <span>
+                                                <button type="button" class="popup-circle-button" onclick="friendRequest({{ request.user.id }},{{ friend_suggestion.id }})">Yes</button>
+                                            </span>
+                                            <span>
+                                                <button type="button" class="popup-circle-button" data-dismiss="modal">No</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="connect-request-send-model" role="dialog" tabindex="-1" aria-labelledby="connect request sent successfuly">
+                    <div class="modal-dialog">
+                        <div class="modal-content margin-top-100px tranzy-background3 center">
+                            <h5 class="textcolor margin-top-30px">Friend Request sent</h5>
+                            <div class="padding-20px row popup-circle-button-container" style="padding-top: 0px;">
+                                <span>
+                                    <button type="button" class="popup-circle-button" data-dismiss="modal">Ok</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end of left part -->
+   <!-- </div>-->
+<!--    </div>-->
+
+    <!-- right part container -->
+     <div class="col-md-4" id="right-part-container">
+            <!-- right part -->
+         <div class="col-md-8 no-padding" id="right-part">
+
+        {% if team_follow_suggestions %}
+         <div class="col-md-12 textcolor padding-5px margin-top-20px" id="connect-suggestion" align="center">
+            <strong> Team Follow Suggestions </strong>
+        </div>
+
+        {% for team_follow in team_follow_suggestions|shuffle|slice:":3"  %}
+            {% if not already_team_member %}
+             {% if not already_following_team %}
+        <div class="col-md-12 padding-5px user-cotainer-id-{{ team_follow.id }}" id="suggestion1">
+
+            <div class="col-md-3 no-padding">
+                <img src="{% if team_follow.display_picture %}{{MEDIA_URL}}{{ team_follow.display_picture }}{% else %}{% static 'images/groups.png' %}{% endif %}" id="message-profile-dp">
+            </div>
+            <div class="col-md-7 small-font suggestion-name capitalize" id="suggestion-name">
+               <a href="{% url 'cricket_team_wall' team_follow.slug %}"> <span>{{ team_follow.name }}</span></a>
+            </div>
+
+                <div class="col-md-2 padding-5px" id="team-follow-div">
+                  <!-- not following-->
+                    <div class="team-suggestion-image" data-toggle="modal" data-target="#team-follow-model{{team_follow.id}}" id="team-suggestion-image{{team_follow.id}}"  title="Team Follow Request"></div>
+               </div>
+             {% endif %}
+             {% endif %}
+        </div>
+
+         <!-- Modal -->
+        <div class="modal fade" id="team-follow-model{{team_follow.id}}" role="dialog" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content margin-top-100px tranzy-background3 center">
+                    <h5 class="textcolor margin-top-30px">You are now Following <b>{{ team_follow.name }}</b> team. </h5>
+                    <div class="padding-20px row popup-circle-button-container" style="padding-top: 0px;">
+                        <span>
+                            <button type="button" class="popup-circle-button" onclick="teamFollow('{{team_follow.id}}')" data-dismiss="modal">Ok</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="col-md-12" id="suggestion2" align="center">
+               <a href="{% url 'cricket_team_follow_suggestions' %}"> View All</span></a>
+        </div>
+        {% endif %}
+    </div>
+ <!-- end of right part -->
+    </div>
+  <!-- end of right part container -->
+</div>
+</div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="best-performance-modal" role="dialog" align="center">
+        <div class="modal-dialog">
+            <div class="modal-content1 textcolor col-md-5 no-padding">
+                <div class="modal-body no-padding" id="performance-popup">
+                    <div class="col-md-12 large-font" id="best-performance" align="center">
+                        Best Performance
+                    </div>
+                    {% with best_performance_stats=request.user.get_best_performance_stats %}
+                        {% if request.user.cricketer.profile_best_performance_display_type == 'BL' %}
+                            <div class="col-md-12" id="hidden-best-bowler-performance">
+                                <div class="col-md-12 large-font margin-top-10px no-padding">
+                                    Bowler
+                                </div>
+                                <div class="col-md-12 margin-top-10px score-color no-padding">
+                                    <div class="col-md-5 no-padding">
+                                        Best Bowling
+                                    </div>
+                                    <div class="col-md-1">
+                                        :
+                                    </div>
+                                    {% if best_performance_stats.best_bowling_runs or best_performance_stats.best_bowling_wickets %}
+                                        <div class="col-md-5">
+                                            {{ best_performance_stats.best_bowling_wickets }}/ {{ best_performance_stats.best_bowling_runs }}
+                                        </div>
+                                    {% else %}
+                                        <div class="col-md-5">
+                                            0/0
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-12 score-color no-padding">
+                                    <div class="col-md-5 no-padding">
+                                        3W
+                                    </div>
+                                    <div class="col-md-1">
+                                        :
+                                    </div>
+                                    {% if best_performance_stats.three_wicket_hauls %}
+                                        <div class="col-md-5">
+                                            {{ best_performance_stats.three_wicket_hauls }}
+                                        </div>
+                                    {% else %}
+                                        <div class="col-md-5">
+                                            0
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-12 score-color no-padding">
+                                    <div class="col-md-5 no-padding">
+                                        5W
+                                    </div>
+                                    <div class="col-md-1">
+                                        :
+                                    </div>
+                                    {% if best_performance_stats.five_wicket_hauls %}
+                                        <div class="col-md-5">
+                                            {{ best_performance_stats.five_wicket_hauls }}
+                                        </div>
+                                    {% else %}
+                                        <div class="col-md-5">
+                                            0
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="col-md-12 large-font margin-top-10px no-padding">
+                                Batsman
+                            </div>
+                            <div class="col-md-12 margin-top-10px score-color no-padding">
+                                <div class="col-md-5 no-padding">
+                                    Highest Score
+                                </div>
+                                <div class="col-md-1">
+                                    :
+                                </div>
+                                {% if best_performance_stats.highest_score_runs or best_performance_stats.highest_score_balls_played %}
+                                    <div class="col-md-5">
+                                        {{ best_performance_stats.highest_score_runs }} ( {{ best_performance_stats.highest_score_balls_played }} )
+                                    </div>
+                                    {% else %}
+                                      <div class="col-md-5">
+                                        0(0)
+                                      </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-12 score-color no-padding">
+                                <div class="col-md-5 no-padding">
+                                    Max. 6s
+                                </div>
+                                <div class="col-md-1">
+                                    :
+                                </div>
+                                {% if best_performance_stats.max_sixes %}
+                                    <div class="col-md-5">
+                                       {{ best_performance_stats.max_sixes }}
+                                    </div>
+                                {% else %}
+                                    <div class="col-md-5">
+                                        0
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-12 score-color no-padding">
+                                <div class="col-md-5 no-padding">
+                                    Max. 4s
+                                </div>
+                                <div class="col-md-1">
+                                    :
+                                </div>
+                                {% if best_performance_stats.max_fours %}
+                                    <div class="col-md-5">
+                                        {{ best_performance_stats.max_fours }}
+                                    </div>
+                                {% else %}
+                                    <div class="col-md-5">
+                                        0
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-12 score-color no-padding">
+                                <div class="col-md-5 no-padding">
+                                    50s
+                                </div>
+                                <div class="col-md-1">
+                                    :
+                                </div>
+                                {% if best_performance_stats.fifties %}
+                                    <div class="col-md-5">
+                                        {{ best_performance_stats.fifties }}
+                                    </div>
+                                {% else %}
+                                    <div class="col-md-5">
+                                        0
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-12 score-color no-padding">
+                                <div class="col-md-5 no-padding">
+                                    100s
+                                </div>
+                                <div class="col-md-1">
+                                    :
+                                </div>
+                                {% if best_performance_stats.hundreds %}
+                                    <div class="col-md-5">
+                                        {{ best_performance_stats.hundreds }}
+                                    </div>
+                                {% else %}
+                                    <div class="col-md-5">
+                                        0
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    <!-- end of model -->
+    </div>
+    <!-- end of container part -->
+</body>
+{% endblock %}
+
+{% block customscript %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(document).click(function(){
+            $(".my-connections-search-popup").slideUp(500,function(){
+                $(".my-connections-search-popup .search-result").html("");
+                $(".my-connections-search1").val("");
+            });
+        });
+        $(".my-connections-search-popup").hide();
+        $(".my-connections-search1").keyup(function(){
+            // $(".predictive-search-result-popup").hide();
+            var sQuery = $(this).val();
+            if(sQuery){
+                $.ajax({
+                    type : 'GET',
+                    url :host+'api/v1/search/friends/?q='+sQuery,
+                    success : function(success){
+                        // console.log("call successfully"+JSON.stringify(success));
+                        var fResult="";
+                        if(success.length != 0){
+                            for(i=0; i<success.length; i++){
+                                fResult = fResult+'<a href="/profile/'+success[i].slug+'/"><div class="col-md-12 no-padding margin-top-10px message-container-box"><div class="col-md-4"><img src="'+(success[i].display_picture || "/static/images/groups.png")+'" alt="message" id="message-profile-dp"></div><div class="col-md-7 lgall-font"><div class="col-md-12 no-padding"><strong>'+success[i].first_name+' '+success[i].last_name+'</strong></div><div class="col-md-12 no-padding">'+success[i].city_display+' , '+success[i].state_display+'</div></div></div></a>';
+                            }
+                            $("#my-connections-search-container .search-result").html(fResult);
+                        }else{
+                            fResult ='<div class="col-md-12 center no-search-result"><span>No result</span></div>';
+                            $("#my-connections-search-container .search-result").html(fResult);
+                        }
+                        $(".my-connections-search-popup").show("blind",200);
+                    },
+                    error : function(error){
+                    }
+                });
+            }else{
+                $("#my-connections-search-container .search-result").html("");
+                $(".my-connections-search-popup").hide("blind",200);
+            }
+        });
+    });
+</script>
+{% endblock %}

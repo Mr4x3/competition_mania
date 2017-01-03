@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block header  %}
+    {% include 'templates_mobile/header_after_complete_login.html' %}
+{% endblock %}
+
+{% block body %}
+<section class="container-fluid no-padding bg-color-middle-gray padding-bottom-40px padding-top-20px">
+    <div class="col-xs-12 col-sm-12">
+        <div class="col-xs-12 col-sm-12 margin-top-20px">
+            <div class="col-xs-12 col-sm-12 bg-color-gray no-padding">
+                <div class="col-xs-12 col-sm-12 bg-color-pure-black center font-large no-padding padding-top-5px padding-bottom-5px">
+                    User Connections
+                </div>
+                <div class="col-xs-12 col-sm-12 no-padding">
+                    <div class="col-xs-12 col-sm-12 margin-top-20px">
+                        {% for user_friend in user_friends  %}
+                        <a href="{% url 'user_wall' user_friend.slug %}" class="anchor-white">
+                            <div class="col-xs-12 col-sm-12 no-padding padding-10px sv-border-light-gray margin-bottom-20px">
+                                <div class="col-xs-3 col-sm-3 no-padding">
+                                    <img src="{% if user_friend.display_picture.name %}{{ MEDIA_URL }}{{ user_friend.display_picture }}{% else %}{% static 'm_images/displayPic.png' %}{% endif %}" alt="" class="chat-display-pic">
+                                </div>
+                                <div class="col-xs-9 col-sm-9 no-padding">
+                                    <div class="col-xs-12 col-sm-12 no-padding" style="line-height: 36px;">
+                                        <strong>{{ user_friend.name }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        {% empty %}
+                            <div class="col-xs-12 col-sm-12 no-padding padding-10px sv-border-light-gray margin-bottom-20px">
+                                <div class="col-xs-12 col-sm-12 no-padding center">
+                                    No Connections
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block footer  %}
+     {% include 'templates_mobile/m_footer.html' %}
+{% endblock %}
+
+{% block customscript %}
+{% endblock %}

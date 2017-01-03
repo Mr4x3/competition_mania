@@ -1,0 +1,2360 @@
+{% extends 'accounts/team.html' %}
+
+{% load staticfiles %}
+{% load shuffle %}
+
+{% block header %}
+<section class="tour-on">
+
+
+</section>
+<!-- Site header -->
+<div class="container-fluid" id="header">
+   <!-- logo -->
+    <div class="col-md-2 logo padding-5px">
+        <div class="content">
+          <a href="{% url 'my_wall' %}">
+            <img src="{% static 'images/sportsvitaelogogrey.png' %}" width="120px" height="60px" alt='logo'>
+          </a>
+        </div>
+    </div>
+    <!-- end logo -->
+    <!-- authentication start -->
+    {% if request.user.is_authenticated %}
+    <div class="col-md-2 margin-top-20px no-padding">
+        <div class="col-md-12">
+            <span class="col-md-6 textcolor" id="message1">
+                <span id="message-counter">
+                    {% if messages_notification_count > 0 %}
+                        {{ messages_notification_count }}
+                    {% endif %}
+                </span>
+            </span>
+            <span class="col-md-6 textcolor messagebox" onclick="markReadMessage()"> Messages </span>
+        </div>
+        {% if latest_received_messages %}
+            <div class="col-md-12 no-padding message-profile">
+                {% for latest_message in latest_received_messages %}
+                    <a href="{% url 'friend_messages' slug=latest_message.sender.slug %}" >
+                        <div class="col-md-12 no-padding margin-top-10px message-container-box" id=message-friend-box-{{latest_message.id}}>
+                            <div class="col-md-4">
+                                <img src="{% if latest_message.sender.display_picture.name %}{{MEDIA_URL}}{{ latest_message.sender.display_picture }}{% else %}{% static 'images/groups.png' %}{% endif %}" alt='message' id="message-profile-dp">
+                            </div>
+                            <div class="col-md-8 small-font textcolor">
+                                <div class="col-md-12 no-padding capitalize">
+                                    <strong>{{ latest_message.sender.name }}</strong>
+                                </div>
+                                <div class="col-md-12 no-padding">
+                                    {{latest_message.text|truncatechars:20}}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+                <div class="col-md-12 textcolor" id="viewall-div" align="center">
+                    <a href="{% url 'user_messages'  %}"><span> View all </span></a>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-md-12 no-padding message-profile">
+                <div class="col-md-12 no-padding margin-top-10px message-container-box textcolor center">
+                    <h5>There are no messages!</h5>
+                </div>
+                <div class="col-md-12 textcolor" id="viewall-div" align="center">
+                    <!-- <a href="{% url "user_messages"  %}"><span> View all </span></a> -->
+                    <span id="new-message-mywall"><i class="fa fa-pencil-square-o fa-lg"></i>&nbsp;Write a New Message</span>
+                </div>
+            </div>
+       {% endif %}
+    </div>
+
+     <!-- new message popup  -->
+            <div id="newmessageModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <span class="close">x</span>
+                    <div id="message-popup">
+                        <div class="margin-top-10px">
+                            <input type="hidden" id="sender-message-hidden" name="sender" value="{{ request.user.id }}">
+                            <input id="recipient-message-hidden" type="hidden" name="recipient" value="{{ friend.id }}">
+                            <input type="text" id="recipients-name" placeholder="Recipients" onkeypress="recipientName();" onblur="autoComplitCheck();">
+                        </div>
+                        <textarea placeholder="Enter Your message here..." id="chat-textarea1"></textarea>
+                        <div>
+                            <button type="button" id="recipients-send" onclick="newMessage()">
+                                <h4 id="chat-send"><strong>Send</strong></h4>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end of message popup -->
+
+    <div class="col-md-2 margin-top-20px no-padding">
+        <div class="col-md-12 no-padding">
+            <span class="col-md-2 no-padding textcolor" id="connect-icon">
+                <span id="friend-request-count">
+                    {% if friend_requests_notification_count > 0 %}
+                        {{friend_requests_notification_count}}
+                    {% endif %}
+                </span>
+            </span>
+            <span class="col-md-9 textcolor connect-request" onclick="markFriendRequest()">
+                Connections
+            </span>
+        </div>
+        {% if latest_friend_requests %}
+            <div class="col-md-12 connect-profile no-padding">
+                {% for connect_request in latest_friend_requests %}
+                    <div class="col-md-12 no-padding margin-top-10px request-box request-container-box{{connect_request.id}}">
+                        <div class="col-md-3">
+                            <img src="{% if connect_request.from_user.display_picture.name %}{{ MEDIA_URL }}{{ connect_request.from_user.display_picture }}{% else %}{% static 'images/groups.png' %}{% endif %}" alt='message' id="message-profile-dp">
+                        </div>
+                        <div class="col-md-5 lgall-font textcolor no-padding" style="margin-left: 10px">
+                            <a href="{% url 'user_wall' connect_request.from_user.slug %}">
+                                <span>{{ connect_request.from_user.name }}</span>
+                            </a>
+                        </div>
+                        <div class="col-md-1" id="right" onclick="friendAccpectRequestHeaderConnection('{{connect_request.id}}')"></div>
+                        <div class="col-md-2 no-padding" id="cross" onclick="rejectRequestHeaderConnection('{{connect_request.id}}')"></div>
+                    </div>
+                {% endfor %}
+                {% if latest_friend_requests|length >= 3 %}
+                <div class="col-md-12 textcolor" id="viewall-div-for-connection" align="center">
+                    <a href="{% url "pending_friend_requests" %}"> View all </a>
+                </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="col-md-12 connect-profile no-padding">
+                <div class="col-md-12 no-padding margin-top-10px request-container-box textcolor center">
+                   <h5>There are no Connect Requests </h5>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-2 margin-top-20px no-padding">
+        <div class="col-md-12">
+            <span class="col-md-offset-3 col-md-3 no-padding textcolor" id="">
+                <span id="notification-icon" onclick="markReadNotifications()">
+                    <i class="fa fa-bell fa-2x" style="color: #F62C2C; font-size: 20px "></i>
+                    <span id="notification-count">
+                    {% if user_notifications_count > 0 %}
+                        {{user_notifications_count}}
+                    {% endif %}
+                     </span>
+                </span>
+            </span>
+           <!-- <span class="col-md-9 medium-font textcolor connect-request">
+                Connect Requests
+            </span>-->
+        </div>
+        {% if latest_user_notifications %}
+            <div class="col-md-12 connect-profile-notifications no-padding">
+                {% for latest_notification in latest_user_notifications %}
+                    <div class="col-md-12 no-padding margin-top-10px textcolor request-box request-container-box{{connect_request.id}}">
+                      <span class="textcolor"><a href="{{ latest_notification.click_url }}"> {{latest_notification.message|safe}} </a> </span>
+                    </div>
+                {% endfor %}
+                <div class="col-md-12 textcolor" id="viewall-div" align="center">
+                    <a href="{% url 'user_notifications' %}"><span class="textcolor">View all</span> </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-md-12 connect-profile-notifications no-padding">
+                <div class="col-md-12 no-padding margin-top-10px request-container-box textcolor center">
+                   <h5>There are no notifications</h5>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    {% else %}
+        <div class="col-md-offset-1 col-md-3 no-padding margin-top-20px">
+            <div class="col-md-6 no-padding">
+                <span class="col-md-12 no-padding color-red">
+                    <a href="{% url 'top_players' %}"><img src="{% static 'm_images/search_player.png' %}" style="height:20px"><span class="color-white">&#160;Top Players</span></a>
+                </span>
+            </div>
+             <div class="col-md-6 no-padding">
+                <span class="col-md-12 no-padding color-red">
+                     <a href="{% url 'top_teams' %}"><img src="{% static 'm_images/search_team.png' %}" style="height:20px"><span class="color-white">&#160;Top Teams</span></a>
+                </span>
+            </div>
+        </div>
+
+
+
+    {% endif %}
+    <!-- authentication end -->
+    <div class="{% if request.user.is_authenticated %} col-md-2 {% else %} col-md-offset-1 col-md-3 {% endif %}">
+        <form action="{% url 'complete_search' %}" method="get">
+            <div id="header-search" class="tour-step-world-search" title="" data-content="(4/6) Search for players and teams around the world.">
+                <input type="text" name="q" class="predictive-search" value="" id="sf3" placeholder="Search Sports Vitae" autocomplete="off"/>
+                <button type="submit" id="search-button"><i class="fa fa-search"></i></button>
+            </div>
+        </form>
+
+        <div class="col-md-12 no-padding predictive-search-result-popup">
+                <div id="predictive-search-peoples-container">
+                    <div class="col-md-offset-2 col-md-8 textcolor center search-header color-red">
+                        <span>Users</span>
+                    </div>
+                    <div class="col-md-12 center no-padding search-result" >
+                        <div class="col-md-12 textcolor center no-search-result"  >
+                            <span>No result</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="empty-div-in-search col-md-12"></div>
+
+                <div id="predictive-search-teams-container">
+                    <div class="col-md-offset-2 col-md-8 textcolor center search-header color-red">
+                        <span>Teams</span>
+                    </div>
+                    <div class="col-md-12 center search-result">
+                        <!-- <a href="">
+                            <div class="col-md-12 no-padding margin-top-10px message-container-box">
+                                <div class="col-md-offset-1 col-md-3">
+                                    <img src="/static/images/groups.png" alt="message" id="message-profile-dp">
+                                </div>
+                                <div class="col-md-7 lgall-font textcolor left">
+                                    <div class="col-md-12 no-padding">
+                                        <strong>t4 u4</strong>
+                                    </div>
+                                    <div class="col-md-12 no-padding">
+                                        sdfdg
+                                    </div>
+                                </div>
+                            </div>
+                        </a> -->
+                        <div class="col-md-12 textcolor center no-search-result"  >
+                            <span>No result</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="empty-div-in-search col-md-12"></div>
+                <div class="col-md-12 center" id="view-all-search-container">
+                    <a href="" id="view-all-search-button"><span class="textcolor"> View All Search Result </span></a>
+                </div>
+             </div>
+       </div>
+    {% if request.user.is_authenticated %}
+    <div class="col-md-2 user">
+        <div class="col-md-12" id="connect-name">
+            <span class="textcolor connect-name capitalize" >Hi {{ request.user.first_name}}!<i class="fa fa-caret-down textcolor margin-10px"></i></span>
+        </div>
+        <div class="col-md-12 connect-profile-name1 no-padding" id="connect-profile-name1">
+
+            {% if request.user.is_superuser %}
+                <div class="col-md-12">
+                    <a href="{% url 'login_as' %}">Login as</a>
+                </div>
+            {% endif %}
+            <div class="col-md-12 textcolor no-padding">
+                <div class="col-md-12" id="edit-box">
+                   <span class="col-md-3 no-padding">Edit </span> <i class="fa fa-caret-right"></i>
+                </div>
+                <div class="col-md-offset-2 col-md-10 no-padding small-font" id="edit-section">
+                    <div class="col-md-12 no-padding">
+                     <span class="textcolor">  <a href="{% url "edit_user_profile" %}"> Edit Profile Specific </a></span>
+                    </div>
+                    <div class="col-md-12 no-padding">
+                     <span class="textcolor"> <a href="{% url "edit_cricket_profile" %}"> Edit Sport Specific </a></span>
+                    </div>
+                    <div class="col-md-12 no-padding">
+                     <span class="textcolor"> <a href="{% url "edit_cricket_certification" %}"> Edit Certification </a></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 textcolor">
+                <a href="{% url "logout" %}">Logout</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-md-2 textcolor">
+        <div class="col-md-12 no-padding margin-top-20px right">
+            <a href="{% url 'homepage' %}" class="color-white"> Login/ Sign Up</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- end of site header-->
+{% endblock %}
+
+{% block body %}
+<body class="body-background">
+    <section class="container-fluid no-padding">
+    <!-- container part -->
+    <section id="my-profile-header" class="container-fluid no-padding">
+        <div class="textcolor small-font" style="position:absolute; padding: 5px 15px;"><a href="{% url 'edit_user_profile' %}"><u>click to edit</u></a></div>
+        <div class="right profile-tour">
+            <i class="fa fa-laptop" aria-hidden="true" style="font-size: 17px;color:red"></i> <button class="color-white" type="button">Show Tour</button>
+        </div>
+        <div class="col-md-12 color-red top-player-links">
+            <span class="col-md-12 no-padding color-red no-padding">
+                <a href="{% url 'top_players' %}"><img src="{% static 'm_images/search_player.png' %}" style="height:17px"><span class="color-white"> &#160;Top Players</span></a>
+            </span>
+            <span class="col-md-12 no-padding color-red margin-top-10px">
+                 <a href="{% url 'top_teams' %}"><img src="{% static 'm_images/search_team.png' %}" style="height:17px"><span class="color-white"> Top Teams</span></a>
+            </span>
+        </div>
+        <img src="{% if request.user.cover_picture.name %}{{ MEDIA_URL }}{{ request.user.cover_picture }}{% else %}{% static 'images/mywall.jpg' %}{% endif %}" id="profile-first-section">
+        <div class="col-md-5 white-tranzy-background padding-5px" id="profile-section-part">
+            <div class="col-md-3">
+                <img src="{% if request.user.display_picture.name %}{{ request.user.display_picture.url }}{% else %}{% static 'images/groups.png' %}{% endif%}" id="profile-dp">
+            </div>
+            <div class="col-md-8" id="profile-status">
+             {% with allcaptain=request.user.get_all_teams_captaining  %}
+                {% if allcaptain %}
+                <div class="col-md-12 small-font" id="captaining-div">
+                      <div class="no-padding col-lg-12" id="team-name-slice">
+                        <img src="{% static 'images/hat.png' %}" width="20px" height="20px">
+                        {% for captaining_team in allcaptain|slice:":4" %}
+                          <span class="capitalize" title="{{captaining_team.name}}">
+                            <a href="{% url "cricket_team_wall" slug=captaining_team.slug %}">
+                                <strong>{{captaining_team.name}}</strong><span>,</span>
+                            </a>
+                          </span>
+                        {% endfor %}
+                        {% if allcaptain|length >= 4 %}
+                            <span data-toggle="tooltip" data-placement="right" title="{% for captaining_team in allcaptain|slice:"2:" %}{{captaining_team.name}}{% if not forloop.last %}, {% endif %}{% endfor %}" style="display: inline; cursor: default;" >...</span>
+                        {% endif %}
+                        </div>
+                </div>
+            {% endif %}
+             {% endwith %}
+                {% if request.user.cricketer.get_batting_profile_display_value %}
+                <div class="col-md-12">
+                    <img src="{% static 'images/bat.png' %}" width="20px" height="20px"><span class="small-font"><strong> {{ request.user.cricketer.get_batting_profile_display_value }} </strong> </span>
+                </div>
+                {% endif %}
+
+                {% if request.user.cricketer.get_bowling_profile_display_value %}
+                <div class="col-md-12">
+                    <span class="small-font"><img src="{% static 'images/ball.png' %}" width="20px" height="20px"><strong> {{ request.user.cricketer.get_bowling_profile_display_value }}</strong> </span>
+                </div>
+                {% endif %}
+
+                {% if request.user.cricketer.is_wicketkeeper %}
+                <div class="col-md-12">
+                    <span class="small-font"><img src="{% static 'images/wicket ball.png' %}" width="20px" height="20px"><strong> Wicket Keeper </strong> </span>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-md-1 pull-right" id="profile-status1">
+                {% if man_of_the_matches_count %}
+                    <span><img src="{% static 'images/mom-icon.png' %}" width="25px" height="25px" class="" title="MOM: {{ man_of_the_matches_count }}"></span>
+                {% endif %}
+                {% if best_batsman_matches_count %}
+                    <span><img src="{% static 'images/batsman-icon.png' %}" width="25px" height="25px" class="" title="Best Batsman: {{ best_batsman_matches_count }}"></span>
+                {% endif %}
+                {% if best_bowler_matches_count %}
+                    <span><img src="{% static 'images/bowler-icon.png' %}" width="25px" height="25px" class="" title="Best Bowler: {{ best_bowler_matches_count }}"></span>
+                {% endif %}
+                {% if best_fielder_matches_count %}
+                    <span><img src="{% static 'images/fielder-icon.png' %}" width="25px" height="25px" class="" title="Best Fielder: {{ best_fielder_matches_count }}"></span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-offset-10 col-md-2 no-padding textcolor" style="text-align: right; margin-top: -30px">
+             <button type="button" id="add-stat-mywall" class="tour-step-3" title="" data-content="(3/6) Played a great match recently? Add your personal stats here." data-toggle="modal" data-target="#userPerformanceAddNewStatsModal">Add New Stats</button>
+
+        </div>
+    </section>
+    <!-- end of first section -->
+
+    <!--Second section-->
+    <section class="container-fluid chat-top1" id="profile-second-section">
+        <div class="col-md-2 no-padding">
+            <div class="col-md-12 capitalize no-padding" id="profile-name">
+               <h4> {{ request.user.name }} </h4>
+            </div>
+        </div>
+        <div class="col-md-3 tour-step-6" align="center" data-content="(6/6) This will highlight your performance.">
+
+        {% if request.user.cricketer.usp == 'BL' %}
+            {% with overall_bowling=request.user.get_overall_bowling_career_stats %}
+                <div class="col-md-12">
+                    <span><img src="{% static 'images/ball.png' %}" width="20px" height="20px" alt='bat' id="bat"></span> USP <i class="fa fa-info-circle custom-info normal-help-popover" title="" data-content="Extraordinary performance Redirected from your team performance"></i>
+                </div>
+
+                <div class="col-md-12 no-padding">
+                    {% if overall_bowling.economy %}
+                        <span>Eco : {{overall_bowling.economy.1|floatformat:1}} <span class="bowling-tri-symbole"></span></span>
+                        {% else %}
+                            <span>Eco : ---</span>
+                    {% endif %}
+
+                    {% if overall_bowling.bowling_average %}
+                        <span>Avg. : {{ overall_bowling.bowling_average.1|floatformat:1 }} <span class="bowling-avg-tri-symbole"></span></span>
+                        {% else %}
+                          <span>Avg.: ---</span>
+                   {% endif %}
+                 </div>
+            {% endwith %}
+
+        {% else %}
+
+            {% with overall_batting=request.user.get_overall_batting_career_stats %}
+                <div class="col-md-12">
+                    <span><img src="{% static 'images/bat.png' %}" width="20px" height="20px" alt='bat' id="bat"></span>    USP <i class="fa fa-info-circle custom-info normal-help-popover" title="" data-content="Extraordinary performance Redirected from your team performance"></i>
+                </div>
+
+                <div class="col-md-12 no-padding">
+                    {% if overall_batting.batting_strike_rate %}
+                        <span>S.R. : {{ overall_batting.batting_strike_rate.1|floatformat:1 }}% <span class="batting-tri-symbole"></span> </span>
+                        {% else %}
+                            <span>S.R.: --- </span>
+                    {% endif %}
+
+                    {% if overall_batting.batting_average %}
+                     <span> Avg. : {{ overall_batting.batting_average.1|floatformat:1 }} <span class="batting-avg-tri-symbole"></span></span>
+                     {% else %}
+                         <span>Avg.: ---</span>
+                    {% endif %}
+                 </div>
+            {% endwith %}
+
+        {% endif %}
+          </div>
+        </div>
+        <div class="col-md-2 no-padding" align="center">
+            <div class="col-md-12 tour-step-5" title="" data-content="(5/6) See your collective stats here.">
+                <a href="{% url 'cricketer_career_performance' request.user.slug %}"> My Performance  </a>
+            </div>
+        </div>
+        <div class="col-md-2" align="center" data-toggle="modal" data-target="#best-performance-modal">
+            <div class="col-md-12" id="performance">
+                 Best Performance&nbsp;<i class="fa fa-info-circle custom-info normal-help-popover" title="" data-content="Extraordinary performance Redirected from your team performance"></i>
+            </div>
+        </div>
+        <div class="col-md-2 no-padding" align="center">
+            <div class="col-md-12">
+                <a href="{% url 'connections' %}"> My Connections </a>
+            </div>
+            <div class="col-md-12">
+                {{ friends_count }}
+            </div>
+        </div>
+    </section>
+    <!-- end of second section -->
+    </section>
+
+    <!-- third section -->
+    <section class="container-fluid no-padding" id="profile-third-section">
+        <!-- left part of wall -->
+        <div class="col-md-2 no-padding" id="about">
+            <div class="col-md-12 no-padding">
+                <div class="textcolor padding-5px" id="about-me-top" align="center">
+                   <strong> About </strong>
+                </div>
+
+
+                <div class="col-md-12 about-details padding-5px">
+                    <div class="no-padding">
+                        <span class="about-playing">Playing as</span>
+                        <span class="about-team">{{ request.user.cricketer.get_playing_as_display }}</span>
+                    </div>
+                </div>
+
+                 <div class="col-md-12 about-details padding-5px">
+                    <div class="col-md-12 no-padding">
+                        <span class="col-md-3 no-padding about-playing">From</span>
+                        <span class="col-md-9 no-padding about-team">
+                            {% if request.user.get_country_display != 'India' %}
+                                {{ request.user.city_text }},
+                                 {{ request.user.state_text }}
+                             {% else %}
+                                {{ request.user.get_city_display }},
+                                {{ request.user.get_state_display }},{% endif %} {{ request.user.get_country_display }} </span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-12 no-padding" id="my-team">
+                <div class="col-md-12 textcolor padding-5px bgcolor-red margin-top-10px" align="center">
+                    <a href="{% url 'subscribe' %}" style="color:#fff"><strong>Premium Services </strong></a>
+                </div>
+
+                <div class="col-md-12 textcolor padding-5px" id="my-team-top" align="center">
+                   <strong> My Teams </strong>
+                </div>
+                 <div class="col-md-12 padding-5px" id="my-team-details">
+                    {% for user_team_joined in request.user.get_all_teams_joined %}
+                           <div class="cricket-team"> <a href="{% url "cricket_team_wall" slug=user_team_joined.slug %}"><span class="team-joined-name capitalize"> {{ user_team_joined.name }} </span> </a> </div>
+                   {% endfor %}
+                </div>
+
+                <div class="col-md-12 creat-my-team no-padding tour-step-2" title="" data-content="(2/6) Add your friends and create your Team. Give it a name you've always wanted." >
+                    <a href="{% url "cricket_team_registration" %}"> Create My Team <i id="plus" class="fa fa-plus-circle"></i></a>
+                </div>
+            </div>
+        </div>
+        <!-- end of left part -->
+
+        <!-- start of middle part -->
+        <div class="col-md-8" id="middle-part">
+            <!-- content part -->
+            <div class="col-md-12" id="middle-first-part">
+                <div class="col-md-12 no-padding margin-top-10px" id="status">
+                    <form action="" method="post" enctype="multipart/form-data" name="post-form" id="post-form-id"> {% csrf_token %}
+                        <span class="col-md-1 margin-top-10px">
+
+                            <div class="large-font" id="post-button1">
+                                <div class="col-md-12 no-padding post-button-outer-container">
+                                    <div class="col-md-12 no-padding post-button-inner-container">
+                                        <input type="hidden" id="post-type" name="post-type" value="1">
+                                        <span data-post-type="1" id="T"><strong>T</strong></span>
+                                        <i data-post-type="3" class="fa fa-map-marker fa-2x" id="map-symbole1"></i>
+                                        <i data-post-type="2" id="file-post-icon-1" class="fa fa-paperclip fa-2x"></i>
+                                         <i class="fa fa-sort-desc fa-lg" id="post-arrow"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="status-map" align="center" style="z-index: 10;" >
+                                <label class="myLabel">
+                                    <input data-post-type="2" type="file" id="wall-image">
+                                    <span><i id="file-post-icon-2" class="fa fa-paperclip fa-2x"></i></span>
+                                </label>
+                                <span data-post-type="1" id="T3"><strong>T</strong></span>
+                                <div class="map">
+                                    <span data-post-type="1" id="T1"><strong>T</strong></span>
+                                    <i data-post-type="3" class="fa fa-map-marker fa-2x" id="map-symbole"></i>
+                                </div>
+                            </div>
+                        </span>
+                        <span class="col-md-10 margin-top-10px">
+                            <textarea placeholder="Tell us how you performed today, via text or upload your picture?" name="post-text" id="status-chat-area"></textarea>
+                            <input type="text" placeholder="Enter a location" name="post-location" id="pac-input" class="place-input" onkeypress=callMap()>
+                            <img src="" name="cover-pic" id="post-img-prv">
+                            <div id="map1"></div>
+                        </span>
+                        <span class="col-md-1 textcolor margin-top-10px">
+                            <button type="button" id="post-button" onclick="post('{{ request.user.id }}','{{ request.user.name }}','{{ request.user.display_picture }}','{{request.user.slug}}')">
+                                <h5>Post</h5>
+                            </button>
+                        </span>
+                    </form>
+                </div>
+                <div id="post-loader" class="col-md-12 margin-top-30px">
+                    <div>
+                        <center>
+                            <img src="../static/images/preloader.gif">
+                        </center>
+                    </div>
+                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="post-error" role="dialog" tabindex="-1" aria-labelledby="Unable to post server error occured!!">
+                    <div class="modal-dialog">
+                        <div class="modal-content margin-top-100px tranzy-background3 center">
+                            <h4 class="textcolor">Server Error!</h4>
+                            <h5 class="textcolor">Some went wrong while posting your post, Please post again.</h5>
+                            <div class="row margin-top-15px">
+                                <div class="row popup-circle-button-container" style="padding-top: 0px;">
+                                    <span>
+                                        <button type="button" class="popup-circle-button" data-dismiss="modal">OK</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                 <div class="modal fade" id="blank-post-error" role="dialog" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content margin-top-100px tranzy-background3 center">
+                            <h4 class="textcolor">Error!</h4>
+                            <h5 class="textcolor">The Status Update appears to blank. Please Update your status!!</h5>
+                            <div class="row margin-top-15px">
+                                <div class="row popup-circle-button-container" style="padding-top: 0px;">
+                                    <span>
+                                        <button type="button" class="popup-circle-button" data-dismiss="modal">OK</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12" id="status-third-part">
+                    {% if user_wall_posts %}
+                    {% for wall_post in user_wall_posts %}
+                        {% if not wall_post.team_id %}
+                            <div class="post-container col-md-12" id="post-id-{{wall_post.id}}">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                         <img src="{% if wall_post.owner.display_picture.name %}{{ MEDIA_URL }}{{ wall_post.owner.display_picture }}{% else %}{% static 'images/groups.png' %}{% endif %}" alt='user-image' idg="logo-tag" class="chat-display-pic">
+                                    </div>
+                                    <div class="col-md-9 no-padding">
+                                        <div class="col-md-12 no-padding">
+                                            <div class="col-md-12 no-padding capitalize">
+                                             <a href="{% url 'user_wall' slug=wall_post.owner.slug %}"><strong>{{ wall_post.owner.name }} </strong></a>
+                                            </div>
+                                            {% if wall_post.post_type == 1 %}
+                                                <div class="col-md-12 no-padding" id="post-text-area">
+                                                    {% autoescape off %}{{ wall_post.text }}{% endautoescape %}
+                                                </div>
+                                            {% elif wall_post.post_type == 3 %}
+                                                <div class="col-md-12 gray-text-color">
+                                                    Checked in at {{ wall_post.location }}
+                                                </div>
+
+                                                <div class="col-md-12 no-padding" id="post-text-area">
+                                                    {% autoescape off %}{{ wall_post.text }}{% endautoescape %}
+                                                </div>
+
+                                            {% elif wall_post.post_type == 2 %}
+                                                 <div class="col-md-12 no-padding" id="post-text-area">
+                                                    {% autoescape off %}{{ wall_post.text }}{% endautoescape %}
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <img src="{{ MEDIA_URL }}{{ wall_post.post_image }}" alt='posted-img' class="posted-img">
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% if wall_post.owner.id == request.user.id %}
+                                    <span class="col-md-1 no-padding">
+                                        <i class="fa fa-sort-desc trash">
+                                            <span class="col-md-12 lgall-font no-padding" id="delete-post" onclick="deletePost({{wall_post.id}})">Delete</span>
+                                        </i>
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <div id="like-comment-counter-wraper" class="row">
+                                    <div class="col-md-12">
+                                        <span id="like-count-wappper" >
+                                            {% if wall_post.likes.all.count > 0 %}
+                                                <span id="like-counter" data-like-count="{{ wall_post.likes.all.count }}">{{ wall_post.likes.all.count }}{% if wall_post.likes.all.count == 1 %}&nbsp;Like{% else %}&nbsp;Likes{% endif %}</span>
+                                            {% endif %}
+                                        </span>
+                                        <span id="comment-count-wappper" >
+                                            {% if wall_post.user_wall_post_comments.all.count > 0 %}
+                                                <span id="comment-counter" data-comment-count="{{ wall_post.user_wall_post_comments.all|length }}">{{ wall_post.user_wall_post_comments.all|length }}{% if wall_post.user_wall_post_comments.all|length == 1 %}&nbsp;Comment{% else %}&nbsp;Comments{% endif %}</span>
+                                            {% endif %}
+                                        </span>
+                                        <span class="pull-right">
+                                            {% if wall_post.posted_on %}
+                                                <span>{{ wall_post.posted_on|date:'M j, Y' }} at {{ wall_post.posted_on|date:'g:i A' }}</span>
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div id="comment-bar" class="row">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2 like-unlike-button">
+                                                {% if request.user in wall_post.likes.all %}
+                                                    <div class="unlike-button" onclick="unlikeButton({{ wall_post.id }})" >
+                                                        <span>
+                                                            <i class="fa fa-thumbs-up"></i>&nbsp;Liked
+                                                        </span>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="like-button" onclick="likeButton({{ wall_post.id }})" >
+                                                        <span>
+                                                            <i class="fa fa-thumbs-up"></i>&nbsp;Like
+                                                        </span>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="comments-button" onclick="showComments({{ wall_post.id }}, {{ request.user.id }});" >
+                                                    <span><i class="fa fa-commenting"></i>&nbsp;Comments</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="comment-wapper-of-post col-md-12">
+                                                <div class="loader">
+                                                </div>
+                                                <span class="show-more-comment-wapper">
+                                                </span>
+                                                <div class="no-comments-wraper">
+                                                </div>
+                                                <div class="comment-wrapper">
+                                                    <div class="hidden-comment-wraper">
+                                                    </div>
+                                                    <div class="show-comment-wraper">
+                                                    </div>
+                                                </div>
+                                                <div class="comment-text-area-wappper">
+                                                    <div class="col-md-10 col-md-offset-1">
+                                                        <input type="text" class="comment-text-area" data-comment-box-id="{{ wall_post.id }}" placeholder="Write a comment">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else%}
+                           <!-- Team wall post-->
+                            <div class="post-container col-md-12" id="post-id-{{wall_post.id}}">
+                            <div class="row">
+                                <div class="col-md-2">
+                                     <img src="{% if wall_post.posted_by.display_picture.name %}{{ MEDIA_URL }}{{ wall_post.posted_by.display_picture }}{% else %}{% static 'images/groups.png' %}{% endif %}" alt='user-image' class="chat-display-pic">
+                                </div>
+                                <div class="col-md-9 no-padding">
+                                    <div class="col-md-12 no-padding">
+                                        <div class="col-md-12 no-padding capitalize">
+                                        <a href="{% url 'user_wall' slug=wall_post.posted_by.slug %}"> <strong> {{ wall_post.posted_by.name }}</a></strong> Via Team <strong><a href="{% url 'cricket_team_wall' slug=wall_post.team.slug %}"> {{wall_post.team.name}}</strong></a>
+                                        </div>
+                                        {% if wall_post.post_type == 1 %}
+                                            <div class="col-md-12 no-padding" id="post-text-area">
+                                                {% autoescape off %}{{ wall_post.text }}{% endautoescape %}
+                                            </div>
+                                        {% elif wall_post.post_type == 3 %}
+                                            <div class="col-md-12 gray-text-color">
+                                                Checked in at {{ wall_post.location }}
+                                            </div>
+
+                                            <div class="col-md-12 no-padding" id="post-text-area">
+                                                {% autoescape off %}{{ wall_post.text }}{% endautoescape %}
+                                            </div>
+                                        {% elif wall_post.post_type == 2 %}
+                                           <div class="col-md-12 no-padding" id="post-text-area">
+                                                {% autoescape off %}{{ wall_post.text }}{% endautoescape %}
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <img src="{{ MEDIA_URL }}{{ wall_post.post_image }}" alt='posted-img' class="posted-img">
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <span class="col-md-1 no-padding">
+                                    {% if wall_post.posted_by.id == request.user.id %}
+                                        <i class="fa fa-sort-desc trash">
+                                            <span class="col-md-12 lgall-font no-padding" id="delete-post" onclick="teamWallDeletePost({{ object.id }},{{wall_post.id}},{{ request.user.id }})">Delete</span>
+                                        </i>
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div id="like-comment-counter-wraper" class="row">
+                                <div class="col-md-12">
+                                    <span id="like-count-wappper" >
+                                        {% if wall_post.likes.all.count > 0 %}
+                                            <span id="like-counter" data-like-count="{{ wall_post.likes.all.count }}">{{ wall_post.likes.all.count }}{% if wall_post.likes.all.count == 1 %}&nbsp;Like{% else %}&nbsp;Likes{% endif %}</span>
+                                        {% endif %}
+                                    </span>
+                                    <span id="comment-count-wappper" >
+                                        {% if wall_post.cricket_team_wall_post_comments.all.count > 0 %}
+                                            <span id="comment-counter" data-comment-count="{{ wall_post.cricket_team_wall_post_comments.all|length }}">{{ wall_post.cricket_team_wall_post_comments.all|length }}{% if wall_post.cricket_team_wall_post_comments.all|length == 1 %}&nbsp;Comment{% else %}&nbsp;Comments{% endif %}</span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="pull-right" >
+                                        {% if wall_post.posted_on %}
+                                            <span>{{ wall_post.posted_on|date:'M j, Y' }} at {{ wall_post.posted_on|date:'g:i A' }}</span>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div id="comment-bar" class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-2 like-unlike-button">
+                                            {% if request.user in wall_post.likes.all %}
+                                                <div class="unlike-button" onclick="teamPostUnlikeButton({{ wall_post.team_id }},{{ wall_post.id }})" >
+                                                    <span>
+                                                        <i class="fa fa-thumbs-up"></i>&nbsp;Liked
+                                                    </span>
+                                                </div>
+                                            {% else %}
+                                                <div class="like-button" onclick="teamPostLikeButton({{ wall_post.team_id }},{{ wall_post.id }})" >
+                                                    <span>
+                                                        <i class="fa fa-thumbs-up"></i>&nbsp;Like
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="comments-button" onclick="showTeamPostComments({{ wall_post.team_id }}, {{ wall_post.id }}, {{ request.user.id }});" >
+                                                <span><i class="fa fa-commenting"></i>&nbsp;Comments</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="comment-wapper-of-post col-md-12">
+                                            <div class="loader">
+                                            </div>
+                                            <span class="show-more-comment-wapper">
+                                            </span>
+                                            <div class="no-comments-wraper">
+                                            </div>
+                                            <div class="comment-wrapper">
+                                                <div class="hidden-comment-wraper">
+                                                </div>
+                                                <div class="show-comment-wraper">
+                                                </div>
+                                            </div>
+                                            <div class="comment-text-area-wappper">
+                                                <div class="col-md-10 col-md-offset-1">
+                                                    <input type="text" class="team-comment-text-area" data-team-comment-box-id="{{ wall_post.id }}" placeholder="Write a comment">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                {% else %}
+                <div class="post-container-no-post col-md-12 center">
+                   <h2> There are currently no posts. </h2>
+                </div>
+            {% endif %}
+            </div>
+            </div>
+
+            <div class="col-md-12 center" id="paginationLoader">
+                <img src="{% static 'images/loading_bar.gif' %}">
+            </div>
+        </div>
+
+
+        <!-- right part -->
+        <div class="col-md-2 no-padding">
+            <div class="col-md-12 no-padding tour-step-1" id="right-part3"  title="" data-content="(1/6) Find anyone who you play with? No? Send them a request. Get social!" >
+                {% if friend_suggestions %}
+                    <div class="col-md-12 textcolor padding-5px" id="connect-suggestion1" align="center">
+                        <strong> Player Suggestions </strong>
+                    </div>
+                    {% for friend_suggestion in friend_suggestions|shuffle|slice:":3" %}
+                        <div class="col-md-12 padding-5px user-cotainer-id-{{ friend_suggestion.id }}" id="suggestion1">
+                            {{friend_suggestion.from_user.slug}}
+                            <div class="col-md-3 no-padding">
+                                <img src="{% if friend_suggestion.display_picture %}{{MEDIA_URL}}{{ friend_suggestion.display_picture }}{% else %}{% static 'images/groups.png' %}{% endif %}" id="message-profile-dp">
+                            </div>
+                            <div class="col-md-7 no-padding capitalize small-font suggestion-name">
+                                <a href="{% url 'user_wall' friend_suggestion.slug %}"><span>{{ friend_suggestion.name }}</span></a>
+                            </div>
+                            <div class="col-md-2 suggestion-image no-padding" data-toggle="modal" data-target="#connect-request-popup-{{ friend_suggestion.id }}">
+                                <div title="Send connect request"></div>
+                            </div>
+                        </div>
+                            <!-- Modal -->
+                            <div class="modal fade" id="connect-request-popup-{{ friend_suggestion.id }}" role="dialog" tabindex="-1" aria-labelledby="send connect rquest">
+                                <div class="modal-dialog">
+                                    <div class="modal-content margin-top-100px tranzy-background3 center">
+                                        <h5 class="textcolor">Send Request?</h5>
+                                        <div class="row margin-top-15px">
+                                            <div class="col-md-2">
+                                                <img src="{% if friend_suggestion.display_picture %}{{MEDIA_URL}}{{ friend_suggestion.display_picture }}{% else %}{% static 'images/groups.png' %}{% endif %}" id="message-profile-dp">
+                                            </div>
+                                            <div class="col-md-4 padding-5px capitalize suggestion-name">
+                                                <a href="{% url 'user_wall' friend_suggestion.slug %}">
+                                                    <span class="textcolor">{{ friend_suggestion.name }}</span>
+                                                </a>
+                                            </div>
+                                            <div class="col-md-6 popup-circle-button-container" >
+                                                <span>
+                                                    <button type="button" class="popup-circle-button" onclick="friendRequest({{ request.user.id }},{{ friend_suggestion.id }})">Yes</button>
+                                                </span>
+                                                <span>
+                                                    <button type="button" class="popup-circle-button" data-dismiss="modal">No</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    {% endfor %}
+                    <!-- Modal -->
+                    <div class="modal fade" id="connect-request-send-model" role="dialog" tabindex="-1" aria-labelledby="connect request sent successfuly">
+                        <div class="modal-dialog">
+                            <div class="modal-content margin-top-100px tranzy-background3 center">
+                                <h5 class="textcolor margin-top-30px">Friend Request sent</h5>
+                                <div class="padding-20px row popup-circle-button-container" style="padding-top: 0px;">
+                                    <span>
+                                        <button type="button" class="popup-circle-button" data-dismiss="modal">Ok</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 padding-5px" id="friend-suggestion-view-all-container">
+                        <div class="textcolor" id="view-all" align="center">
+                            <a href="{% url 'friend_suggestions' %}"> View All </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-md-12 no-padding" id="right-part3">
+                {% if team_follow_suggestions %}
+                    <div class="textcolor padding-5px margin-top-20px" id="connect-suggestion" align="center">
+                        <strong> Team Follow Suggestions </strong>
+                    </div>
+                    {% for team_follow in team_follow_suggestions|shuffle|slice:":3" %}
+                        {% if not already_team_member %}
+                         {% if not already_following_team %}
+                    <!--<div class="col-md-12 padding-5px" id="suggestion2">-->
+
+                        <div class="col-md-12 padding-5px user-cotainer-id-{{ team_follow.id }}" id="suggestion1">
+                            <div class="col-md-3 no-padding">
+                                <img src="{% if team_follow.display_picture %}{{MEDIA_URL}}{{ team_follow.display_picture }}{% else %}{% static 'images/groups.png' %}{% endif %}" id="message-profile-dp">
+                            </div>
+                            <div class="col-md-7 no-padding capitalize small-font suggestion-name" id="suggestion-name">
+                              <a href="{% url 'cricket_team_wall' team_follow.slug %}">  <span>{{ team_follow.name }}</span> </a>
+                            </div>
+
+                            <div class="col-md-2 no-padding margin-top-10px" id="team-follow-div">
+                              <!-- not following-->
+                                <div class="team-suggestion-image" id="team-suggestion-image{{team_follow.id}}" data-toggle="modal" data-target="#team-follow-model{{team_follow.id}}" title="Team Follow Request"></div>
+                           </div>
+
+                           {% endif %}
+                         {% endif %}
+                        </div>
+
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="team-follow-model{{team_follow.id}}" role="dialog" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content margin-top-100px tranzy-background3 center">
+                                <h5 class="textcolor margin-top-30px">You are now following <b>{{ team_follow.name }}</b> team. </h5>
+                                <div class="padding-20px row popup-circle-button-container" style="padding-top: 0px;">
+                                    <span>
+                                        <button type="button" class="popup-circle-button" onclick="teamFollow('{{team_follow.id}}')" data-dismiss="modal">OK</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 {% endfor %}
+                 <div class="col-md-12 padding-5px" id="friend-suggestion-view-all-container">
+                   <div class="textcolor" id="view-all" align="center">
+                        <a href="{% url 'cricket_team_follow_suggestions' %}"> View All </a>
+                    </div>
+                 </div>
+
+                {% endif %}
+            </div>
+            <!-- end of right part -->
+        </div>
+
+
+    <!-- Modal -->
+<div class="modal fade " id="userPerformanceAddNewStatsModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content4 score-board-popup-background" >
+            <div class="col-md-12 score-board-popup-background1" id="addNewStatsData">
+                <div class="col-md-12 padding-10px margin-top-10px textcolor" align="center" id="add-new-matches-title">
+                    <strong>Add New Match</strong>
+                </div>
+
+
+                <form action="" method="post" id="user-match-form">
+                    <div class="col-md-12 margin-top-20px">
+                        <div class="col-md-12 no-padding">
+                            <span class="col-md-3 textcolor">Date</span>
+                            <span class="col-md-1 textcolor">:</span>
+                            <span class="col-md-7">
+                                <span id="user-performance-add-stats-date-container" class="col-sm-12 no-padding date-dropdown-container"  data-ele-id="#user-performance-add-stats-date-container" data-date-form-input-id="#id_match-date" data-feature-date="false" data-no-of-prev-year="10" >
+                                    <input id="id_match-date" name="match_date" type="hidden">
+                                    <select name="user_performance_year" id="year" title="Year" onchange="setDays(month,day,this,'#user-performance-add-stats-date-container','#id_match-date',false)">
+                                        <option value="0" selected>Year</option>
+                                    </select>
+                                    <select name="user_performance_month" id="month" title="Month" onchange="setDays(this,day,year,'#user-performance-add-stats-date-container','#id_match-date',false)">
+                                          <option value="01">Jan</option>
+                                          <option value="02">Feb</option>
+                                          <option value="03">Mar</option>
+                                          <option value="04">Apr</option>
+                                          <option value="05">May</option>
+                                          <option value="06">Jun</option>
+                                          <option value="07">Jul</option>
+                                          <option value="08">Aug</option>
+                                          <option value="09">Sep</option>
+                                          <option value="10">Oct</option>
+                                          <option value="11">Nov</option>
+                                          <option value="12">Dec</option>
+                                          <option value="0" selected>Month</option>
+                                    </select>
+                                    <select name="user_performance_day" id="day" title="Day" onchange="setDays(month,this,year,'#user-performance-add-stats-date-container','#id_match-date',false)">
+                                        <option value="01">1&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                                        <option value="02">2</option>
+                                        <option value="03">3</option>
+                                        <option value="04">4</option>
+                                        <option value="05">5</option>
+                                        <option value="06">6</option>
+                                        <option value="07">7</option>
+                                        <option value="08">8</option>
+                                        <option value="09">9</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                        <option value="13">13</option>
+                                        <option value="14">14</option>
+                                        <option value="15">15</option>
+                                        <option value="16">16</option>
+                                        <option value="17">17</option>
+                                        <option value="18">18</option>
+                                        <option value="19">19</option>
+                                        <option value="20">20</option>
+                                        <option value="21">21</option>
+                                        <option value="22">22</option>
+                                        <option value="23">23</option>
+                                        <option value="24">24</option>
+                                        <option value="25">25</option>
+                                        <option value="26">26</option>
+                                        <option value="27">27</option>
+                                        <option value="28">28</option>
+                                        <option value="29">29</option>
+                                        <option value="30">30</option>
+                                        <option value="31">31</option>
+                                        <option value="0" selected>Day</option>
+                                    </select>
+                                    <span class="col-sm-8 error no-padding">
+
+                                    </span>
+                                </span>
+
+                            </span>
+                        </div>
+                        <div class="col-md-12 no-padding margin-top-10px" id="user-performance-add-stats-slot-container">
+                            <span class="col-md-3 textcolor">Slot</span>
+                            <span class="col-md-1 textcolor">:</span>
+                            <span class="col-md-8">
+                                <select name="slot" id="wall-slots">
+                                    <option value="M">Morning</option>
+                                    <option value="A">Afternoon</option>
+                                    <option value="E">Evening</option>
+                                </select>
+                            </span>
+                            <span class="col-sm-offset-4 col-sm-8 error">
+
+                            </span>
+                        </div>
+                        <div class="col-md-12 no-padding margin-top-10px" id="user-performance-add-stats-against-container">
+                            <span class="col-md-3 text-color textcolor">Vs</span>
+                            <span class="col-md-1 textcolor">:</span>
+                            <span class="col-md-7">
+                                <input type="text" name="against">
+                            </span>
+                            <span class="col-sm-offset-4 col-sm-8 error">
+
+                            </span>
+                        </div>
+
+                        <!-- batting part -->
+                        <div class="col-md-12 margin-top-10px no-padding textcolor" id="add-user-performace-batting-data">
+                            <div class="col-md-4 large-font no-padding">
+                                <strong> Batting </strong>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                <!-- batting table -->
+                                <div class="col-md-12 no-padding margin-top-10px">
+                                    <div class="col-md-2 no-padding runs batting-title-background" align="center">
+                                        <strong>Runs</strong>
+                                    </div>
+                                    <div class="col-md-2 no-padding balls batting-title-background" align="center">
+                                        <strong>Balls</strong>
+                                    </div>
+                                    <div class="col-md-1 no-padding s4 batting-title-background" align="center">
+                                        <strong>4s</strong>
+                                    </div>
+                                    <div class="col-md-1 no-padding s6 batting-title-background" align="center">
+                                        <strong>6s</strong>
+                                    </div>
+                                    <div class="col-md-2 no-padding sr batting-title-background" align="center">
+                                        <strong>SR.</strong>
+                                    </div>
+                                    <div class="col-md-4 no-padding hs batting-title-background center">
+                                        <strong>Dismissal</strong>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 no-padding small-font">
+                                    <div class="col-md-2 no-padding mat" align="center">
+                                        <input id="id_batting-runs" min="0" name="batting_runs" value="0" type="number">
+                                    </div>
+                                    <div class="col-md-2 no-padding inn" align="center">
+                                       <input id="id_batting-balls" min="0" name="batting_balls" value="0" type="number">
+                                    </div>
+                                    <div class="col-md-1 no-padding no" align="center">
+                                        <input id="id_batting-fours" min="0" name="batting_fours" value="0" type="number">
+                                    </div>
+                                    <div class="col-md-1 no-padding runs" align="center">
+                                        <input id="id_batting-sixes" min="0" name="batting_sixes" value="0" type="number">
+                                    </div>
+                                    <div class="col-md-2 no-padding balls" id="batting_strickRate" align="center">
+                                        00.00
+                                    </div>
+                                    <div class="col-md-4 no-padding s51 textcolor" align="center">
+                                       <!-- <input type="checkbox" name="batting_out" > -->
+                                        <select class="textcolor" id="id_batting_dismissal_method" name="batting_dismissal_method">
+                                            <option value="" selected="selected">---------</option>
+                                            <option value="NO">Not Out</option>
+                                            <option value="C">Caught</option>
+                                            <option value="CB">Caught &amp; Bowled</option>
+                                            <option value="ST">Stumped</option>
+                                            <option value="B">Bowled</option>
+                                            <option value="RH">Retired Hurt</option>
+                                            <option value="LBW">LBW</option>
+                                            <option value="RO">Run Out</option>
+                                            <option value="HW">Hit Wicket</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- end of batting table -->
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <span class="col-md-offset-4 col-md-8 error no-padding" id="customize-performance-add-new-match-batting-error">
+                                <ul></ul>
+                            </span>
+                        </div>
+                        <!-- end of Batting part -->
+                        <!-- Bowling part -->
+                        <div class="col-md-12 margin-top-10px no-padding textcolor" id="add-user-performace-bowling-data">
+                            <div class="col-md-4 large-font no-padding">
+                                <strong> Bowling </strong>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                <!-- bowling table -->
+                                <div class="col-md-12 no-padding margin-top-10px">
+                                    <div class="col-md-3 no-padding inn batting-title-background" align="center">
+                                        <strong>Overs</strong>
+                                    </div>
+                                    <div class="col-md-3 no-padding inn batting-title-background" align="center">
+                                        <strong>Maiden Overs</strong>
+                                    </div>
+                                    <div class="col-md-3 no-padding runs batting-title-background" align="center">
+                                        <strong>Runs</strong>
+                                    </div>
+                                     <div class="col-md-3 no-padding inn batting-title-background" align="center">
+                                        <strong>Wickets</strong>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 no-padding small-font">
+                                    <div class="col-md-3 no-padding balls" align="center">
+                                        <input id="id_bowling-overs" maxlength="5" name="bowling_overs" type="text" value="0">
+                                    </div>
+                                    <div class="col-md-3 no-padding balls" align="center">
+                                        <input id="id_bowling_maiden_overs" min="0" name="bowling_maiden_overs" value="0" type="number">
+                                    </div>
+                                    <div class="col-md-3 no-padding runs" align="center">
+                                        <input id="id_bowling-runs" min="0" name="bowling_runs" value="0" type="number">
+                                    </div>
+                                    <div class="col-md-3 no-padding hs " align="center">
+                                        <input id="id_bowling-wickets" min="0" name="bowling_wickets" value="0" type="number">
+                                    </div>
+                                </div>
+                                <!-- end of bowling table -->
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <span class="col-md-offset-4 col-md-8 error no-padding" id="customize-performance-add-new-match-bowling-error">
+                               <!-- <ul></ul>-->
+                            </span>
+                        </div>
+                        <!-- end of bowling part -->
+                        <div class="col-md-offset-5 col-md-2">
+                            <button type="button" id="user-performance-score-save-button" onclick="return userPerformanceAddnewStatsValidation1(form)"><strong>Save </strong></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-12 center" id="addNewStatsLoader">
+                <img src="{% static 'images/loading-gallery.gif' %}">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end of add new match popup -->
+<!-- end of Model -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="best-performance-modal" role="dialog" align="center">
+<div class="modal-dialog">
+<div class="modal-content1 textcolor col-md-5 no-padding">
+    <div class="modal-body no-padding" id="performance-popup">
+        <div class="col-md-12 large-font" id="best-performance" align="center">
+            Best Performance
+        </div>
+           {% with best_performance_stats=request.user.get_best_performance_stats %}
+
+
+                {% if request.user.cricketer.profile_best_performance_display_type == 'BL' %}
+
+                       <div class="col-md-12 textcolor" id="hidden-best-bowler-performance">
+                        <div class="col-md-12 large-font margin-top-10px no-padding">
+                            Bowler
+                        </div>
+                        <div class="col-md-12 margin-top-10px no-padding textcolor">
+                            <div class="col-md-5 no-padding">
+                                Best Bowling
+                            </div>
+                            <div class="col-md-1">
+                                :
+                            </div>
+                            {% if best_performance_stats.best_bowling_wickets or best_performance_stats.best_bowling_runs %}
+                            <div class="col-md-5">
+                                {{ best_performance_stats.best_bowling_wickets }}/ {{ best_performance_stats.best_bowling_runs }}
+                            </div>
+                            {% else %}
+                            <div class="col-md-5">
+                                0 / 0
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-12 no-padding textcolor">
+                            <div class="col-md-5 no-padding">
+                                3W
+                            </div>
+                            <div class="col-md-1">
+                                :
+                            </div>
+                            {% if best_performance_stats.three_wicket_hauls %}
+                            <div class="col-md-5">
+                                {{ best_performance_stats.three_wicket_hauls }}
+                            </div>
+                            {% else %}
+                              <div class="col-md-5">
+                                0
+                              </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-12  no-padding textcolor">
+                            <div class="col-md-5 no-padding">
+                                5W
+                            </div>
+                            <div class="col-md-1">
+                                :
+                            </div>
+                            {% if best_performance_stats.five_wicket_hauls %}
+                            <div class="col-md-5">
+                                {{ best_performance_stats.five_wicket_hauls }}
+                            </div>
+                            {% else %}
+                             <div class="col-md-5">
+                                0
+                            </div>
+                             {% endif %}
+                        </div>
+                 </div>
+
+                {% else %}
+
+                <div class="col-md-12 large-font margin-top-10px no-padding textcolor">
+                            Batting
+                        </div>
+                        <div class="col-md-12 margin-top-10px  no-padding textcolor">
+                            <div class="col-md-5 no-padding">
+                                Highest Score
+                            </div>
+                            <div class="col-md-1">
+                                :
+                            </div>
+                            {% if best_performance_stats.highest_score_runs or best_performance_stats.highest_score_balls_played %}
+                                <div class="col-md-5">
+                                    {{ best_performance_stats.highest_score_runs }} ( {{ best_performance_stats.highest_score_balls_played }} )
+                                </div>
+                                {% else %}
+                                  <div class="col-md-5">
+                                    0 ( 0 )
+                                  </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-12  no-padding">
+                                <div class="col-md-5 no-padding">
+                                    Max. 6s
+                                </div>
+                                <div class="col-md-1">
+                                    :
+                                </div>
+                                {% if best_performance_stats.max_sixes %}
+                                <div class="col-md-5">
+                                   {{ best_performance_stats.max_sixes }}
+                                </div>
+                                {% else %}
+                                <div class="col-md-5">
+                                    0
+                                </div>
+                                {% endif %}
+                        </div>
+                        <div class="col-md-12  no-padding">
+                            <div class="col-md-5 no-padding">
+                                Max. 4s
+                            </div>
+                            <div class="col-md-1">
+                                :
+                            </div>
+                            {% if best_performance_stats.max_fours %}
+                            <div class="col-md-5">
+                                {{ best_performance_stats.max_fours }}
+                            </div>
+                            {% else %}
+                              <div class="col-md-5">
+                                0
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-12 no-padding">
+                            <div class="col-md-5 no-padding">
+                                50s
+                            </div>
+                            <div class="col-md-1">
+                                :
+                            </div>
+                            {% if best_performance_stats.fifties %}
+                            <div class="col-md-5">
+                                {{ best_performance_stats.fifties }}
+                            </div>
+                            {% else %}
+                              <div class="col-md-5">
+                                0
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-12 no-padding">
+                            <div class="col-md-5 no-padding">
+                                100s
+                            </div>
+                            <div class="col-md-1">
+                                :
+                            </div>
+                            {% if best_performance_stats.hundreds %}
+                            <div class="col-md-5">
+                               {{ best_performance_stats.hundreds }}
+                            </div>
+                            {% else %}
+                            <div class="col-md-5">
+                                0
+                            </div>
+                            {% endif %}
+                        </div>
+                {% endif %}
+        {% endwith %}
+        </section>
+</body>
+{% endblock %}
+
+{% block footer %}
+<!-- Third section i.e footer part -->
+<footer class="container-fluid" id="footer">
+   <div class="col-md-3 footer-1st-part">
+      <img src="{% static 'images/sportsvitaelogogrey.png' %}" alt='logo'>
+      <div class="footer-content">
+         An all new venture into the world of sports where it provides a platform to all the sports freaks to showcase their talent and connect with others on social network. SportsVitae is a solution to most problems that every Sportsman faces in a day to day routine <a href="{% url 'about_us' %}" target="_blank"><span class="color-red" id="read-more">read more.....</span></a>
+      </div>
+   </div>
+
+   <!-- 2nd footer part -->
+   <div class="col-md-offset-1 col-md-4 footer-2nd-part">
+      <div class="col-md-12 center" id="terms">
+        <a href="{% url 'terms_and_conditions' %}" target="_blank">Terms & Conditions</a><br>
+          <a href="{% url 'faq' %}" target="_blank">FAQs</a> | <a href="{% url 'contact_us' %}" target="_blank"> Contact Us</a>
+      </div>
+      <div class="col-md-12" id="tag">
+         <span class="col-md-offset-3 col-md-2" id="fb-tag"><a href="https://www.facebook.com/sportsvitae" target="_blank"> <i class="fa fa-facebook fa-2x color-red"></i></a></span>
+         <span class="col-md-2" id="twitter-tag"><a href="https://twitter.com/sportsvitaeco" target="_blank"><i class="fa fa-tumblr fa-2x color-red"></i></a></span>
+         <!--<span class="col-md-1" id="gmail-tag"><a href="https://plus.google.com/sportsvitae" target="_blank"><i class="fa fa-google-plus fa-2x color-red"></i></a></span>-->
+         <span class="col-md-2" id="gmail-tag"><a href="https://www.instagram.com/sportsvitae" target="_blank"><i class="fa fa-instagram fa-2x color-red"></i></a></span>
+
+       </div>
+       <div class="col-md-12 center margin-top-5px">
+         Copyright 2016 Sports Vitae. All Rights Reserved.
+      </div>
+   </div>
+    <!-- end of 2nd part -->
+
+   <div class="col-md-offset-1 col-md-2 footer-3rd-part">
+      <div class="textcolor no-padding" id="how-it-work1">
+        <a href="https://www.youtube.com/watch?v=qniwFdMZY2o" target="_blank">How it Works? </a>
+      </div>
+      <div id="report" style="margin-top: 50px">
+        <a href="{% url 'report_problem' %}" target="_blank"> Report a Problem</a>
+      </div>
+      <div class="col-md-offset-3 col-md-9 no-padding margin-top-10px">
+        <div id="website-by">
+            <a href="http://www.sudofire.com/"> Created by <img src="{% static 'images/small.gif' %}" width="30px" height="35px" alt='sudofire logo'></a>
+         </div>
+       <!-- <a href="{% url 'homepage' %}"> <img src="{% static 'images/webpage-layout.png' %}" alt='sudofire logo'>-->
+      </div>
+    </div>
+</footer>
+{% endblock %}
+
+{% block overridejs %}
+    <script>
+    var latestRequestFriendCount = {{ latest_friend_requests|length }}
+        console.log("count"+latestRequestFriendCount);
+    </script>
+{% endblock %}
+
+{% block customscript %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9S97FQa0ZREnvPDm0Uh4O1EKqItcxjvc&signed_in=true&libraries=places&callback&sensor=false"async defer></script>
+<script type='text/javascript' src="{% static 'js/geo-location.js' %}"></script>
+<script>
+var host = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')+'/';
+
+   /*var d = new Date();
+    var currentYear = d.getFullYear();
+    var months = ['Jan','Feb','Mar','April','May','June','July','Aug','Sep','Oct','Nov','Dec'];
+    todaydate = d.getDate();
+    currentMonth = d.getMonth();
+
+     var monthChange = function(monthValue) {
+
+            var elementsDay = "";
+            MonthVal = monthValue || 0;
+            if (($('#year').val() == currentYear) && (MonthVal == currentMonth)) {
+                var elementsDay = "";
+               for(x = 1 ; x <= todaydate  ; x++) {
+                  elementsDay +='<option value='+x+'>'+x+'</option>';
+               }
+               $("#day").html(elementsDay);
+               return elementsDay;
+            } else if(MonthVal == 0 || MonthVal == 2 || MonthVal== 4 || MonthVal == 6 || MonthVal == 7 || MonthVal == 9 || MonthVal == 11) {
+                for (x = 1 ; x <= 31 ; x++){
+                    elementsDay += '<option value='+x+'>'+x+'</option>';
+                }
+                 $('#user-performance-add-stats-date-container > #day').html(elementsDay);
+            } else if (($('#year').val()) % 4 == 0 && MonthVal == 1) {
+                for (x = 1 ; x <= 29 ; x++){
+                    elementsDay +='<option value='+x+'>'+x+'</option>';
+                  }
+                 $('#user-performance-add-stats-date-container > #day').html(elementsDay);
+            } else if (MonthVal == 1) {
+                for (x = 1 ; x <= 28 ; x++){
+                    elementsDay +='<option value='+x+'>'+x+'</option>';
+                  }
+                 $('#user-performance-add-stats-date-container > #day').html(elementsDay);
+            } else {
+                    for (x = 1 ; x <= 30 ; x++){
+                    elementsDay +='<option value='+x+'>'+x+'</option>';
+                   }
+                 $('#user-performance-add-stats-date-container > #day').html(elementsDay);
+            }
+            $('').html(elementsDay);
+            $('#user-performance-add-stats-date-container > #day option:first-child').attr("selected", "selected");
+            var Sday = $('#user-performance-add-stats-date-container > #day');
+              var Smonth = $('#user-performance-add-stats-date-container > #month');
+              var Syear = $('#user-performance-add-stats-date-container > #year');
+              setDays(Smonth[0],Sday[0],Syear[0]);
+        }
+
+        $("#month").change(function() {
+            monthChange($(this).val());
+        });
+
+       $("#year").change(function(){
+        monthChange();
+         //var elementsMonth = "";
+            var yearVal = $(this).val();
+              if (currentYear == yearVal) {
+                var elementsMonth = "";
+                    for(x = 0 ; x <= currentMonth  ; x++) {
+                         elementsMonth +='<option value='+x+'>'+months[x]+'</option>';
+                    }
+                    $("#month").html(elementsMonth);
+              } else{
+                for(month in months) {
+                    elementsMonth +='<option value='+month+'>'+months[month]+'</option>';
+
+                 }
+              }
+         $("#month").html(elementsMonth);
+         $('#user-performance-add-stats-date-container > #month option:first-child').attr("selected", "selected");
+            var Sday = $('#user-performance-add-stats-date-container > #day');
+              var Smonth = $('#user-performance-add-stats-date-container > #month');
+              var Syear = $('#user-performance-add-stats-date-container > #year');
+              setDays(Smonth[0],Sday[0],Syear[0]);
+       })
+
+
+        var numDays = {'01': 31, '02': 28, '03': 31, '04': 30, '05': 31, '06': 30,'07': 31, '08': 31, '09': 30, '10': 31, '11': 30, '12': 31};
+        function setDays(oMonthSel, oDaysSel, oYearSel) {
+            var nDays, oDaysSelLgth, opt, i = 1;
+            nDays = numDays[oMonthSel[oMonthSel.selectedIndex].value];
+            if (nDays == 28 && oYearSel[oYearSel.selectedIndex].value % 4 == 0)
+              ++nDays;
+            oDaysSelLgth = oDaysSel.length;
+            if (nDays != oDaysSelLgth)
+            {
+              if (nDays < oDaysSelLgth){
+                oDaysSel.length = nDays;
+              }else{
+                for (i; i < nDays - oDaysSelLgth + 1; i++)
+                {
+                  opt = new Option(oDaysSelLgth + i, oDaysSelLgth + i);
+                  oDaysSel.options[oDaysSel.length] = opt;
+                }
+              }
+            }
+            var oForm = oMonthSel.form;
+            var month = parseInt(oMonthSel.options[oMonthSel.selectedIndex].value)+1;
+            var day = oDaysSel.options[oDaysSel.selectedIndex].value;
+            var year = oYearSel.options[oYearSel.selectedIndex].value;
+            if(year != "" && month != "" && day != ""){
+                oForm.match_date.value = year + '-' + month + '-' + day;
+            }
+        }
+
+        $(document).ready(function(){
+            var cDate = new Date();
+            var maxYear = cDate.getFullYear();
+            var minYear = cDate.getFullYear()-10;
+            var yearString = '';
+            for (i = maxYear; i>= minYear; i--)
+            {
+              yearString = yearString+'<option value="'+i+'">'+i+'</option>';
+            }
+            yearString = yearString+'<option value="0" selected="1">Year</option>';
+            $("#year").html(yearString);
+            var oldDob = $("#user-performance-add-stats-date-container > #id_date_of_birth").val();
+            if (oldDob) {
+              arr = oldDob.split(' ');
+              arr2 = arr[0].split('-');
+              var year = arr2[0];
+              var month = arr2[1];
+              var day = arr2[2];
+              $('#user-performance-add-stats-date-container > #day option[value="'+day+'"]').attr("selected","selected");
+              $('#user-performance-add-stats-date-container > #month option[value="'+month+'"]').attr("selected","selected");
+              $('#user-performance-add-stats-date-container > #year option[value="'+year+'"]').attr("selected","selected");
+
+              var Sday = $('#user-performance-add-stats-date-container > #day');
+              var Smonth = $('#user-performance-add-stats-date-container > #month');
+              var Syear = $('#user-performance-add-stats-date-container > #year');
+              setDays(Smonth[0],Sday[0],Syear[0]);
+            }
+
+
+            $('#id_batting-runs, #id_batting-balls').change(function(){
+                var runs = $("#id_batting-runs").val();
+                var balls = $("#id_batting-balls").val();
+                if(balls <= 0){
+                    $('#batting_strickRate').html("00.00");
+                }else{
+                    var strickRate = (parseFloat(runs) / parseFloat(balls))*100;
+                    $('#batting_strickRate').html(strickRate.toFixed(2));
+                }
+            });
+        });*/
+
+        $(document).ready(function(){
+            $('#id_batting-runs, #id_batting-balls').change(function(){
+                var runs = $("#id_batting-runs").val();
+                var balls = $("#id_batting-balls").val();
+                if(balls <= 0){
+                    $('#batting_strickRate').html("00.00");
+                }else{
+                    var strickRate = (parseFloat(runs) / parseFloat(balls))*100;
+                    $('#batting_strickRate').html(strickRate.toFixed(2));
+                }
+            });
+        });
+
+
+   function userPerformanceAddnewStatsValidation1(oForm){
+    var matchDate = oForm.match_date.value;
+    var slot = oForm.slot.value;
+    var against = oForm.against.value;
+    var battingRuns = oForm.batting_runs.value;
+    var battingBalls = oForm.batting_balls.value;
+    var battingFours = oForm.batting_fours.value;
+    var battingSixes = oForm.batting_sixes.value;
+    var battingDismissalMethod = oForm.batting_dismissal_method.value;
+    var bowlingOvers = oForm.bowling_overs.value;
+    var bowlingMaidenOvers = oForm.bowling_maiden_overs.value;
+    var bowlingRuns = oForm.bowling_runs.value;
+    var bowlingWickets = oForm.bowling_wickets.value;
+    check = 1;
+    if(!matchDate){
+        $("#user-performance-add-stats-date-container .error").html("field is required");
+        check = 0;
+    }
+    if(!slot){
+        $("#user-performance-add-stats-slot-container .error").html("field is required");
+        check = 0;
+    }
+    if(!against){
+        $("#user-performance-add-stats-against-container .error").html("field is required");
+        check = 0;
+    }
+    if(check == 0){
+        return false;
+    }else{
+        $("#user-performance-add-stats-date-container .error").html("");
+        $("#user-performance-add-stats-slot-container .error").html("");
+        $("#user-performance-add-stats-against-container .error").html("");
+        var sendData = {
+            'match_date' : matchDate+"T00:00",
+            'day_slot': slot,
+            'against':against,
+            'batting_stat.dismissal_method': battingDismissalMethod,
+            'batting_stat.runs': battingRuns,
+            'batting_stat.balls_played': battingBalls,
+            'batting_stat.fours': battingFours,
+            'batting_stat.sixes': battingSixes,
+            'bowling_stat.overs': bowlingOvers,
+            'bowling_stat.maiden_overs': bowlingMaidenOvers,
+            'bowling_stat.runs': bowlingRuns,
+            'bowling_stat.wickets': bowlingWickets,
+        };
+        // $("#userPerformanceAddNewStatsModal").modal('hide');
+        $("#addNewStatsLoader").addClass("z-index-up");
+        $("#addNewStatsData").css("opacity","0.9");
+
+
+        $.ajax({
+            type : "POST",
+            url : host+"api/v1/cricket/match-stats/",
+            data: sendData,
+            // contentType: "application/json",
+            // dataType: 'json',
+            statusCode: {
+             201: function(success) {
+                $("#userPerformanceAddNewStatsModal").modal('hide');
+               // $("user-performance-add-stats-date-container > select").html("");
+               $("#batting_strickRate").html("00.00");
+               $("#customize-performance-add-new-match-batting-error").html("");
+               $('#user-match-form')[0].reset();
+
+                $("#userPerformanceAddNewStatsModal").on('hidden.bs.modal', function (e) {
+                    $("#userPerformanceAddNewStatsSuceessModal").modal('show');
+                });
+                location.reload();
+                // $("#userPerformanceAddNewStatsSuceessModal").modal('show');
+             },
+             400: function(error) {
+                $("#addNewStatsLoader").removeClass("z-index-up");
+                $("#addNewStatsData").css("opacity","1");
+                var batting ="";
+                $.each(error.responseJSON.batting_stat, function(i, item) {
+                    batting = batting+"<li>"+i+" - "+item.toString().replace('""','')+"</li>";
+                });
+                $("#customize-performance-add-new-match-batting-error > ul").html(batting);
+
+                var bowling ="";
+                $.each(error.responseJSON.bowling_stat, function(i, item) {
+                    bowling = bowling+"<li>"+i+" - "+item.toString().replace('""','')+"</li>";
+                });
+                $("#customize-performance-add-new-match-bowling-error > ul").html(bowling);
+             },
+             500: function(error) {
+                    $("#addNewStatsLoader").removeClass("z-index-up");
+                    $("#addNewStatsData").css("opacity","1");
+             }
+            }
+        });
+    }
+}
+
+</script>
+<script>
+
+//COMMENT AJAX CALL
+    $(document).on('keypress', '.comment-text-area', function(event){
+        if (event.which == 13) {
+            event.preventDefault();
+            var postId = $(this).data("commentBoxId");
+            var commentData = $(this).val();
+            $.ajax({
+                type : "POST",
+                url : host+"api/v1/accounts/user-wall-posts/"+postId+"/comments/",
+                data : {
+                    "comment":commentData,
+                },
+                statusCode: {
+                    201: function(success) {
+                        var d = new Date();
+                        var commentDate = new Date(success.commented_on);
+                        var timeStamp = "";
+                        if(d.toDateString() != commentDate.toDateString()) {
+                            var date = getDateFormate(commentDate)
+                            var time = getTimeFormate(commentDate);
+                            timeStamp = date+" at "+time;
+                        }else{
+                            var time = getTimeFormate(commentDate);
+                            timeStamp = time;
+                        }
+                        var userPic = success.comment_by_user_display_picture || "../static/images/groups.png";
+
+                        $("#post-id-"+postId+" .show-comment-wraper").append('<div id="comment-id-'+success.id+'" class="col-md-12 commnet-block" onmouseenter="showCommentDelete('+success.id+');" onmouseleave="hideCommentDelete('+success.id+');"><div class="row"><div class="col-md-1 comment-by-pic-wapper"><img src="'+userPic+'" class="chat-display-pic-in-comment"></div><div class="col-md-10 comment-by-and-comment-text-wappper"> <a href="/profile/'+success.comment_by_user_slug+'/"><span class="comment-by">'+success.comment_by_user_name+'</span></a><span class="comment-text" id="comment-text">'+success.comment+'</span><div class="row"><div class="col-md-12 comment-status-container"><span class="comment-like-button-wapper"><span class="comment-like-button" onclick="commentLike('+success.id+');">Like</span></span><span class="comment-like-counter-wapper"></span><span class="comment-date-time"><span>'+timeStamp+'</span></span></div></div></div><div class="col-md-1 no-padding commentRightSection"><div class="col-md-offset-5"><span class="deleteCommentDropdownButton" title="Delete comment" onclick="deleteCommentDropdownToggle('+success.id+');" ><i class="fa fa-times"></i></span></div><div class="deleteCommentDropdown"><span onclick="deleteComment('+success.id+');">Delete</sapn></div></div></div></div>');
+                        $("#post-id-"+postId+" .comment-text-area").val("");
+                        var commentCount = $("#post-id-"+postId+" #comment-counter").data("commentCount");
+                        if (!commentCount) {
+                            commentCount = 0;
+                        }
+                        commentCount = commentCount+1;
+                        if(commentCount == 1 || commentCount == 0){
+                            $("#post-id-"+postId+" #comment-count-wappper").html('<span id="comment-counter" data-comment-count="'+commentCount+'">'+commentCount+'&nbsp;Comment</span>');
+                        }else{
+                            $("#post-id-"+postId+" #comment-count-wappper").html('<span id="comment-counter" data-comment-count="'+commentCount+'">'+commentCount+'&nbsp;Comments</span>');
+                        }
+                        $("#post-id-"+postId+" .no-comments-wraper").html("");
+                    },
+                    400: function(error) {
+                    },
+                    500: function(error) {
+                    }
+                }
+            });
+        }
+    });
+//END OF COMMENT AJAX CALL
+
+function markFriendRequest() {
+   var pendingFriendRequestid  =[];
+    {% for pendingRequest in latest_friend_requests %}
+        pendingFriendRequestid.push({{pendingRequest.id}});
+    {% endfor %}
+   // console.log("request "+ {{pending_friend_request}})
+    var data_to_send  = pendingFriendRequestid
+    $.ajax({
+        type : "POST",
+        url : host+"api/v1/accounts/friend-requests/mark-viewed/",
+        data : {
+            "friend_requests_viewed": data_to_send,
+        },
+        success : function(success){
+        },
+        error : function(error) {
+        }
+    });
+}
+
+
+function markReadMessage() {
+   var latest_message_id =[];
+    {% for latest_message in latest_received_messages %}
+        latest_message_id.push({{latest_message.sender.id}});
+    {% endfor %}
+    var data_to_send = {'message_sender_ids': latest_message_id}
+    //console.log(JSON.stringify(data_to_send));
+    //console.log("message_read "+latest_message_id);
+    $.ajax({
+        type : "POST",
+        url : host+"api/v1/accounts/messages/mark-read/",
+        data : data_to_send,
+        success : function(success){
+        },
+        error : function(error) {
+        }
+    });
+}
+
+
+function markReadNotifications() {
+   var user_notifications_viewed = [];
+    {% for user_notification in latest_user_notifications %}
+        user_notifications_viewed.push({{ user_notification.id }});
+    {% endfor %}
+    var data_to_send = {'user_notifications_viewed': user_notifications_viewed}
+    $.ajax({
+        type : "POST",
+        url : host+"api/v1/accounts/notifications/mark-viewed/",
+        data : data_to_send,
+        success : function(success){
+        },
+        error : function(error) {
+        }
+    });
+}
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        {% if clicked_friend_messages %}
+            {% if clicked_friend_messages.0.sender.id != request.user.id %}
+                var pic = "";
+                if("{{ clicked_friend_messages.0.sender.display_picture }}"){
+                    pic = "../../media/{{ clicked_friend_messages.0.sender.display_picture }}";
+                }else{
+                    pic = "../../static/images/groups.png";
+                }
+                var name = "{{ clicked_friend_messages.0.sender.name }}";
+                var id= "{{ clicked_friend_messages.0.sender.id }}";
+            {% else %}
+                var pic = "";
+                if("{{ clicked_friend_messages.0.recipient.display_picture }}"){
+                    pic = "../../media/{{ clicked_friend_messages.0.recipient.display_picture }}";
+                }else{
+                    pic = "../../static/images/groups.png";
+                }
+                var name = "{{ clicked_friend_messages.0.recipient.name }}";
+                var id= "{{ clicked_friend_messages.0.recipient.id }}";
+            {% endif %}
+        {% else %}
+            {% if last_messaged_friend_messages.0.sender.id != request.user.id %}
+                var pic = "";
+                if("{{ last_messaged_friend_messages.0.sender.display_picture }}")
+                    pic = "../media/{{ last_messaged_friend_messages.0.sender.display_picture }}";
+                else
+                    pic = "../static/images/groups.png";
+                var name = "{{ last_messaged_friend_messages.0.sender.name }}";
+                var id= "{{ last_messaged_friend_messages.0.sender.id }}";
+            {% else %}
+                var pic = "";
+                if("{{ last_messaged_friend_messages.0.recipient.display_picture }}")
+                    pic = "../media/{{ last_messaged_friend_messages.0.recipient.display_picture }}";
+                else
+                    pic = "../static/images/groups.png";
+                var name = "{{ last_messaged_friend_messages.0.recipient.name }}";
+                var id= "{{ last_messaged_friend_messages.0.recipient.id }}";
+            {% endif %}
+        {% endif %}
+        //$("#chat-name-recent").html(name);
+        //$("#message-active-user-pic").attr("src",pic);
+        //$("#delete-coversation-button-yes-container").html('<button type="button" class="delete-coversation-button" onclick="DeleteConversatopnOfFriend('+id+');" data-dilgiss="modal">Yes</button>');
+        $("#message-type > #hidden-recipient-input").val(id);
+    });
+</script>
+
+<script>
+var friendsIDs = [
+    {% for friend in request.user.friends.all %}
+        {label:"{{ friend.name }}",  idx:"{{ friend.id }}", icon:"{% if friend.display_picture %}{{MEDIA_URL}}{{friend.display_picture}}{% else %} ../static/images/groups.png {% endif %}"},
+    {% endfor %}
+];
+
+function autoComplitCheck() {
+    var frdName = $("#recipients-name").val();
+    var frdId = $('#recipient-message-hidden').val();
+    var traker=0;
+    for (each in friendsIDs){
+        if(friendsIDs[each].idx == frdId){
+            if (friendsIDs[each].label != frdName) {
+                traker = 0;
+                break;
+            }else{
+                traker = 1;
+                break;
+            }
+        } else {
+            traker=0;
+        }
+    }
+    if (traker == 1) {
+        $("#recipients-name").val(frdName);
+        $("#recipient-message-hidden").val(frdId);
+        $("#NewMessageSendConformModel #ModelUserName").html('Message sent successfully to <span class="capitalize"> '+frdName+' </span>');
+    }else{
+        $("#recipients-name").val("");
+        $('#recipient-message-hidden').val("");
+    }
+}
+
+// function for auto-suggestion for recipient
+function recipientName() {
+    $("#recipients-name").autocomplete({
+        source: friendsIDs,
+        autoFocus:true,
+        select: function(event, ui) {
+            $('#recipient-message-hidden').val(ui.item.idx);
+        }
+    })
+    .autocomplete( "instance" )._renderItem = function( ul, item ) {
+      return $( "<li>" )
+        .append( "<img class='chat-display-pic' src='"+item.icon+"'>   "+ item.label)
+        .appendTo( ul );
+    };
+};
+// end of function
+
+  // ajax call
+
+function newMessage() {
+    var senderId = $('#sender-message-hidden').val();
+    var recipientId = $('#recipient-message-hidden').val();
+    var textMessage = $('#chat-textarea1').val();
+    if (senderId != "" && recipientId != "" && textMessage != "") {
+        dataToSend={
+            'sender' : senderId,
+            'recipient' : recipientId,
+            'text' : textMessage
+        };
+        $.ajax({
+            type : "POST",
+            url : host+"api/v1/accounts/messages/",
+            data: dataToSend,
+            success : function(success){
+                $("#recipients-name, #chat-textarea1").val("");
+                $("#newmessageModal").hide();
+                $('#NewMessageSendConformModel').modal('show');
+                $('#NewMessageSendConformModel').on('hidden.bs.modal', function (e) {
+                    window.location.href = "/messages/";
+                });
+            },
+            error : function (error) {
+            }
+        });
+    }
+    $("#newmessageModal").hide();
+}
+
+setInterval(function(){
+    var display = $("#status-map").css('display');
+    // changePostButtonBColor(display);
+},10);
+</script>
+
+<script>
+    {% for wall_post in user_wall_posts %}
+        {% if  wall_post.team_id %}
+            teamid = {{ wall_post.team_id }};
+        {% endif %}
+        {% endfor %}
+
+
+  //COMMENT AJAX CALL
+ $(document).on('keypress', '.team-comment-text-area', function(event){
+        if (event.which == 13) {
+            event.preventDefault();
+            var postId = $(this).data("teamCommentBoxId");
+            var commentData = $(this).val();
+            teamId = teamid;
+            $.ajax({
+                type : "POST",
+                url : host+"api/v1/cricket/teams/"+teamId+"/wall-posts/"+postId+"/comments/",
+                data : {
+                    "comment":commentData,
+                },
+                statusCode: {
+                    201: function(success) {
+                        var d = new Date();
+                        var commentDate = new Date(success.commented_on);
+                        var timeStamp = "";
+                        if(d.toDateString() != commentDate.toDateString()) {
+                            var date = getDateFormate(commentDate)
+                            var time = getTimeFormate(commentDate);
+                            timeStamp = date+" at "+time;
+                        }else{
+                            var time = getTimeFormate(commentDate);
+                            timeStamp = time;
+                        }
+                        var userPic = "../static/images/groups.png";
+                        if (success.comment_by_user_display_picture) {
+                            userPic = success.comment_by_user_display_picture;
+                        }
+                        $("#post-id-"+postId+" .show-comment-wraper").append('<div id="comment-id-'+success.id+'" class="col-md-12 commnet-block" onmouseenter="showCommentDelete('+success.id+');" onmouseleave="hideCommentDelete('+success.id+');"><div class="row"><div class="col-md-1 comment-by-pic-wapper"><img src="'+userPic+'" class="chat-display-pic-in-comment"></div><div class="col-md-10 comment-by-and-comment-text-wappper"><a href="/profile/'+success.comment_by_user_slug+'/"><span class="comment-by">'+success.comment_by_user_name+'</span></a><span class="comment-text" id="comment-text">'+success.comment+'</span><div class="row"><div class="col-md-12 comment-status-container"><span class="comment-like-button-wapper"><span class="comment-like-button" onclick="teamPostCommentLike('+teamId+','+success.id+');">Like</span></span><span class="comment-like-counter-wapper"></span><span class="comment-date-time"><span>'+timeStamp+'</span></span></div></div></div><div class="col-md-1 no-padding commentRightSection"><div class="col-md-offset-5"><span class="deleteCommentDropdownButton" title="Delete comment" onclick="deleteCommentDropdownToggle('+success.id+');" ><i class="fa fa-times"></i></span></div><div class="deleteCommentDropdown"><span onclick="deleteTeamPostComment('+teamId+','+success.id+');">Delete</sapn></div></div></div></div>');
+                        $("#post-id-"+postId+" .team-comment-text-area").val("");
+                        var commentCount = $("#post-id-"+postId+" #comment-counter").data("commentCount");
+                        if (!commentCount) {
+                            commentCount = 0;
+                        }
+                        commentCount = commentCount+1;
+                        if(commentCount == 1 || commentCount == 0){
+                            $("#post-id-"+postId+" #comment-count-wappper").html('<span id="comment-counter" data-comment-count="'+commentCount+'">'+commentCount+'&nbsp;Comment</span>');
+                        }else{
+                            $("#post-id-"+postId+" #comment-count-wappper").html('<span id="comment-counter" data-comment-count="'+commentCount+'">'+commentCount+'&nbsp;Comments</span>');
+                        }
+                        $("#post-id-"+postId+" .no-comments-wraper").html("");
+                    },
+                    400: function(error) {
+                    },
+                    500: function(error) {
+                    }
+                }
+            });
+        }
+    });
+//END OF COMMENT AJAX CALL
+
+</script>
+
+<script>
+{% if request.user %}
+    var userSlug = '{{request.user.slug}}';
+{% endif %}
+
+var userId = '{{ request.user.id }}';
+console.log("id"+userId);
+var objectId = '{{ object.id }}';
+var ajaxUrl = host+"api/v1/accounts/user-posts/"+userSlug+"/?page=2";
+var urlFlag;
+var flagUrl;
+//ajax call for pagination
+function wallPostPagination(userSlug, userId, objectId, ajaxUrl) {
+    $("#paginationLoader").fadeIn();
+    loadAgain = true;
+    $.ajax({
+        type : "GET",
+        url : ajaxUrl,
+        success : function(success){
+            console.log("success "+JSON.stringify(success.results));
+            loadFinished = true;
+            // sessionStorage.setItem("nextUrl", success.next);
+            if(success.next != 'null') {
+                urlFlag = true;
+                flagUrl = success.next;
+                $("#paginationLoader").fadeOut();
+            }
+            for(wallPost in success.results) {
+                if(success.results[wallPost].if_team == true) {
+                    if(success.results[wallPost].display_picture) {
+                        teamUserImgPath = '/media/'+success.results[wallPost].display_picture+'';
+                    } else {
+                        teamUserImgPath = "/static/images/groups.png";
+                    }
+
+                    var teamWallPostType ="";
+                    if(success.results[wallPost].post_type == 1){
+                        teamWallPostType = '<div class="col-sm-12 no-padding" id="post-text-area">'+success.results[wallPost].text+'</div>';
+                    }else if(success.results[wallPost].post_type == 2){
+                        teamWallPostType = '<div class="col-sm-12 no-padding" id="post-text-area">'+success.results[wallPost].text+'</div><div class="col-sm-12"><img src="'+success.results[wallPost].post_image+'" alt="posted-img" class="posted-img"></div>';
+                    }else if(success.results[wallPost].post_type == 3){
+                        teamWallPostType = '<div class="col-sm-12 gray-text-color">Checked in at '+success.results[wallPost].location+'</div><div class="col-sm-12 no-padding" id="post-text-area">'+success.results[wallPost].text+'</div>';
+                    }
+
+
+                    if(success.results[wallPost].posted_by_id == userId) {
+                        var TeamwallTrashDiv = '<span class="col-md-1 no-padding"><i class="fa fa-sort-desc trash"><span class="col-md-12 lgall-font no-padding" id="delete-post" onclick="teamWallDeletePost('+objectId+','+success.results[wallPost].id+','+userId+')">Delete</span></i></span>';
+                    } else {
+                        TeamwallTrashDiv = '';
+                    }
+
+                    if (success.results[wallPost].self_like) {
+                        teamlikedDiv = '<div class="unlike-button" onclick="teamPostUnlikeButton('+success.results[wallPost].team_id+','+success.results[wallPost].id+')"><span><i class="fa fa-thumbs-up"></i>&nbsp;Liked</span></div>';
+                        }
+                        else {
+                            teamlikedDiv = '<div class="like-button" onclick="teamPostLikeButton('+success.results[wallPost].team_id+','+success.results[wallPost].id+')" ><span><i class="fa fa-thumbs-up"></i>&nbsp;Like</span></div>';
+                        }
+
+                    if (success.results[wallPost].likes) {
+                        if(success.results[wallPost].likes.length == 1){
+                            TeamLikeCountDiv = '<span id="like-counter" data-like-count='+success.results[wallPost].likes.length+'>'+success.results[wallPost].likes.length+'&nbsp;Like</span>';
+                        }else{
+                            TeamLikeCountDiv = '<span id="like-counter" data-like-count='+success.results[wallPost].likes.length+'>'+success.results[wallPost].likes.length+'&nbsp;Likes</span>';
+                        }
+                    }else {
+                        TeamLikeCountDiv = '';
+                    }
+
+                    if (success.results[wallPost].no_of_comments) {
+                        if(success.results[wallPost].no_of_comments == 1 || success.results[wallPost].no_of_comments == 0){
+                            TeamCommentCountDiv = '<span id="comment-counter" data-comment-count='+success.results[wallPost].no_of_comments+'>'+success.results[wallPost].no_of_comments+'&nbsp;Comment/span>';
+                        }else{
+                            TeamCommentCountDiv = '<span id="comment-counter" data-comment-count='+success.results[wallPost].no_of_comments+'>'+success.results[wallPost].no_of_comments+'&nbsp;Comments</span>';
+                        }
+                    } else {
+                        TeamCommentCountDiv = '';
+                    }
+
+                        var teamPostOn = new Date(success.results[wallPost].posted_on);
+                        var team_date = getDateFormate(teamPostOn)
+                        var team_time = getTimeFormate(teamPostOn);
+                        team_timeStamp = team_date+" at "+team_time;
+
+                    $("#status-third-part").append('<div class="post-container col-md-12" id="post-id-'+success.results[wallPost].id+'"><div class="row"><div class="col-md-2"><img src="'+teamUserImgPath+'" alt="user-image" class="chat-display-pic"></div><div class="col-md-9 no-padding"><div class="col-md-12 no-padding"><div class="col-md-12 no-padding capitalize"><a href="/profile/'+success.results[wallPost].user_slug+'/"> <strong>'+success.results[wallPost].posted_by+'</a></strong> Via Team <strong><a href="/cricket/teams/'+success.results[wallPost].team_slug+'/"> '+success.results[wallPost].team_name+'</strong></a></div>'+teamWallPostType+'</div></div>'+TeamwallTrashDiv+'</div><div id="like-comment-counter-wraper" class="row"><div class="col-md-12"><span id="like-count-wappper" >'+TeamLikeCountDiv+'</span><span id="comment-count-wappper">'+TeamCommentCountDiv+'</span><span class="pull-right" >'+team_timeStamp+'</span></div></div><div id="comment-bar" class="row"><div class="col-md-12"><div class="row"><div class="col-md-2 like-unlike-button">'+teamlikedDiv+'</div><div class="col-md-3"><div class="comments-button" onclick="showTeamPostComments('+success.results[wallPost].team_id+', '+success.results[wallPost].id+', '+userId+');" ><span><i class="fa fa-commenting"></i>&nbsp;Comments</span></div></div></div><div class="row"><div class="comment-wapper-of-post col-md-12"><div class="loader"></div><span class="show-more-comment-wapper"></span><div class="no-comments-wraper"></div><div class="comment-wrapper"><div class="hidden-comment-wraper"></div><div class="show-comment-wraper"></div></div><div class="comment-text-area-wappper"><div class="col-md-10 col-md-offset-1"><input type="text" class="team-comment-text-area" data-team-comment-box-id="'+success.results[wallPost].id+'" placeholder="Write a comment"></div></div></div></div></div></div></div>');
+                } else {
+                    var wallPostType ="";
+                    if(success.results[wallPost].post_type == 1){
+                        wallPostType = '<div class="col-sm-12 no-padding" id="post-text-area">'+success.results[wallPost].text+'</div>';
+                    }else if(success.results[wallPost].post_type == 2){
+                        wallPostType = '<div class="col-sm-12 no-padding" id="post-text-area">'+success.results[wallPost].text+'</div><div class="col-sm-12"><img src="'+success.results[wallPost].post_image+'" alt="posted-img" class="posted-img"></div>';
+                    }else if(success.results[wallPost].post_type == 3){
+                        wallPostType = '<div class="col-sm-12 gray-text-color">Checked in at '+success.results[wallPost].location+'</div><div class="col-sm-12 no-padding" id="post-text-area">'+success.results[wallPost].text+'</div>';
+                    }
+
+                    if(success.results[wallPost].display_picture) {
+                        wallUserImgPath = '/media/'+success.results[wallPost].display_picture+'';
+                    } else {
+                        wallUserImgPath = "/static/images/groups.png";
+                    }
+
+
+                    if(success.results[wallPost].owner_id == userId) {
+                        var wallTrashDiv = '<span class="col-md-1 no-padding"><i class="fa fa-sort-desc trash"><span class="col-md-12 lgall-font no-padding" id="delete-post" onclick="deletePost('+success.results[wallPost].id+')">Delete</span></i></span>';
+                    } else {
+                        wallTrashDiv = '';
+                    }
+
+                    if (success.results[wallPost].likes) {
+                        likedDiv = '<div class="unlike-button" onclick="unlikeButton('+success.results[wallPost].id+')"><span><i class="fa fa-thumbs-up"></i>&nbsp;Liked</span></div>';
+                        }
+                        else {
+                            likedDiv = '<div class="like-button" onclick="likeButton('+success.results[wallPost].id+')" ><span><i class="fa fa-thumbs-up"></i>&nbsp;Like</span></div>';
+                        }
+
+                        if (success.results[wallPost].likes) {
+                            if(success.results[wallPost].likes.length == 1){
+                                userLikeCountDiv = '<span id="like-counter" data-like-count='+success.results[wallPost].likes.length+'>'+success.results[wallPost].likes.length+'&nbsp;Like</span>';
+                            }else{
+                                userLikeCountDiv = '<span id="like-counter" data-like-count='+success.results[wallPost].likes.length+'>'+success.results[wallPost].likes.length+'&nbsp;Likes</span>';
+                            }
+                        } else {
+                            userLikeCountDiv = '';
+                        }
+
+                        if (success.results[wallPost].no_of_comments) {
+                            if(success.results[wallPost].no_of_comments == 1 || success.results[wallPost].no_of_comments == 0){
+                                userCommentCountDiv = '<span id="comment-counter" data-comment-count='+success.results[wallPost].no_of_comments+'>'+success.results[wallPost].no_of_comments+'&nbsp;Comment</span>';
+                            }else{
+                                userCommentCountDiv = '<span id="comment-counter" data-comment-count='+success.results[wallPost].no_of_comments+'>'+success.results[wallPost].no_of_comments+'&nbsp;Comments</span>';
+                            }
+                        } else {
+                            userCommentCountDiv = '';
+                        }
+
+                        var userPostOn = new Date(success.results[wallPost].posted_on);
+                        var user_date = getDateFormate(userPostOn)
+                        var user_time = getTimeFormate(userPostOn);
+                        user_timeStamp = user_date+" at "+user_time;
+
+
+                    $("#status-third-part").append('<div class="post-container col-md-12" id="post-id-'+success.results[wallPost].id+'"><div class="row"><div class="col-md-2"><img src="'+wallUserImgPath+'" alt="user-image" id="logo-tag" class="chat-display-pic"></div><div class="col-md-9 no-padding"><div class="col-md-12 no-padding"><div class="col-md-12 no-padding capitalize"><a href="/profile/'+success.results[wallPost].user_slug+'/"><strong>'+success.results[wallPost].owner+'</strong></a></div>'+wallPostType+'</div></div>'+wallTrashDiv+'</div><div id="like-comment-counter-wraper" class="row"><div class="col-md-12"><span id="like-count-wappper" >'+userLikeCountDiv+'</span><span id="comment-count-wappper" >'+userCommentCountDiv+'</span><span class="pull-right" >'+user_timeStamp+'</span></div></div><div id="comment-bar" class="row"><div class="col-md-12"><div class="row"><div class="col-md-2 like-unlike-button">'+likedDiv+'</div><div class="col-md-3"><div class="comments-button" onclick="showComments('+success.results[wallPost].id+', '+userId+')" ><span><i class="fa fa-commenting"></i>&nbsp;Comments</span></div></div></div><div class="row"><div class="comment-wapper-of-post col-md-12"><div class="loader"></div><span class="show-more-comment-wapper"></span><div class="no-comments-wraper"></div><div class="comment-wrapper"><div class="hidden-comment-wraper"></div><div class="show-comment-wraper"></div></div><div class="comment-text-area-wappper"><div class="col-md-10 col-md-offset-1"><input type="text" class="comment-text-area" data-comment-box-id="'+success.results[wallPost].id+'" placeholder="Write a comment"></div></div></div></div></div></div></div>')
+                }
+            }
+        },
+
+        error : function(error) {
+            $("#paginationLoader").fadeOut();
+            loadFinished = true;
+        }
+    });
+}
+//end of ajax call
+
+//GET TIME IN FROMATE HH:MM AM/PM
+function getTimeFormate(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    var strTime = hours + ':' + minutes + '' + ampm;
+    return strTime;
+}
+//END OF GET TIME
+
+//GET DATE FROMATE IN MMM DD, YYYY EX: Jun 13, 1994
+function getDateFormate(date) {
+    var month =["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
+    var MMM = month[date.getMonth()];
+    var DD = date.getDate();
+    var YYYY = date.getFullYear();
+    var settime = MMM+" "+DD+", "+YYYY;
+    return settime;
+}
+//END OF DATE FROMATE
+
+
+// window.onload = wallPostPagination(userSlug, userId, objectId);
+// call function on the end of scroll page
+var loadFinished = true;
+$(window).scroll(function () {
+    if (loadFinished && $(window).scrollTop() >= $(document).height() - $(window).height() - 160) {
+        loadFinished = false;
+        if (urlFlag == true && flagUrl != 'null'){
+            ajaxUrl = flagUrl;
+        }
+        {% if user_wall_posts|length >= 10 %}
+            if (ajaxUrl != null) {
+                wallPostPagination(userSlug, userId, objectId, ajaxUrl);
+            }
+        {% endif %}
+    }
+});
+</script>
+
+<script>
+    var normalHelpPopover = function(){
+        $('.normal-help-popover').popover({
+            // template: "<div class='popover tour'><div class='arrow'></div><div class='popover-title'></div><div class='popover-content'></div></div>",
+            template: "<div class='popover tour'><div class='arrow'></div><div class='popover-content'></div></div>",
+            placement: 'right',
+            trigger: 'hover',
+            container: 'body',
+        });
+    }
+
+    /***************************************************
+     * SOURCE: http://bootstraptour.com/
+     **************************************************/
+     var steps =[{
+            element: ".tour-step-1",
+            placement: "top",
+        },
+        {
+            element: ".tour-step-2",
+
+        },
+        {
+            element: ".tour-step-3",
+            placement: "left",
+        },
+        {
+            element: ".tour-step-world-search",
+            placement: "bottom"
+        },
+        {
+            element: ".tour-step-5",
+            placement: "right"
+        },
+        {
+            element: ".tour-step-6",
+            template: "<div class='popover tour'><div class='arrow'></div><div class='popover-content'></div><div class='popover-navigation'><a data-role='end'><u>Got it</u></a></div></div>",
+            placement: "left"
+        }]
+
+    tour = new Tour({
+        name:'tour0',
+        steps: steps,
+        backdrop: true,
+        storage: window.sessionStorage,
+        placement: 'right',
+        /*template: "<div class='popover tour'><div class='arrow'></div><div class='popover-content'></div><div class='popover-navigation'><a data-role='prev'>« Prev</a><a data-role='next'>Next »</a><a data-role='end'>Close</a></div></div>",*/
+        template: "<div class='popover tour col-lg-12'><div class='arrow'></div><div class='popover-content col-lg-12'></div><div class='popover-navigation col-lg-12'><span class='col-lg-9 left textcolor no-padding'><a class='disable-tour' style='float:left'><u>Never Show me Tour</u></a></span><span class='col-lg-3 textcolor right no-padding'><a data-role='next'><u>Next</u></a></span></div></div>",
+        onShown: function (tour){
+            // $('.tour-backdrop').html('<button class="disable-tour">Never Show me Tour</button>');
+        },
+        onEnd: function(tour){
+            normalHelpPopover();
+        },
+
+    });
+
+    var key, count = 0;
+        for(key in steps) {
+          if(steps.hasOwnProperty(key)) {
+            count++;
+          }
+        }
+    console.log("stepslength"+count);
+
+    $.ajax({
+        url : host+"api/v1/accounts/tour-completed-status/{{ request.user.id }}/",
+        type : "GET",
+        statusCode: {
+            201: function(success) {
+                console.log("tour success"+JSON.stringify(success));
+                if(success.status == true){
+                     console.log("inside s");
+                    tour.init();
+                    tour.start();
+                    if(tour.ended()){
+                        normalHelpPopover();
+                    }
+                }else{
+                    tour.end();
+                    normalHelpPopover();
+                }
+            },
+            400: function(error) {
+                console.log("error"+JSON.stringify(error));
+            }
+        }
+    });
+
+    $(document).on('click','.disable-tour',function(){
+        $.ajax({
+            url : host+"api/v1/accounts/tour-completed/{{ request.user.id }}/",
+            type : "GET",
+            statusCode: {
+                201: function(success) {
+                    console.log("success toggle: "+JSON.stringify(success));
+                    if(success.status == false){
+                        tour.end();
+                        normalHelpPopover();
+                    }
+                },
+                400: function(error) {
+                    console.log("error toggle: "+JSON.stringify(error));
+                }
+            }
+        });
+    });
+
+    $('.profile-tour > button').click(function() {
+        $.ajax({
+            url : host+"api/v1/accounts/tour-completed/{{ request.user.id }}/",
+            type : "GET",
+            statusCode: {
+                201: function(success) {
+                    console.log("success toggle: "+JSON.stringify(success));
+                    if(success.status == false){
+                        tour.end();
+                        normalHelpPopover();
+                    }else {
+                        if('tour0_current_step' in sessionStorage) {
+                            sessionStorage.removeItem('tour0_current_step');
+                            sessionStorage.removeItem('tour0_end');
+                        }
+                        if('tour0_end' in sessionStorage) {
+                            sessionStorage.removeItem('tour0_end');
+                        }
+                        tour.init();
+                        tour.start();
+                    }
+                },
+                400: function(error) {
+                    console.log("error toggle: "+JSON.stringify(error));
+                }
+            }
+        });
+    });
+
+    u = setInterval(function(){
+        if(tour.ended()){
+            console.log("request");
+            normalHelpPopover();
+            clearInterval(u);
+        }
+    },1000);
+</script>
+
+<script>
+    {% with overall_batting=request.user.get_overall_batting_career_stats %}
+         SR0 = '{{ overall_batting.batting_strike_rate.0 }}';
+         SR1 = '{{ overall_batting.batting_strike_rate.1 }}';
+         AV0 = '{{ overall_batting.batting_average.0 }}';
+         AV1 = '{{ overall_batting.batting_average.1 }}';
+    {% endwith %}
+
+    SR0 = parseFloat(SR0).toFixed(1);
+    SR1 = parseFloat(SR1).toFixed(1);
+    if(parseFloat(SR1) > parseFloat(SR0)) {
+        $(".batting-tri-symbole").html('<i class="fa fa-caret-up green-tri-icon cursor-pointer" aria-hidden="true" title="Last Strike Rate: '+SR0+' , Current Strike Rate: '+SR1+'"></i>');
+    } else if(SR1 == SR0) {
+        $(".batting-tri-symbole").html('<i class="fa fa-minus cursor-pointer light-black-color" aria-hidden="true" title="Last Strike Rate: '+SR0+' , Current Strike Rate: '+SR1+'></i>');
+    } else {
+        $(".batting-tri-symbole").html('<i class="fa fa-caret-down red-tri-icon cursor-pointer" aria-hidden="true" title="Last Strike Rate: '+SR0+' , Current Strike Rate: '+SR1+'"></i>');
+    }
+
+    if(parseFloat(AV1) > parseFloat(AV0)) {
+        $(".batting-avg-tri-symbole").html('<i class="fa fa-caret-up green-tri-icon cursor-pointer" aria-hidden="true" title="Last Average: '+parseFloat(AV0).toFixed(1)+' , Current Average: '+parseFloat(AV1).toFixed(1)+'"></i>');
+    }else if(AV1 == AV0) {
+        $(".batting-avg-tri-symbole").html('<i class="fa fa-minus cursor-pointer light-black-color" aria-hidden="true" title="Last Average: '+parseFloat(AV0).toFixed(1)+' , Current Average: '+parseFloat(AV1).toFixed(1)+'></i>');
+    } else {
+        $(".batting-avg-tri-symbole").html('<i class="fa fa-caret-down red-tri-icon cursor-pointer" aria-hidden="true" title="Last Average: '+parseFloat(AV0).toFixed(1)+' , Current Average:'+parseFloat(AV1).toFixed(1)+'"></i>');
+    }
+
+
+     {% with overall_bowling=request.user.get_overall_bowling_career_stats %}
+            BEC0 = '{{ overall_bowling.economy.0 }}';
+            BEC1 = '{{ overall_bowling.economy.1 }}';
+            BAV0 = '{{ overall_bowling.bowling_average.0 }}';
+            BAV1 = '{{ overall_bowling.bowling_average.1 }}';
+     {% endwith %}
+
+    if(parseFloat(BEC1) > parseFloat(BEC0)) {
+        $(".bowling-tri-symbole").html('<i class="fa fa-caret-up red-tri-icon cursor-pointer" aria-hidden="true" title="Last Economy Rate: '+parseFloat(BEC0).toFixed(1)+' , Current Economy Rate: '+parseFloat(BEC1).toFixed(1)+'"></i>');
+    } else if(BEC1 == BEC0) {
+            $(".bowling-tri-symbole").html('<i class="fa fa-minus cursor-pointer light-black-color" aria-hidden="true" title="Last Economy Rate: '+parseFloat(BEC0).toFixed(1)+' , Current Economy Rate: '+parseFloat(BEC1).toFixed(1)+'"></i>');
+    } else {
+        $(".bowling-tri-symbole").html('<i class="fa fa-caret-down green-tri-icon cursor-pointer " aria-hidden="true" title="Last Economy Rate: '+parseFloat(BEC0).toFixed(1)+' , Current Economy Rate: '+parseFloat(BEC1).toFixed(1)+'"></i>');
+    }
+
+    if(parseFloat(BAV1) > parseFloat(BAV0)) {
+        $(".bowling-avg-tri-symbole").html('<i class="fa fa-caret-up red-tri-icon cursor-pointer" aria-hidden="true" title="Last Average: '+parseFloat(BAV0).toFixed(1)+' , Current Average: '+parseFloat(BAV1).toFixed(1)+'"></i>');
+    }else if(BAV1 == BAV0) {
+            $(".bowling-avg-tri-symbole").html('<i class="fa fa-minus cursor-pointer light-black-color" aria-hidden="true" title="Last Average: '+parseFloat(BAV0).toFixed(1)+' , Current Average: '+parseFloat(BAV1).toFixed(1)+'"></i>');
+    } else {
+        $(".bowling-avg-tri-symbole").html('<i class="fa fa-caret-down green-tri-icon cursor-pointer" aria-hidden="true" title="Last Average: '+parseFloat(BAV0).toFixed(1)+' , Current Average: '+parseFloat(BAV1).toFixed(1)+'"></i>');
+    }
+</script>
+
+{% endblock %}

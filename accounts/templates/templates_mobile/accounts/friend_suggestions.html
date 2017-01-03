@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block header  %}
+    {% include 'templates_mobile/header_after_complete_login.html' %}
+{% endblock %}
+
+{% block body %}
+<section class="container-fluid no-padding bg-color-middle-gray padding-bottom-40px padding-top-20px">
+    <div class="col-xs-12 col-sm-12">
+        <div class="col-xs-12 col-sm-12 margin-top-20px">
+            <div class="col-xs-12 col-sm-12 bg-color-gray no-padding">
+                <div class="col-xs-12 col-sm-12 bg-color-pure-black center font-large no-padding padding-top-5px padding-bottom-5px">
+                    Player Suggestions
+                </div>
+                <div class="col-xs-12 col-sm-12 no-padding">
+                    <div class="col-xs-12 col-sm-12 margin-top-20px">
+                        {% for friend_suggestion in friend_suggestions %}
+                            <div class="col-xs-12 col-sm-12 no-padding padding-10px sv-border-light-gray margin-bottom-20px" id="suggestion-id-{{ friend_suggestion.id }}" >
+                                <a href="{% url 'user_wall' friend_suggestion.slug %}" class="anchor-white">
+                                    <div class="col-xs-3 col-sm-3 no-padding">
+                                        <img src="{% if friend_suggestion.display_picture.name %}{{ MEDIA_URL }}{{ friend_suggestion.display_picture }}{% else %}{% static 'm_images/displayPic.png' %}{% endif %}" alt="" class="chat-display-pic">
+                                    </div>
+                                    <div class="col-xs-6 col-sm-6 no-padding">
+                                        <div class="col-xs-12 col-sm-12 no-padding" style="line-height: 36px;">
+                                            <strong>{{ friend_suggestion.name }}</strong>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="col-xs-3 col-sm-3 no-padding">
+                                    <div class="col-xs-12 col-sm-12 no-padding" style="line-height: 36px;">
+                                        <a class="anchor-white-red-on-hover connect-popup-button" data-toggle="modal" data-target="#connect-request-popup" data-friend-id="{{ friend_suggestion.id }}">Connect</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        {% empty %}
+                            <div class="col-xs-12 col-sm-12 no-padding padding-10px sv-border-light-gray margin-bottom-20px">
+                                <div class="col-xs-12 col-sm-12 no-padding center">
+                                    No Player Suggestions
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Modal -->
+    <div class="modal fade" id="connect-request-popup" tabindex="-1" role="dialog" aria-labelledby="">
+        <div class="modal-dialog sv-info-popup" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row margin-bottom-5px">
+                        <span class="col-xs-12 col-sm-12">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="color-white">&times;</span></button>
+                        </span>
+                    </div>
+                    <div class="row margin-bottom-15px color-white">
+                        <span class="col-xs-12 col-sm-12 center">Are you sure you want to connect?</span>
+                    </div>
+                    <div class="row margin-bottom-5px">
+                        <div class="col-xs-4 col-xs-offset-2 col-sm-4 col-sm-offset-2 sv-btn-circle sv-btn-circle-default-small">
+                            <center><button class="connect-yes-button" type="button" data-dismiss="modal" aria-label="Close" data-friend-id="" data-user-id="{{ request.user.id }}">Yes</button></center>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 sv-btn-circle sv-btn-circle-default-small">
+                            <center><button type="button" data-dismiss="modal" aria-label="Close" >No</button></center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- END MODAL -->
+<div class="modal fade" id="connect-request-success-popup" tabindex="-1" role="dialog" aria-labelledby="">
+    <div class="modal-dialog sv-info-popup" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row margin-bottom-5px">
+                    <span class="col-xs-12 col-sm-12">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="color-white">&times;</span></button>
+                    </span>
+                </div>
+                <div class="row margin-bottom-15px color-white">
+                    <span class="col-xs-12 col-sm-12 center">Friend Request sent Successfully.</span>
+                </div>
+                <div class="row margin-bottom-5px">
+                    <div class="col-xs-12 col-sm-12 sv-btn-circle sv-btn-circle-default-small center">
+                        <button type="button" data-dismiss="modal" aria-label="Close" >Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer  %}
+     {% include 'templates_mobile/m_footer.html' %}
+{% endblock %}
+
+{% block customscript %}
+<script type="text/javascript">
+    $('.connect-popup-button').click(function(){
+        var friendId = $(this).data('friend-id');
+        $("#connect-request-popup .connect-yes-button").data('friend-id',friendId);
+    });
+    $("#connect-request-popup .connect-yes-button").click(function(){
+        console.log("click");
+        var friendId = $(this).data('friend-id');
+        var userId = $(this).data('user-id');
+        friendRequest(userId, friendId);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block header %}
+<header class="container-fluid" id="header">
+    <!-- logo -->
+    <div id="header-site-logo" class="col-md-3 center">
+          <a href="{% url 'my_wall' %}"><img src="{% static 'images/sportsvitaelogogrey.png' %}" alt='logo'> </a>
+    </div>
+
+    <div class="col-md-2 messagebox">
+
+    </div>
+
+    <div class="col-md-2 connect">
+
+    </div>
+
+    <div class="col-md-3">
+
+    </div>
+
+      <div class="col-md-2 user">
+            <div class="col-md-12" id="connect-name">
+                <span class="medium-font textcolor connect-name capitalize" >Hi {{user.first_name}}!<i class="fa fa-caret-down textcolor margin-10px"></i>
+            </div>
+            <div class="col-md-12 connect-profile-name1" id="connect-profile-name1">
+                <div class="col-md-12 textcolor">
+
+                 </div>
+                <div class="col-md-12 textcolor">
+                    <a href="{% url "logout" %}">Logout</a>
+                </div>
+            </div>
+      </div>
+</header>
+{% endblock %}
+
+
+{% block body %}
+
+ <!-- contener part -->
+<div class="container-fluid content-part">
+
+   <h3 class="center color-red">Create my Team</h3>
+
+    <!-- left part of page i.e steps-->
+     <div class="col-md-2 verticalLine">
+            <div> <button type="button" id="step1"> Step 1 </button> </div>
+            <div>  <button type="button" id="step2"> Step 2 </button> </div>
+            <a href="#"> <p id="step3">Step3</p></a>
+     </div>
+    <!-- end of left part -->
+
+    <!-- Right part of page i.e form -->
+
+    <!-- form start -->
+<form action="" method="post" id="team-form">
+      {% csrf_token %}
+
+      <div class="col-md-6 margin-top-20px" id="contener-2nd-part">
+            <div class="col-md-12 textcolor">
+                  <span class="col-md-4">
+                        <label class="padding-5px" for="team-name">Name of my Team</label>
+                  </span>
+                  <span class="col-md-offset-2 col-md-6 inputbackground-team">
+                        <input type=text name="team-name" id="name" placeholder="Eg. HP Cricket Team" required>
+                  </span>
+            </div>
+
+            <div class="col-md-12 textcolor">
+                <span class="col-md-4 margin-top-20px ">
+                   <label class="padding-5px" for="playing-as"> Playing as </label>
+                </span>
+                <span class="col-md-offset-2 col-md-6 margin-top-20px dropdownbackground">
+                     <select name="playing-as" id="playing-as" required>
+                        <option selected='selected' value="" disabled="disabled">Select one field</option>
+                        <option value="professional">Professional</option>
+                        <option value="corporate">Corporate</option>
+                        <option value="friendly">Friendly</option>
+                    </select>
+                </span>
+            </div>
+
+            <div class="row col-md-12 textcolor">
+                <span class="col-md-4 margin-top-20px">
+                  <label for="playing-from"> Playing From </label>
+                </span>
+
+                <span class="col-md-offset-2 col-md-6 margin-top-20px dropdownbackground">
+                    <select name="playing-from" required>
+                        <option selected='selected' value="" disabled="disabled">District</option>
+                        <option value="distic">Delhi</option>
+                        <option>#</option>
+                        <option>#</option>
+                    </select>
+                </span>
+
+            </div>
+
+            <div class="row col-md-12 textcolor">
+                <span class="col-md-4 margin-top-20px">
+                   <label for="founded-in"> Founded in </label>
+                </span>
+
+                <span class="col-md-offset-2 col-md-6 margin-top-20px dropdownbackground">
+                    <input type="date" name="founded-in" id="datepicker1" required>
+                </span>
+            </div>
+
+            <div class="row col-md-12 margin-top-20px textcolor">
+                <span class="col-md-4">
+                   <label for="founded-by"> Founded By </label>
+                    <div class="lgall-font" style="margin-top: -8px">(Optional)</div>
+                </span>
+                <span class="col-md-offset-2 col-md-6 inputbackground-team">
+                    <input type="text" name="founded-by">
+                </span>
+            </div>
+
+            <div class="row col-md-12 textcolor margin-top-20px ">
+                <span class="col-md-4">
+                   <label for="home-ground"> Home Ground </label>
+                    <div class="lgall-font" style="margin-top: -8px">(Optional)</div>
+                </span>
+                <span class="col-md-offset-2 col-md-6 inputbackground-team">
+                    <input type="text" name="home-ground">
+                </span>
+            </div>
+
+            <div class="row col-md-12 textcolor margin-top-20px">
+                <span class="col-md-4">
+                  <label for="weekend">Slots </label>
+                </span>
+                <span class="col-md-offset-2 col-md-6 dropdownbackground">
+                    <select name="weekend" required>
+                        <option selected='selected' value="" disabled="disabled">Select  one field</option>
+                        <option value="weekends">Weekends</option>
+                        <option>#</option>
+                        <option>#</option>
+                        </select>
+                </span>
+            </div>
+
+            <div class="row col-md-12 textcolor margin-top-20px">
+                <span class="col-md-4">
+                  <label for="time-slots">Slots </label>
+                </span>
+                <span class="col-md-offset-2 col-md-6 dropdownbackground">
+                    <select name="time-slots" required>
+                        <option selected='selected' value="" disabled="disabled">Select one field </option>
+                        <option value="morning">Morning</option>
+                        <option>#</option>
+                        <option>#</option>
+                        </select>
+                </span>
+             </div>
+
+            <div class="row col-md-offset-3 col-md-6 textcolor margin-top-20px">
+                    <button type="button" id="next-button">
+                      <h4><strong>Next </strong></h4>
+                    </button>
+
+
+            </div>
+    </div>
+    <!-- end of step1 -->
+
+            <!-- step 2 -->
+    <div class="col-md-6 margin-top-20px" id="contener-2nd-part1">
+        <div class="col-md-12 textcolor medium-font">
+            <label for="cover-picture"> <strong> Team Cover Picture </strong></label>
+          </div>
+          <div class="col-md-12">
+              <span class="col-md-offset-1" id="cover-pic1">
+                   <img src="{% static 'images/LightsMohali.png' %}" alt='group' id="cover-pic" name="cover-picture">
+               </span>
+               <span class="col-md-offset-1" id="file">
+                   <label class="myFile">
+                    <i class="fa fa-camera-retro"></i>
+                    <input type="file" onchange="readURL(this)" id="coverimg"/> Upload New
+                    </label>
+               </span>
+          </div>
+
+          <div class="col-md-12 textcolor medium-font margin-top-50px">
+           <label for="display-picture"><strong> Team Display Picture </strong> </label>
+          </div>
+
+          <div class="col-md-12">
+                  <span>
+                       <img src="{% static 'images/groups.png' %}"  alt='group' name="display-picture" id="team-pic">
+                 </span>
+
+                    <span class="col-md-offset-1" id="file1">
+
+                   <label class="myFile">
+                        <i class="fa fa-camera-retro"></i>
+                        <input type="file" onchange="readURL2(this)" id="teamimg"/>Upload New
+                    </label>
+                    </span>
+          </div>
+
+          <div class="col-md-12">
+
+            <button type="submit" id="create-button">
+             <h4 class="margin-top-20px"><strong>Create Team</strong></h4>
+            </button>
+
+          </div>
+
+    </div>
+   <!-- end of step2 -->
+
+</form>
+     <!-- end of form -->
+</div>
+{% endblock %}
+
+{% block footer %}
+<!-- Third section i.e footer part -->
+<footer class="container-fluid" id="footer">
+   <div class="col-md-3 footer-1st-part">
+      <img src="{% static 'images/sportsvitaelogogrey.png' %}" alt='logo'>
+      <div class="footer-content">
+         An all new venture into the world of sports where it provides a platform to all the sports freaks to showcase their talent and connect with others on social network. SportsVitae is a solution to most problems that every Sportsman faces in a day to day routine <a href="{% url 'about_us' %}" target="_blank"><span class="color-red" id="read-more">read more.....</span></a>
+      </div>
+   </div>
+
+   <!-- 2nd footer part -->
+   <div class="col-md-offset-1 col-md-4 footer-2nd-part">
+      <div class="col-md-12 center" id="terms">
+        <a href="{% url 'terms_and_conditions' %}" target="_blank">Terms & Conditions</a><br>
+          <a href="{% url 'faq' %}" target="_blank">FAQs</a> | <a href="{% url 'contact_us' %}" target="_blank"> Contact Us</a>
+      </div>
+      <div class="col-md-12" id="tag">
+         <span class="col-md-offset-3 col-md-2" id="fb-tag"><a href="https://www.facebook.com/sportsvitae" target="_blank"> <i class="fa fa-facebook fa-2x color-red"></i></a></span>
+         <span class="col-md-2" id="twitter-tag"><a href="https://twitter.com/sportsvitaeco" target="_blank"><i class="fa fa-tumblr fa-2x color-red"></i></a></span>
+         <!--<span class="col-md-1" id="gmail-tag"><a href="https://plus.google.com/sportsvitae" target="_blank"><i class="fa fa-google-plus fa-2x color-red"></i></a></span>-->
+         <span class="col-md-2" id="gmail-tag"><a href="https://www.instagram.com/sportsvitae.co" target="_blank"><i class="fa fa-instagram fa-2x color-red"></i></a></span>
+
+       </div>
+       <div class="col-md-12 center margin-top-5px">
+         Copyright 2016 Sports Vitae. All Rights Reserved.
+      </div>
+   </div>
+    <!-- end of 2nd part -->
+
+   <div class="col-md-offset-1 col-md-2 footer-3rd-part">
+      <div class="textcolor no-padding" id="how-it-work1">
+        <a href="https://www.youtube.com/watch?v=qniwFdMZY2o" target="_blank">How it Works? </a>
+      </div>
+      <div id="report" style="margin-top: 50px">
+        <a href="{% url 'report_problem' %}" target="_blank"> Report a Problem</a>
+      </div>
+      <div class="col-md-offset-3 col-md-9 no-padding margin-top-10px">
+        <div id="website-by">
+            <a href="http://www.sudofire.com/"> Created by <img src="{% static 'images/small.gif' %}" width="30px" height="35px" alt='sudofire logo'></a>
+         </div>
+       <!-- <a href="{% url 'homepage' %}"> <img src="{% static 'images/webpage-layout.png' %}" alt='sudofire logo'>-->
+      </div>
+    </div>
+</footer>
+
+{% endblock %}

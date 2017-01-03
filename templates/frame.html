@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block content %}
+    <section class="container-fluid no-padding">
+        <div class="center col-lg-12 buy4industry-loader">
+             <img src="{% static 'images/Preloader_1.gif' %}" width=60px height=60px alt='loader'>
+        </div>
+
+        <!-- sidebar -->
+        <aside id="sidebar" class="col-lg-2 light-gray-back">
+           <header id="" class="row gray-back gray-border-buttom">
+                <h3 class="col-lg-12 pure-black-color" style="font-size: 22px">
+                    {% if request.user.is_superuser %}
+                        <a href="{% url 'login:dashboard' %}">Buy4Industry</a>
+                    {% elif request.user.staff_member.company %}
+                        <a href="{% url 'login:dashboard' %}">{{ request.user.staff_member.company.name }}</a>
+                        {% else %}
+                        <a href="{% url 'login:dashboard' %}">Buy4Industry</a>
+                    {% endif %}
+                </h3>
+
+
+            </header>
+            <nav class="row">
+                <div id="profile" class="col-lg-12 light-gray-border-bottom">
+                    <figure class="col-lg-5 three-quater-width-image no-padding profile-circle center">
+                            {% if request.user.staff_member.image.name == 'False' or request.user.staff_member.image.name == '' %}
+                                <img src="{% static 'images/groups.png' %}" alt="staff-img">
+                            {% else %}
+                                <img src="{{MEDIA_URL}}{{ request.user.staff_member.image.name }}" alt="staff-img">
+                            {% endif %}
+                    </figure>
+                    <div class="col-lg-7 text-capitalize no-padding margin-top-5px">
+                            {% if request.user.first_name %}
+                                <h4>{{request.user.first_name}}</h4>
+                            {% else %}
+                                <h4>{{request.user.username}}</h4>
+                            {% endif %}
+                        <span class="">
+                            <!-- profile&nbsp;|&nbsp; --><span class="pure-black-color"><a href="{% url "login:logout"  %}"> logout </a></span>
+                        </span>
+                    </div>
+                </div>
+                <ul id="menu-list" class="col-lg-12 scrollable text-capitalize">
+
+                    {% if request.user.is_staff %}
+                        <a href="{% url 'company:company_list' %}">
+                            <li class="white-link menu-item">
+                                <img src="{% static 'images/icons/company.png' %}" alt="Company icon">
+                                <span class="pure-black-color">Company </span>
+                            </li>
+                        </a>
+                    {% endif %}
+
+                    {% if request.user.is_staff %}
+                        <a href="{% url 'company:staff_member_list' %}">
+                            <li class="white-link menu-item">
+                                <img src="{% static 'images/icons/staff-members.png' %}" alt="staff icon">
+                                <span class="pure-black-color">Staff Members </span>
+                            </li>
+                        </a>
+                    {% endif %}
+
+                    {% if perms.customer.view_customer %}
+                    <a href="{% url 'customer:customer_list' %}">
+                        <li class="white-link menu-item">
+                            <img src="{% static 'images/icons/our-customers.png' %}" alt="Our Customers">
+                            <span class="pure-black-color">Our Customers</span>
+                        </li>
+                    </a>
+                    {% endif %}
+
+                    {% if perms.enquiry.view_enquiry %}
+                    <a href="{% url 'enquiry:enquiry_list' %}">
+                        <li class="white-link menu-item">
+                            <img src="{% static 'images/icons/enquiries.png' %}" alt="Enquiries">
+                            <span class="pure-black-color">Enquiries</span>
+                        </li>
+                    </a>
+                    {% endif %}
+                    {% if perms.enquiry.view_quotation %}
+                     <a href="{% url 'enquiry:quotation_list' %}">
+                        <li class="white-link menu-item">
+                            <img src="{% static 'images/icons/send-quotations.png' %}" alt="Send Quotation">
+                            <span class="pure-black-color">Quotations</span>
+                        </li>
+                    </a>
+                    {% endif %}
+                    {% if perms.enquiry.view_order %}
+                     <a href="{% url 'enquiry:order_list' %}">
+                        <li class="white-link menu-item">
+                            <img src="{% static 'images/icons/orders.png' %}" alt="Purchase Orders">
+                            <span class="pure-black-color">Orders</span>
+                        </li>
+                    </a>
+                    {% endif %}
+                    {% if perms.company.view_stock %}
+                    <a href="{% url 'company:list_stock' %}">
+                        <li class="white-link menu-item">
+                            <i class="fa fa-download color-black x-large-font" aria-hidden="true"></i>
+                            <span class="pure-black-color">Downloads</span>
+                        </li>
+                    </a>
+                    {% endif %}
+                    {% if perms.customer.view_complain %}
+                    <a href="{% url 'customer:complain_list' %}">
+                        <li class="white-link menu-item">
+                            <img src="{% static 'images/icons/complaints.png' %}" alt="Complaints">
+                            <span class="pure-black-color">Complaints</span>
+                        </li>
+                    </a>
+                    {% endif %}
+                    {% if perms.customer.view_feedback %}
+                    <a href="{% url 'customer:feedback_list' %}">
+                        <li class="white-link menu-item">
+                            <img src="{% static 'images/icons/feedback.png' %}" alt="Stock">
+                            <span class="pure-black-color">Feedback</span>
+                        </li>
+                    </a>
+                    {% endif %}
+                </ul>
+            </nav>
+        </aside>
+        <!-- sidebar ends -->
+
+
+        <!--Add text overflow Popup-->
+        <div class="modal fade margin-top-100px no-padding" id="textOverflowPopup" role="dialog" tabindex='-1'>
+            <div class="modal-dialog modal-md no-padding">
+                <div class="col-lg-12 modal-content no-padding">
+                    <div class="col-lg-12 modal-body no-padding">
+                        <div class="col-lg-offset-10 col-lg-2">
+                            <button type="button" class="close margin-top-10px" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </div>
+
+                        <div class="col-lg-12 center padding-10px" id="textOverflowPopup-container">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end of text overflow Popup-->
+
+        <!--title overflow Popup-->
+        <div class="modal fade margin-top-100px no-padding" id="titleOverflowPopup" role="dialog" tabindex='-1'>
+            <div class="modal-dialog modal-md no-padding">
+                <div class="col-lg-12 modal-content no-padding">
+                    <div class="col-lg-12 modal-body no-padding">
+                        <div class="col-lg-offset-10 col-lg-2">
+                            <button type="button" class="close margin-top-10px" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div class="col-lg-12 padding-10px justify" id="titleOverflowPopup-container"></div>
+                        <div class="col-lg-12 padding-10px justify" id="messageOverflowPopup-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end of title overflow Popup-->
+
+        <!-- main content -->
+        <main id="main-content-wrapper" class="col-lg-10">
+            <header class="row gray-back padding-10px gray-border-buttom">
+                {% block headersearch %}
+                <div id="search-wrapper" class="col-lg-offset-7 col-lg-4 no-padding">
+                    <form method="GET" name="search-form" id="search-form">
+                        <div class="col-lg-11 transparent-form">
+                            <input type="search" name="q" placeholder="Search">
+                        </div>
+                        <div class="col-lg-1 no-padding transparent-form" id="search-submit">
+                            <button type="submit">
+                                <i class="fa fa-search" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% endblock headersearch %}
+            </header>
+
+
+            <section id="content" class="row scrollable">
+                {# if success messages show them!! #}
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if message.tags == 'success' %}
+                            <h5 class="success-message bold center">{{ message }}</h5>
+                        {% elif message.tags == 'error' %}
+                            <h5 class="error-message bold center template-error">{{ message }}</h5>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                {% block contentpage %}{% endblock contentpage %}
+            </section>
+        </main>
+        <!-- main ends -->
+    </section>
+{% endblock %}
+
+{% block customscript %}
+
+{% endblock %}
+

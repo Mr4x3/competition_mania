@@ -1,0 +1,564 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block header %}
+     {% include 'templates_mobile/header_before_complete_registration.html' %}
+{% endblock %}
+
+{% block body %}
+<section class="container-fluid no-padding bg-color-pure-black">
+    <div class="col-xs-12 col-sm-12">
+        <div class="row center" id="sv-header-tab">
+            <div class="col-xs-4 col-sm-4 padding-5px">Sports Specific</div>
+            <div class="col-xs-4 col-sm-4 padding-5px active">Profile Specific</div>
+            <div class="col-xs-4 col-sm-4 padding-5px">Certification</div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 margin-top-20px">
+        <div class="row center">
+            <span class="font-large color-white sv-border-bottom-white-with-caret">Profile Specific</span>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 margin-top-20px">
+        <div class="row center">
+            <form action="" method="post" enctype="multipart/form-data"  name="profile-specific-form" id="m-profile-form">
+                {% csrf_token %}
+                <div class="text-error">
+                    {% if form.errors.non_field_errors %}
+                        {{ form.errors.non_field_errors.0 }}
+                    {% endif %}
+                </div>
+                <div class="col-xs-12 col-sm-12 form-group sv-form-control">
+                    {{form.name}}
+                    <div class="col-xs-12 col-sm-12 text-error" id="errorname">
+                      {% if form.errors.name %}
+                        {{ form.errors.name.0 }}
+                      {% endif %}
+                    </div>
+                </div>
+                {% if request.user.registration_source != 2 or request.user.email|slice:":10" != 'dummyemail'  %}
+                <div class="col-xs-12 col-sm-12 form-group sv-form-control" id="email-disabled">
+                    {{form.email}}
+                </div>
+                 {% else %}
+                 <div class="col-xs-12 col-sm-12 form-group sv-form-control" id="email-empty" >
+                    {{form.email}}
+                </div>
+               {% endif %}
+                <div class="col-xs-12 col-sm-12 text-error" id="erroremail">{% if form.errors.email %}{{ form.errors.email.0 }}{% endif %}</div>
+                <div class="col-xs-12 col-sm-12 form-group">
+                    <div class="col-xs-12 col-sm-12 no-padding">
+                        <span>Choose your display Pic<br>(Optional)</span>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 no-padding cropit-image-preview user-display-pic-preview user-display-pic-preview-center margin-top-15px dp-preview-show-modal" id="dp-preview"></div>
+                    <div class="col-xs-12 col-sm-12 no-padding margin-top-5px">
+                        <span class="font-x-small">Upload a pic larger than 150 X 150 pixels</span>
+                        <!--<input id="id_display_picture" name="display_picture" type="hidden">-->
+                        <div id="dp-input-set">
+                            <input id="id_display_picture" name="display_picture" type="hidden">
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12">
+                        <span class="text-error">
+                            {{form.cover_picture.errors.0}}
+                            {{form.cover_picture.error}}
+                        </span>
+                        <span id="error-container-8" class="text-error"></span>
+                    </div>
+                    <!-- Modal -->
+                    <div class="modal fade" id="dpCroperModal" tabindex="-1" role="dialog" aria-labelledby="">
+                        <div class="modal-dialog sv-info-popup" role="document">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div class="row margin-bottom-5px">
+                                        <span class="col-xs-12 col-sm-12">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="color-white">&times;</span></button>
+                                        </span>
+                                    </div>
+                                    <div class="row margin-bottom-15px color-white center">
+                                        <span class="col-xs-12 col-sm-12 font-large ">Change your Display Picture</span>
+                                        <div class="col-xs-12 col-sm-12" id="dp-image-cropper">
+                                            <div id="cropit-display-image">
+                                                <div class="col-xs-12 col-sm-12 no-padding cropit-image-preview user-display-pic-preview user-display-pic-preview-center margin-top-15px" id="dp-preview" style="background-image: url('{% if form.instance.display_picture.name %}{{ MEDIA_URL }}{{ form.instance.display_picture }}{% else %}{% static 'm_images/displayPic.png' %}{% endif %}');"></div>
+                                                <div class="col-xs-12 col-sm-12 no-padding margin-top-5px">
+                                                    <div class="font-x-small" >Upload a pic larger than 150 X 150 pixels</div>
+                                                    <div id="dp-image-error" class="center color-red font-x-small"></div>
+                                                </div>
+
+                                                <div class="margin-top-10px col-xs-8 col-xs-offset-2 col-sm-8 col-sm-offset-2">
+                                                    <input type="range" class="cropit-image-zoom-input range-input-style" />
+                                                </div>
+                                                <input type="file" name="abc" class="cropit-image-input" />
+                                                <div class="row">
+                                                    <div class="col-xs-3 col-xs-offset-2 col-sm-3 col-sm-offset-2 sv-btn-circle sv-btn-circle-default font-xx-small dp-select-image-btn">
+                                                        <button type="button" class="cropit-select-image-btn" style="line-height: 14px;" >
+                                                            <span class="col-xs-12 col-sm-12 no-padding font-small">Upload</span>
+                                                            <span class="col-xs-12 col-sm-12 no-padding font-small">image</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-xs-3 col-xs-offset-2 col-sm-3 col-sm-offset-2 sv-btn-circle sv-btn-circle-default font-x-small">
+                                                        <button type="button" id="doneDpCrop">Save</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="col-xs-12 col-sm-12 form-group">
+                    <div class="col-xs-12 col-sm-12 no-padding">
+                        <span>Choose your Cover Pic<br>(Optional)</span>
+                    </div>
+                    <div id="cp-preview" class="col-xs-12 col-sm-12 no-padding user-cover-pic-preview margin-top-15px cp-preview-show-modal"></div>
+                    <div class="col-xs-12 col-sm-12 no-padding margin-top-5px">
+                        <span class="font-x-small">Upload a pic larger than : 300 X 150 pixels</span>
+                        <!--<input id="id_cover_picture" name="cover_picture" type="hidden">-->
+                        <div id="cp-input-set">
+                            <input id="id_cover_picture" name="cover_picture" type="hidden">
+                        </div>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="cpCroperModal" tabindex="-1" role="dialog" aria-labelledby="Change cover picture">
+                        <div class="modal-dialog sv-info-popup" role="document">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <div class="row margin-bottom-5px">
+                                        <span class="col-xs-12 col-sm-12">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="color-white">&times;</span></button>
+                                        </span>
+                                    </div>
+                                    <div class="row margin-bottom-15px color-white center">
+                                        <span class="col-xs-12 col-sm-12 font-large ">Change your Cover Picture</span>
+                                        <div class="col-xs-12 col-sm-12" id="cp-image-cropper">
+                                            <div id="cropit-display-image">
+                                                <div class="cropit-image-preview col-xs-12 col-sm-12 no-padding margin-top-15px" id="cp-preview" style="background-image: url('{% if form.instance.cover_picture.name %}{{ MEDIA_URL }}{{ form.instance.cover_picture }}{% else %}{% static 'm_images/mywall.jpg' %}{% endif %}');"></div>
+                                                <div class="col-xs-12 col-sm-12 no-padding margin-top-5px">
+                                                    <div class="font-x-small" >Upload a pic larger than : 300 X 150 pixels</div>
+                                                    <div id="cp-image-error" class="center color-red font-x-small"></div>
+                                                </div>
+
+                                                <div class="margin-top-10px col-xs-8 col-xs-offset-2 col-sm-8 col-sm-offset-2">
+                                                    <input type="range" class="cropit-image-zoom-input range-input-style" />
+                                                </div>
+                                                <input type="file" name="abc2" class="cropit-image-input" />
+                                                <div class="row">
+                                                    <div class="col-xs-3 col-xs-offset-2 col-sm-3 col-sm-offset-2 sv-btn-circle sv-btn-circle-default font-xx-small cp-select-image-btn">
+                                                        <button type="button" class="cropit-select-image-btn" style="line-height: 14px;" >
+                                                            <span class="col-xs-12 col-sm-12 no-padding font-small">Upload</span>
+                                                            <span class="col-xs-12 col-sm-12 no-padding font-small">image</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="col-xs-3 col-xs-offset-2 col-sm-3 col-sm-offset-2 sv-btn-circle sv-btn-circle-default font-x-small">
+                                                        <button type="button" id="doneCpCrop">Save</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+                <div class="col-xs-12 col-sm-12 no-padding form-group">
+                    <div class="col-xs-3" >
+                        <span class="coloy-gray">Sex</span>
+                    </div>
+                    <div class="col-xs-9" >
+                        <span>I am a</span>
+                        <span class="">
+                            {{form.gender}}
+                           <!-- <input id="radio-1" class="" name="radio-group" type="radio" checked>
+                            <label for="radio-1" class="">Male</label>-->
+                        </span>
+                       <!-- <span class="sv-custom-radio">
+                            <input id="radio-2" class="" name="radio-group" type="radio">
+                            <label for="radio-2" class="" >Female</label>
+                        </span>-->
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 form-group sv-form-select-control date-dropdown-container" id="profile-specific-date-container" data-ele-id="#profile-specific-date-container" data-date-form-input-id="#id_date_of_birth" data-feature-date="false" data-no-of-prev-year="150">
+                   <!-- <span class="col-xs-4 col-sm-4" ></span>  -->
+                   <!-- <div class="col-xs-12 col-sm-12 no-padding" id="profile-specific-date-container"> -->
+                    <div class="display-none" >
+                        {{form.date_of_birth}}
+                    </div>
+                    <div class="col-xs-4 col-sm-4 year-wrapper">
+                        <select name="profile_specific_year" id="year" title="Year" onchange="setDays(month,day,this,'#profile-specific-date-container','#id_date_of_birth',false)">
+                            <option value="0" selected>Year</option>
+                        </select>
+                    </div>
+                    <div class="col-xs-4 col-sm-4 month-wrapper">
+                    <select name="profile_specific_month" id="month" title="Month" onchange="setDays(this,day,year,'#profile-specific-date-container','#id_date_of_birth',false)">
+                        <option value="01">Jan</option>
+                        <option value="02">Feb</option>
+                        <option value="03">Mar</option>
+                        <option value="04">Apr</option>
+                        <option value="05">May</option>
+                        <option value="06">Jun</option>
+                        <option value="07">Jul</option>
+                        <option value="08">Aug</option>
+                        <option value="09">Sep</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                        <option value="0" selected>Month</option>
+                    </select>
+                    </div>
+                    <div class="col-xs-4 col-sm-4 day-wrapper">
+                    <select name="profile_specific_day" id="day" title="Day" onchange="setDays(month,this,year,'#profile-specific-date-container','#id_date_of_birth',false)">
+                        <option value="01">1</option>
+                        <option value="02">2</option>
+                        <option value="03">3</option>
+                        <option value="04">4</option>
+                        <option value="05">5</option>
+                        <option value="06">6</option>
+                        <option value="07">7</option>
+                        <option value="08">8</option>
+                        <option value="09">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                        <option value="21">21</option>
+                        <option value="22">22</option>
+                        <option value="23">23</option>
+                        <option value="24">24</option>
+                        <option value="25">25</option>
+                        <option value="26">26</option>
+                        <option value="27">27</option>
+                        <option value="28">28</option>
+                        <option value="29">29</option>
+                        <option value="30">30</option>
+                        <option value="31">31</option>
+                        <option value="0" selected>Day</option>
+                    </select>
+                    </div>
+                    <span class="col-xs-12 col-md-12 text-error" id="dateOfBirth-error">
+                        {% if form.errors.date_of_birth %}
+                          {{ form.errors.date_of_birth.0 }}
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="col-xs-12 col-sm-12 form-group sv-form-select-control">
+                     {{form.country}}
+                    <div class="col-xs-12 col-sm-12 text-error" id="errorcountry">
+                      {% if form.errors.country %}
+                        {{ form.errors.country.0 }}
+                      {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 form-group sv-form-select-control" id="state-div">
+                     {{form.state}}
+                    <div class="col-xs-12 col-sm-12 text-error" id="state-error">
+                      {% if form.errors.state %}
+                        {{ form.errors.state.0 }}
+                      {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 form-group sv-form-control" id="state-text-div">
+                     {{form.state_text}}
+                    <div class="col-xs-12 col-sm-12 text-error" id="stateText-error">
+                      {% if form.errors.state_text %}
+                        {{ form.errors.state_text.0 }}
+                      {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 form-group sv-form-select-control" id="city-select-div">
+                    {{form.city}}
+                    <span class="col-xs-12 col-sm-12 text-error" id="city-error">
+                      {% if form.errors.city %}
+                        {{ form.errors.city.0 }}
+                      {% endif %}
+                    </span>
+                </div>
+                <div class="col-xs-12 col-sm-12 form-group sv-form-control" id="city-text-div">
+                    {{form.city_text}}
+                    <span class="col-xs-12 col-sm-12 text-error" id="cityText-error">
+                      {% if form.errors.city_text %}
+                        {{ form.errors.city_text.0 }}
+                      {% endif %}
+                    </span>
+                </div>
+                <div class="col-xs-12 col-sm-12 form-group sv-form-control">
+                    <div class="col-xs-2 col-sm-2 no-padding padding-right-5px">
+                        <input id="mobile-code" type="text" disabled="disabled" >
+                    </div>
+                    <div class="col-xs-10 col-sm-10 no-padding">
+                        {{form.mobile }}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 form-group sv-btn-circle sv-btn-circle-default">
+                    <center><button type="submit">Save</button></center>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}
+
+{% block footer  %}
+    {% include 'templates_mobile/m_footer.html' %}
+{% endblock %}
+
+
+{% block customscript %}
+<script type="text/javascript">
+//DP CROPER
+  $('#dp-image-cropper').cropit();
+  $('.dp-select-image-btn').click(function() {
+      $('#dp-image-cropper .cropit-image-input').click();
+  });
+
+  $('#dp-image-cropper .cropit-image-input').change(function(){
+     //Get reference of FileUpload.
+        var fileUpload = $("#dp-image-cropper .cropit-image-input")[0];
+
+        //Check whether the file is valid Image.
+        var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(.jpg|.png|.gif)$");
+        if (regex.test(fileUpload.value.toLowerCase())) {
+            if (typeof (fileUpload.files) != "undefined") {
+                var reader = new FileReader();
+                reader.readAsDataURL(fileUpload.files[0]);
+                reader.onload = function (e) {
+                    var image = new Image();
+                    image.src = e.target.result;
+                    image.onload = function () {
+                        var height = this.height;
+                        var width = this.width;
+                        if (height < 150 || width < 150) {
+                            //alert("Height and Width must not exceed 80 * 80px.");
+                            $('#dp-image-error').text("Image size too small, Upload a larger Image");
+                            return false;
+                        }
+                        //alert("Uploaded image has valid Height and Width.");
+                        return true;
+                    };
+                }
+            } else {
+                alert("This browser does not support HTML5.");
+                return false;
+            }
+        } else {
+            alert("Please select a valid Image file.");
+            return false;
+        }
+
+  });
+
+
+$('#doneDpCrop').click(function() {
+    var imageData = $('#dp-image-cropper').cropit('export', {
+      type: 'image/jpeg',
+      quality: .9,
+      originalSize: true
+    });
+    console.log(imageData);
+    if(imageData){
+      $("#id_display_picture").attr("value",imageData);
+      $(".user-display-pic-preview").css('background-image','url("'+imageData+'")');
+    }
+    $('#dpCroperModal').modal('hide');
+});
+</script>
+
+<script type="text/javascript">
+//CP CROPER
+
+$('#cp-image-cropper').cropit();
+$('.cp-select-image-btn').click(function() {
+    console.log('hello');
+  $('#cp-image-cropper .cropit-image-input').click();
+});
+
+$('#cp-image-cropper .cropit-image-input').change(function(){
+     //Get reference of FileUpload.
+        var fileUpload = $("#cp-image-cropper .cropit-image-input")[0];
+
+        //Check whether the file is valid Image.
+        var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(.jpg|.png|.gif)$");
+        if (regex.test(fileUpload.value.toLowerCase())) {
+            if (typeof (fileUpload.files) != "undefined") {
+                var reader = new FileReader();
+                reader.readAsDataURL(fileUpload.files[0]);
+                reader.onload = function (e) {
+                    var image = new Image();
+                    image.src = e.target.result;
+                    image.onload = function () {
+                        var height = this.height;
+                        var width = this.width;
+                        if (height < 150 || width < 300) {
+                            $('#cp-image-error').text("Image size too small, Upload a larger Image");
+                            return false;
+                        }
+                        //alert("Uploaded image has valid Height and Width.");
+                        return true;
+                    };
+                }
+            } else {
+                alert("This browser does not support HTML5.");
+                return false;
+            }
+        } else {
+            alert("Please select a valid Image file.");
+            return false;
+        }
+  });
+
+$('#doneCpCrop').click(function() {
+    var imageData = $('#cp-image-cropper').cropit('export', {
+      type: 'image/jpeg',
+      quality: .9,
+      originalSize: true
+    });
+    console.log(imageData);
+    if(imageData){
+      $("#id_cover_picture").attr("value",imageData);
+      $(".user-cover-pic-preview").css('background-image','url("'+imageData+'")');
+    }
+    $('#cpCroperModal').modal('hide');
+});
+</script>
+
+
+
+<script type="text/javascript">
+
+  /*var numDays = {'01': 31, '02': 28, '03': 31, '04': 30, '05': 31, '06': 30,'07': 31, '08': 31, '09': 30, '10': 31, '11': 30, '12': 31};
+
+  function setDays(oMonthSel, oDaysSel, oYearSel)
+  {
+    var nDays, oDaysSelLgth, opt, i = 1;
+    nDays = numDays[oMonthSel[oMonthSel.selectedIndex].value];
+    if (nDays == 28 && oYearSel[oYearSel.selectedIndex].value % 4 == 0)
+      ++nDays;
+    oDaysSelLgth = oDaysSel.length;
+    if (nDays != oDaysSelLgth)
+    {
+      if (nDays < oDaysSelLgth){
+        oDaysSel.length = nDays;
+      }else{
+        for (i; i < nDays - oDaysSelLgth + 1; i++)
+        {
+          opt = new Option(oDaysSelLgth + i, oDaysSelLgth + i);
+          oDaysSel.options[oDaysSel.length] = opt;
+        }
+      }
+    }
+    var oForm = oMonthSel.form;
+    var month = oMonthSel.options[oMonthSel.selectedIndex].value;
+    var day = oDaysSel.options[oDaysSel.selectedIndex].value;
+    var year = oYearSel.options[oYearSel.selectedIndex].value;
+    oForm.date_of_birth.value = year + '-' + month + '-' + day;
+  }
+
+  $(document).ready(function(){
+    var cDate = new Date();
+    var maxYear = cDate.getFullYear()-13;
+    var minYear = cDate.getFullYear()-113;
+    var yearString = '';
+    for (i = maxYear; i>= minYear; i--)
+    {
+        console.log("inside year");
+      yearString = yearString+'<option value="'+i+'">'+i+'</option>';
+    }
+    yearString = yearString+'<option value="0" selected="1">Year</option>';
+    $(".year-wrapper > #year").html(yearString);
+    var oldDob = $("#profile-specific-date-container > #id_date_of_birth").val();
+    if (oldDob) {
+      arr = oldDob.split(' ');
+      arr2 = arr[0].split('-');
+      var year = arr2[0];
+      var month = arr2[1];
+      var day = arr2[2];
+      $('#profile-specific-date-container > .day-wrapper > #day option[value="'+day+'"]').attr("selected","selected");
+      $('#profile-specific-date-container > .month-wrapper > #month option[value="'+month+'"]').attr("selected","selected");
+      $('#profile-specific-date-container > .year-wrapper > #year option[value="'+year+'"]').attr("selected","selected");
+
+      var Sday = $('#profile-specific-date-container > .day-wrapper > #day');
+      var Smonth = $('#profile-specific-date-container > .month-wrapper > #month');
+      var Syear = $('#profile-specific-date-container > .year-wrapper > #year');
+      setDays(Smonth[0],Sday[0],Syear[0]);
+    }
+    $('.disabled > input').attr('readonly', 'readonly');
+    $('.empty > input').val('');
+  });*/
+
+$(document).ready(function(){
+    $('.disabled > input').attr('readonly', 'readonly');
+    $('.empty > input').val('');
+    cid= $('#id_country option:selected').val();
+    console.log(cid);
+    mobileCode(cid);
+    if (cid!= 'IN') {
+        console.log("not in india");
+        document.getElementById("state-text-div").style.display="block";
+        document.getElementById("state-div").style.display="none";
+        document.getElementById("city-text-div").style.display="block";
+        document.getElementById("city-select-div").style.display="none";
+        //document.getElementById("city-label").style.display="block";
+    }else if(cid==='IN') {
+        console.log("in india");
+        document.getElementById("state-div").style.display="block";
+        document.getElementById("state-text-div").style.display="none";
+        var sid= $('#id_state option:selected').val();
+        document.getElementById("city-text-div").style.display="none";
+        console.log("sid"+sid);
+        if(sid){
+          document.getElementById("city-select-div").style.display="block";
+        }else{
+          document.getElementById("city-select-div").style.display="none";
+        }
+    }
+    //id= $('#id_state option:selected').val();
+    //setCity(id);
+
+    //FOR UPLOAD BUTTONS TO CHANGE DP
+    //var child = $('#profile-file1').children('input');
+    //$('#profile-file1').html(child);
+});
+
+$(document).ready(function(){
+    if($('#erroremail').is(':empty')){
+        $('#email-disabled > input').prop("readonly", true);
+        $('#email-empty > input').val('');
+    }else{
+        $('#email-disabled').attr('id','email-empty');
+        $('#email-disabled, #email-empty').removeAttr('readonly');
+    }
+});
+
+$(document).ready(function(){
+    $('.dp-preview-show-modal').click(function(){
+        $('#dpCroperModal').modal('show');
+    });
+
+    $('.cp-preview-show-modal').click(function(){
+        $('#cpCroperModal').modal('show');
+    });
+});
+
+history.pushState(null, null,"");
+window.addEventListener('popstate', function () {
+    history.pushState(null, null, "");
+});
+</script>
+{% endblock %}

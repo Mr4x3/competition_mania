@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block body %}
+
+<section id="verification-section-1" class="container-fluid no-padding">
+<header class="col-xs-12 col-sm-12 sv-bgcolor-t-black">
+    <div class="row">
+        <div class="col-xs-6 col-sm-6">
+             <a href="{% url 'homepage' %}">
+               <img src="{% static 'images/sportsvitaelogogrey.png' %}" alt="logo" height="70px">
+            </a>
+        </div>
+        <a class="col-xs-6 col-sm-6 right anchor-white" id="header-info" href="#">
+            How it Works?
+        </a>
+    </div>
+</header>
+<div class="col-xs-12 col-sm-12 margin-top-30px margin-bottom-30px">
+    <div class="container">
+        <div class="col-xs-12 col-sm-12 sv-border-red sv-bgcolor-t-black center padding-top-20px padding-bottom-20px">
+            <span class="col-xs-12 col-sm-12 font-large no-padding color-red">A Verification mail has been sent to you.</span>
+            <span class="col-xs-12 col-sm-12 font-large no-padding  color-red">You need to verify email first.</span>
+            <div id="resent-mail-id" class="col-xs-12 col-sm-12 margin-top-20px">
+               <span id="resend-mail-button"> Resend Verification Mail </span>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+{% endblock %}
+
+{% block footer  %}
+    <section id="sv-footer" class="container-fluid no-padding">
+        {% include 'templates_mobile/m_footer.html' %}
+    </section>
+{% endblock %}

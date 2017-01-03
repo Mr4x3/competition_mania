@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block body %}
+<section id="home-section-home" class="container-fluid no-padding">
+    <header class="col-xs-12 col-sm-12 sv-bgcolor-t-black">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                 <a href="{% url 'homepage' %}">
+                   <img src="{% static 'images/sportsvitaelogogrey.png' %}" alt="logo" height="70px">
+                </a>
+            </div>
+            <a class="col-xs-6 col-sm-6 right anchor-white" id="header-info" href="https://www.youtube.com/watch?v=qniwFdMZY2o">
+                How it Works?
+            </a>
+        </div>
+    </header>
+    <div class="col-xs-12 col-sm-12 no-padding" id="auth-wrapper">
+        <div class="col-xs-12 col-sm-12 no-padding">
+            <div class="col-sm-6 col-xs-6">
+                <a href="{% url 'top_teams' %}" class="color-white">
+                    <div class="col-xs-12 col-sm-12 tranzy-black-back padding-10px">
+                        <figure class="center col-xs-12 col-sm-12">
+                            <img src="{% static 'm_images/search_team.png' %}">
+                        </figure>
+                        <div class="col-xs-12 col-sm-12 center no-padding" style="margin-top:15px">
+                            Search Team
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-xs-6">
+                <a href="{% url 'top_players' %}" class="color-white">
+                    <div class="col-xs-12 col-sm-12 tranzy-black-back padding-10px">
+                        <figure class="center col-xs-12 col-sm-12">
+                            <img src="{% static 'm_images/search_player.png' %}">
+                        </figure>
+                        <div class="col-xs-12 col-sm-12 center margin-top-10px no-padding">
+                            Search Player
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="container margin-top-20px col-xs-12 col-sm-12">
+            <div id="login-form-container" class="col-xs-offset-1 col-xs-10 col-sm-offset-1 col-sm-10 red-border">
+                <span class="col-xs-12 col-sm-12 padding-5px center font-large cursor-pointer">Log in</span>
+                <form action="{% url 'homepage' %}{% if next_url %}?next={{next_url}}{% endif %}" method="post" name="loginForm" id="login-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="login">
+                    <div class="col-xs-12 col-sm-12 padding-15px" id="login-form-dropdown">
+                        <div class="col-xs-12 col-sm-12 form-group no-padding sv-form-control">
+                            {{ login_form.email }}
+                            <div id="login-email-error" class="col-xs-12 col-sm-12 text-error center">{{ login_form.errors.email.0 }}</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 no-padding sv-form-control">
+                            {{ login_form.password }}
+                            <div id="login-password-error" class="col-xs-12 col-sm-12 text-error center">{{ login_form.errors.password.0 }}</div>
+                        </div>
+                        <div id="m_forgot-password" class="col-xs-12 col-sm-12 form-group no-padding margin-top-10px">
+                            <span class="col-xs-12 col-sm-12 padding-5px center">Forgot Password</span>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 form-group sv-btn-circle sv-btn-circle-default margin-top-10px">
+                            <center>
+                                <button type="submit">Login</button>
+                            </center>
+                        </div>
+                    </div>
+                </form>
+                <div id="m_forgot-password-container" class="col-xs-12 col-sm-12 bg-color-pure-black" style="border: 1px solid red; padding-bottom: 20px">
+                    <div id="forgot-ajax-status" class="col-xs-12 col-sm-12 margin-top-20px text-error"></div>
+                    <div class="col-xs-12 col-sm-12 sv-form-control margin-top-20px">
+                        <input name="email-id" id="email-id" type="email" placeholder="Enter your Email ID" required>
+                    </div>
+                     <div class="col-xs-12 col-sm-12 form-group sv-btn-circle sv-btn-circle-default margin-top-10px">
+                        <center>
+                            <button type="button" onclick="forgotpasswordcall()">Reset</button>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div id="signup-form-container" class="col-xs-offset-1 col-xs-10 col-sm-offset-1 col-sm-10 red-border">
+                <span class="col-xs-12 col-sm-12 padding-5px center font-large cursor-pointer">Sign up</span>
+                 <form action="{% url 'homepage' %}" method="post" name="registrationForm" id="registration-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="registration">
+                    <div class="col-xs-12 col-sm-12 padding-15px" id="signup-form-dropdown">
+                        <span class="col-xs-12 col-sm-12 no-padding center font-medium">New User?</span>
+                        <span class="col-xs-12 col-sm-12 no-padding center font-small">Create your Sports Profile</span>
+                        <div class="col-xs-12 col-sm-12 form-group no-padding margin-top-5px sv-form-control">
+                            {{registration_form.name}}
+                            <div id="errorname" class="col-xs-12 col-sm-12 text-error center">{% if registration_form.errors.name %}{{registration_form.errors.name.0}}{% endif %}</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 form-group no-padding sv-form-control">
+                            {{ registration_form.email }}
+                            <div id="erroremail" class="col-xs-12 col-sm-12 text-error center">{% if registration_form.errors.email %}{{ registration_form.errors.email.0 }}{% endif %}</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 form-group no-padding sv-form-control">
+                            {{ registration_form.password1 }}
+                            <div id="errorpassword" class="col-xs-12 col-sm-12 text-error center">{% if registration_form.errors.password1 %}{{ registration_form.errors.password1.0 }}{% endif %}</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 no-padding form-group sv-form-control">
+                             {{ registration_form.password2 }}
+                             <div id="errorpasswordnotmatch" class="col-xs-12 col-sm-12 text-error center">{% if registration_form.errors.password2 %}{{ registration_form.errors.password2.0 }}{% endif %}</div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 no-padding form-group center">
+                            <span>I am a</span>
+                            <span class="" >
+                                {{registration_form.gender}}
+                                <!--<input id="radio-1" class="" name="radio-group" type="radio" checked>
+                                <label for="radio-1" class="">Male</label>-->
+                            </span>
+                            <!--<span class="sv-custom-radio">
+                                <input id="radio-2" class="" name="radio-group" type="radio">
+                                <label for="radio-2" class="" >Female</label>
+                            </span>-->
+                        </div>
+                        <span class="col-xs-12 col-sm-12 no-padding center font-x-small form-group">By Clicking Submit you agree to our <a href="{% url 'terms_and_conditions' %}" class="anchor-white-underline">Terms N Conditions</a></span>
+
+                        <div class="col-xs-12 col-sm-12 form-group sv-btn-circle sv-btn-circle-default">
+                            <center><button type="submit">Submit</button></center>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="col-xs-12 col-sm-12 no-padding">
+                <center><span class="or-circle red-border" >Or</span></center>
+            </div>
+        </div>
+        <div class="container">
+            <div id="social-login" class="col-xs-12 col-sm-12 margin-top-15px padding-15px red-border">
+                <div class="col-xs-12 col-sm-12 margin-bottom-10px sv-btn sv-btn-default">
+                    <button type="button" id="login-facebook">Login via <span class="color-red">Facebook</span></button>
+                </div>
+                <div class="col-xs-12 col-sm-12 sv-btn sv-btn-default" id="gSignInWrapper">
+                    <button id="customBtn" class="customGPlusSignIn" type="button">Login via <span class="color-red">Google+</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="home-section-2" class="container-fluid no-padding">
+    <div class="container">
+        <span class="col-xs-12 col-sm-12 padding-5px center font-xx-large margin-top-10px">Features</span>
+        <div class="col-xs-12 col-sm-12 center margin-top-30px no-padding">
+            <img src= "{% static 'images/choosing-hand.png'%}" >
+            <span class="col-xs-12 col-sm-12 padding-10px no-padding bold">Choose your Sport's Specifics</span>
+            <span class="col-xs-12 col-sm-12 no-padding">Have your own sport's profile and showcase to the whole world the real you.</span>
+        </div>
+        <div class="col-xs-12 col-sm-12 center margin-top-30px no-padding">
+            <img src= "{% static 'images/hand-shake.png'%}">
+            <span class="col-xs-12 col-sm-12 padding-10px no-padding bold">Connect to Sportspersons in vicinity</span>
+            <span class="col-xs-12 col-sm-12 no-padding">Search a sportsperson, become friends & start playing</span>
+        </div>
+        <div class="col-xs-12 col-sm-12 center margin-top-30px no-padding">
+            <img src= "{% static 'images/create-your-team.png'%}">
+            <span class="col-xs-12 col-sm-12 padding-10px no-padding bold">Create your team</span>
+            <span class="col-xs-12 col-sm-12 no-padding">Create your own team & compete with other teams</span>
+        </div>
+        <div class="col-xs-12 col-sm-12 center margin-top-30px no-padding">
+            <img src= "{% static 'images/team-performance.png'%}">
+            <span class="col-xs-12 col-sm-12 padding-10px no-padding bold">Analyze self/team performance</span>
+            <span class="col-xs-12 col-sm-12 no-padding">Check your stats, track your performance & win-meter after every match</span>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block footer  %}
+        {% include 'templates_mobile/m_footer.html' %}
+{% endblock %}
+
+
+{% block customscript %}
+    <script type='text/javascript' src="{% static 'js/google+_login.js' %}"></script>
+    <script src="https://apis.google.com/js/client:platform.js?onload=startApp"></script>
+    <script type='text/javascript' src="{% static 'js/googlerenderbutton.js' %}"></script>
+    <script src='https://apis.google.com/js/client:plusone.js'></script>
+    <!--<script src="https://connect.facebook.net/en_US/all.js"></script>-->
+    <script>
+        window.fbAsyncInit = function() {
+          FB.init({
+            appId      : 'your-app-id',
+            xfbml      : true,
+            version    : 'v2.1'
+          });
+        };
+
+        (function(d, s, id){
+           var js, fjs = d.getElementsByTagName(s)[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement(s); js.id = id;
+           js.src = "//connect.facebook.net/en_US/sdk.js";
+           fjs.parentNode.insertBefore(js, fjs);
+         }(document, 'script', 'facebook-jssdk'));
+      </script>
+    <script type='text/javascript' src="{% static 'js/facebook_login.js' %}"></script>
+
+    <script>
+        $("#login-form-container > span").click(function(){
+            $("#login-form-dropdown").slideToggle(1500, "easeInOutExpo");
+        });
+
+        $("#signup-form-container > span").click(function(){
+            $("#signup-form-dropdown").slideToggle(1500, "easeInOutExpo");
+        });
+
+        $("#m_forgot-password").click(function(){
+            $("#m_forgot-password-container").slideToggle();
+        });
+
+        var forgotpasswordcall = function forgotPasswordLink(){
+        emailId = $('#email-id').val();
+        console.log(emailId);
+        $.ajax({
+            type : "POST",
+            url : host+"api/v1/accounts/forgot-password/",
+            data : {
+                'email' : emailId
+            },
+            statusCode: {
+             201: function() {
+                console.log("succes");
+                document.getElementById("forgot-ajax-status").innerHTML ='Please check your inbox.';
+                $("#email-id").val("");
+             },
+             400: function(error) {
+                console.log("error");
+                document.getElementById("forgot-ajax-status").innerHTML ='This email is not registered with us.';
+                console.log("erroe"+JSON.stringify(error));
+             },
+             500: function(error) {
+                console.log("server error");
+                console.log("erroe"+JSON.stringify(error));
+             }
+            }
+        });
+    }
+    $(document).ready(function() {
+        if(!$('#login-email-error').is(':empty') || !$('#login-password-error').is(':empty')){
+            $("#login-form-dropdown").slideToggle(1500, "easeInOutExpo");
+        }
+
+        if(!$('#errorname').is(':empty') || !$('#erroremail').is(':empty') || !$('#errorpassword').is(':empty') || !$('#errorpasswordnotmatch').is(':empty')){
+            $("#signup-form-dropdown").slideToggle(1500, "easeInOutExpo");
+        }
+    });
+    </script>
+{% endblock %}

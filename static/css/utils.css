@@ -1,0 +1,320 @@
+/******************************
+ * UTILS CLASS
+******************************/
+
+*, html, body {
+    font-family: roboto;
+}
+
+a, a:hover, a:focus, a:active {
+    text-decoration: none;
+    outline: 0;
+}
+
+.smaller-font {
+    font-size: smaller;
+}
+
+.larger-font {
+    font-size: larger;
+}
+
+.small-font {
+    font-size: small;
+}
+
+.x-small-font {
+    font-size: x-small;
+}
+
+.medium-font {
+    font-size: medium;
+}
+
+.large-font {
+    font-size: large;
+}
+
+.x-large-font {
+    font-size: x-large;
+}
+
+.xx-large-font {
+    font-size: xx-large;
+}
+
+.right {
+    text-align: right;
+}
+
+.left {
+    text-align: left;
+}
+
+.center {
+    text-align: center;
+}
+
+.justify {
+    text-align: justify;
+}
+
+.text-underline {
+    text-decoration: underline;
+}
+
+.full-width, .full-width-image > img {
+    width: 100%;
+}
+
+.three-quater-width, .three-quater-width-image > img {
+    width: 75%;
+}
+
+.half-width, .half-width-image > img {
+    width: 50%;
+}
+
+.quater-width, .quater-width-image > img {
+    width: 25%;
+}
+
+.no-padding {
+    padding: 0;
+}
+
+.padding-5px {
+    padding: 5px;
+}
+
+.padding-10px {
+    padding: 10px;
+}
+
+.padding-left-30px {
+    padding-left: 30px;
+}
+
+.padding-15px {
+    padding: 15px;
+}
+
+.padding-20px {
+    padding: 20px;
+}
+
+.padding-30px {
+    padding: 30px;
+}
+
+.padding-40px {
+    padding: 40px;
+}
+
+.padding-50px {
+    padding: 50px;
+}
+
+.padding-bottom-5px {
+    padding-bottom: 5px;
+}
+
+.padding-bottom-10px {
+    padding-bottom: 10px;
+}
+
+.padding-bottom-15px {
+    padding-bottom: 15px;
+}
+
+.padding-bottom-20px {
+    padding-bottom: 20px;
+}
+
+.padding-bottom-30px {
+    padding-bottom: 30px;
+}
+
+.padding-bottom-40px {
+    padding-bottom: 40px;
+}
+
+.padding-bottom-50px {
+    padding-bottom: 50px;
+}
+
+.padding-top-5px {
+    padding-top: 5px;
+}
+
+.padding-top-10px {
+    padding-top: 10px;
+}
+
+.padding-top-15px {
+    padding-top: 15px;
+}
+
+.padding-top-20px {
+    padding-top: 20px;
+}
+
+.padding-top-30px {
+    padding-top: 30px;
+}
+
+.padding-top-40px {
+    padding-top: 40px;
+}
+
+.padding-top-50px {
+    padding-top: 50px;
+}
+
+.no-margin {
+    margin: 0;
+}
+
+.margin-10px {
+    margin: 10px;
+}
+
+.margin-15px {
+    margin: 15px;
+}
+
+.margin-20px {
+    margin: 20px;
+}
+
+.margin-top-5px {
+    margin-top: 5px;
+}
+
+.margin-top-10px {
+    margin-top: 10px;
+}
+
+.margin-top-20px {
+    margin-top: 20px;
+}
+.margin-top-40px {
+    margin-top: 40px;
+}
+.margin-top-30px {
+    margin-top: 30px;
+}
+
+.margin-top-40px {
+    margin-top: 40px;
+}
+
+.margin-top-50px {
+    margin-top: 50px;
+}
+
+.margin-top-60px {
+    margin-top: 60px;
+}
+
+.margin-top-70px {
+    margin-top: 70px;
+}
+
+.margin-top-100px {
+    margin-top: 100px;
+}
+
+.margin-top-negative-50px {
+    margin-top: -50px;
+}
+
+.margin-left-10px {
+    margin-left: 10px;
+}
+
+.margin-bottom-10px {
+    margin-bottom: 10px;
+}
+
+.margin-bottom-20px {
+    margin-bottom: 20px;
+}
+
+.margin-bottom-15px {
+    margin-bottom: 15px;
+}
+
+.margin-bottom-30px {
+    margin-bottom: 30px;
+}
+
+.margin-bottom-40px {
+    margin-bottom: 40px;
+}
+
+.font-weight-bold, .bold {
+    font-weight: bold;
+}
+
+.block {
+    display: block;
+}
+
+.inline {
+    display: inline;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+.scrollable {
+    overflow-y: auto;
+}
+
+.overflow {
+    overflow: visible;
+}
+
+.short-hr {
+    width: 40%;
+    text-align: center;
+    border-color: #cccccc;
+}
+
+.hideIt {
+    display: none;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.relative {
+    position: relative;
+}
+
+.fixed {
+    position: fixed;
+}
+
+.capitalized {
+    text-transform: capitalize;
+}
+
+.border-gray {
+    border: 1px solid gray;
+}
+
+.error-text {
+    color: #FF3232;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.float-right {
+    float:right;
+}

@@ -1,0 +1,102 @@
+ {% extends 'base.html' %}
+
+{% load staticfiles %}
+
+ {% block body %}
+ <!-- first section -->
+<section id='first-section-login'>
+   <div id="header-part" class='container-fluid'>
+       <div id="top-part">
+             <div id="logo1" class="col-md-2">
+            <a href="{% url 'homepage' %}">
+               <img src="{% static 'images/sportsvitaelogogrey.png' %}" width=120px height=70px alt='logo'>
+            </a>
+         </div>
+        </div>
+   </div>
+
+    <div class="tranzy-black-background-passwordreset textcolor margin-top-100px col-md-offset-4 col-md-4 padding-20px" id="password-resetbox" align="center">
+        <div class="medium-font">
+            Sportsvitae Login
+        </div>
+        <div class="col-md-12">
+            <img src="{% static 'images/line.png' %}" width=300px alt='line'>
+        </div>
+
+        <form action="" method="post"> {% csrf_token %}
+        <div class="col-md-12 margin-top-20px">
+           <span class="col-md-4">Email_Id</span> <span class="col-md-8 no-padding tranzy-black-background2">
+                {{ form.username }}
+           </span>
+           <span class="col-md-12 error small-font">
+            {% if form.errors.username %}
+                {{ form.errors.username.0 }}
+            {% endif %}
+           </span>
+        </div>
+
+        <div class="col-md-12 margin-top-50px" align="center">
+            <span class="col-md-offset-4 col-md-4"><input type="submit" value="Login" id="continue1"></span>
+        </div>
+        <div class="col-md-12 margin-top-20px">
+            <span class="col-md-12 center small-font">
+               <a href="{% url 'homepage' %}">
+                  <strong>
+                     <span class="textcolor">SignUp for Sportsvitae</span>
+                  </strong>
+               </a>
+            </span>
+        </div>
+
+        </form>
+
+    </div>
+
+
+
+</section>
+<!-- Third section i.e footer part -->
+<!-- Third section i.e footer part -->
+<footer class="container-fluid" id="footer">
+   <div class="col-md-3 footer-1st-part">
+      <img src="{% static 'images/sportsvitaelogogrey.png' %}" alt='logo'>
+      <div class="footer-content">
+         An all new venture into the world of sports where it provides a platform to all the sports freaks to showcase their talent and connect with others on social network. SportsVitae is a solution to most problems that every Sportsman faces in a day to day routine <a href="{% url 'about_us' %}" target="_blank"><span class="color-red" id="read-more">read more.....</span></a>
+      </div>
+   </div>
+
+   <!-- 2nd footer part -->
+   <div class="col-md-offset-1 col-md-4 footer-2nd-part">
+      <div class="col-md-12 center" id="terms">
+        <a href="{% url 'terms_and_conditions' %}" target="_blank">Terms & Conditions</a><br>
+          <a href="{% url 'faq' %}" target="_blank">FAQs</a> | <a href="{% url 'contact_us' %}" target="_blank"> Contact Us</a>
+      </div>
+      <div class="col-md-12" id="tag">
+         <span class="col-md-offset-3 col-md-2" id="fb-tag"><a href="https://www.facebook.com/sportsvitae" target="_blank"> <i class="fa fa-facebook fa-2x color-red"></i></a></span>
+         <span class="col-md-2" id="twitter-tag"><a href="https://twitter.com/sportsvitaeco" target="_blank"><i class="fa fa-tumblr fa-2x color-red"></i></a></span>
+         <!--<span class="col-md-1" id="gmail-tag"><a href="https://plus.google.com/sportsvitae" target="_blank"><i class="fa fa-google-plus fa-2x color-red"></i></a></span>-->
+         <span class="col-md-2" id="gmail-tag"><a href="https://www.instagram.com/sportsvitae" target="_blank"><i class="fa fa-instagram fa-2x color-red"></i></a></span>
+
+       </div>
+       <div class="col-md-12 center margin-top-5px">
+         Copyright 2016 Sports Vitae. All Rights Reserved.
+      </div>
+   </div>
+    <!-- end of 2nd part -->
+
+   <div class="col-md-offset-1 col-md-2 footer-3rd-part">
+      <div class="textcolor no-padding" id="how-it-work1">
+        <a href="https://www.youtube.com/watch?v=qniwFdMZY2o" target="_blank">How it Works? </a>
+      </div>
+      <div id="report" style="margin-top: 50px">
+        <a href="{% url 'report_problem' %}" target="_blank"> Report a Problem</a>
+      </div>
+      <div class="col-md-offset-3 col-md-9 no-padding margin-top-10px">
+        <div id="website-by">
+            <a href="http://www.sudofire.com/"> Created by <img src="{% static 'images/small.gif' %}" width="30px" height="35px" alt='sudofire logo'></a>
+         </div>
+       <!-- <a href="{% url 'homepage' %}"> <img src="{% static 'images/webpage-layout.png' %}" alt='sudofire logo'>-->
+      </div>
+    </div>
+</footer>
+{% endblock %}

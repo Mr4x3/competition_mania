@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block header  %}
+<section class="container-fluid no-padding bg-color-pure-black">
+    <header class="col-xs-12 col-sm-12 sv-bgcolor-t-black">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <a href="{% url 'homepage' %}">
+                   <img src="{% static 'images/sportsvitaelogogrey.png' %}" alt="logo" height="70px">
+                </a>
+            </div>
+
+        </div>
+    </header>
+</section>
+{% endblock %}
+
+{% block body %}
+
+<section class="container-fluid no-padding bg-color-pure-black">
+    <h3 class="margin-top-30px center">
+            Sportsvitae Login
+    </h3>
+    <div class="col-xs-12 col-sm-12">
+        <img src="{% static 'images/line.png' %}" width=300px alt='line'>
+    </div>
+    <div class="col-xs-12 col-sm-12 margin-top-20px">
+        <div class="row center">
+            <form action="{% url 'login' %}{% if next_url %}?next={{next_url}}{% endif %}" method="post"> {% csrf_token %}
+               <input type="hidden" name="form_type" value="login">
+                <div class="col-xs-12 col-sm-12 form-group sv-form-control">
+                     {{ form.email }}
+                    <div class="col-xs-12 col-sm-12 text-error" id="error-mail1">
+                        {% if form.errors.email %}
+                            {{ form.errors.email.0 }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 form-group sv-form-control">
+                    {{ form.password }}
+                    <div class="col-xs-12 col-sm-12 text-error" id="error-password1">
+                        {% if form.errors.password %}
+                            {{ form.errors.password.0 }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 margin-top-20px form-group sv-btn-circle sv-btn-circle-default">
+                    <center><button type="submit">Login</button></center>
+                </div>
+                </form>
+
+                <div id="m_forgot-password" class="col-xs-12 col-sm-12 margin-top-10">
+                    <button type="button" id="forget-password">Forgot password?</button>
+                </div>
+
+                <div id="m_forgot-password-container" class="col-xs-12 col-sm-12 bg-color-pure-black margin-top-10px" style="border: 1px solid red; padding-bottom: 20px">
+                    <div id="forgot-ajax-status" class="col-xs-12 col-sm-12 margin-top-20px text-error"></div>
+                    <div class="col-xs-12 col-sm-12 sv-form-control margin-top-20px">
+                        <input name="email-id" id="email-id" type="email" placeholder="Enter your Email ID" required>
+                    </div>
+                     <div class="col-xs-12 col-sm-12 form-group sv-btn-circle sv-btn-circle-default margin-top-20px">
+                        <center>
+                            <button type="button" onclick="forgotPasswordLink()">Reset</button>
+                        </center>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 margin-top-10px">
+                    <a class="anchor-white" href="{% url 'homepage' %}">
+                        SignUp for Sportsvitae
+                    </a>
+                </div>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}
+
+{% block footer  %}
+     {% include 'templates_mobile/m_footer.html' %}
+{% endblock %}
+
+{% block customscript %}
+<script>
+    $("#m_forgot-password").click(function(){
+         $("#m_forgot-password-container").slideToggle();
+    });
+</script>
+
+{% endblock %}

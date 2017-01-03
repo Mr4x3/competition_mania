@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block seo %}
+    <title>Server error</title>
+{% endblock %}
+
+{% block content %}
+    <div id="error500" class="container-fluid fullpage-status">
+        <h3 class="row center">
+            <a class="color-white" href="{% url 'login:login' %}">Home</a>
+        </h3>
+    </div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% load staticfiles %}
+
+<!--
+          (       (
+      (   )\ )    )\ ) (  (     (
+ (   ))\ (()/( ( (()/( )\ )(   ))\
+ )\ /((_) ((_)))\ /(_)|(_|()\ /((_)
+((_|_))(  _| |((_|_) _|(_)((_|_))
+(_-< || / _` / _ \|  _|| | '_/ -_)
+/__/\_,_\__,_\___/|_|  |_|_| \___|
+-->
+
+<!DOCTYPE html>
+
+<!--
+            (         (
+       (    )\ )      )\ )  (   (      (
+ (    ))\  (()/(  (  (()/(  )\  )(    ))\
+ )\  /((_)  ((_)) )\  /(_))((_)(()\  /((_)
+((_)(_))(   _| | ((_)(_) _| (_) ((_)(_))
+(_-<| || |/ _` |/ _ \ |  _| | || '_|/ -_)
+/__/ \_,_|\__,_|\___/ |_|   |_||_|  \___|
+                                           -->
+
+<!--authors-->
+<!--Vivek Sharma <Vivek@sudofire.com> -->
+<!--Mukesh Kumar <mukesh@sudofire.com> -->
+
+
+
+<html lang='en'>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+
+        {% block seo %}
+            <title>Buy4Industry</title>
+        {% endblock %}
+
+        <!--tab icon-->
+        <!-- <link rel='icon' href="{% static 'images/fevicon-icon.png' %}" type='image/x-icon'/> -->
+
+        <!--font files-->
+        <link rel="stylesheet" href="{% static 'fonts/font-awesome/css/font-awesome.min.css' %}">
+
+        <!--css files-->
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
+        <link rel="stylesheet" href="{% static 'css/killBootstrapResponsive.css' %}"> <!-- kill bootstarp -->
+        <link rel="stylesheet" href="{% static 'css/sol.css' %}">
+        <link rel="stylesheet" href="{% static 'css/fonts.css' %}">
+        <link rel="stylesheet" href="{% static 'css/utils.css' %}">
+        <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+        <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+        {% block customstyle %}{% endblock %}
+    </head>
+    <body>
+
+        {% block content %}{% endblock content %}
+
+        <!--javascript files-->
+
+        <script src="{% static 'js/jquery-2.2.3.min.js' %}"></script>
+        <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+        {% block alternatefilescript %} {% endblock %}
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+        <!-- find docs here http://pbauerochse.github.io/searchable-option-list/index.html -->
+        <script src="{% static 'js/main.js' %}"></script>
+        {% block customscript %}{% endblock %}
+    </body>
+</html>

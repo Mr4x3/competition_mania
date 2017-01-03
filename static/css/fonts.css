@@ -1,0 +1,19 @@
+/******************************
+ * FONTS
+******************************/
+
+@font-face {
+    font-family: Corbel;
+
+    src: url(../fonts/corbel/Corbel.ttf);
+}
+
+@font-face {
+    font-family: ubuntu-light;
+
+    src: url(../fonts/ubuntu/Ubuntu-L.ttf);
+}
+
+body * {
+    font-family: ubuntu-light;
+}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block seo %}
+    <title>Page Not Found</title>
+{% endblock %}
+
+{% block content %}
+    <div id="error404" class="container-fluid fullpage-status">
+        <h3 class="row center">
+            <a class="color-white" href="{% url 'login:login' %}">Home</a>
+        </h3>
+    </div>
+{% endblock %}

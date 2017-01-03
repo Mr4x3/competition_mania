@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block header  %}
+    {% include 'templates_mobile/header_after_complete_login.html' %}
+{% endblock %}
+
+{% block body %}
+<section class="container-fluid no-padding bg-color-middle-gray padding-bottom-40px padding-top-20px">
+    <div class="col-xs-12 col-sm-12">
+        <div class="col-xs-12 col-sm-12 margin-top-20px">
+            <div class="col-xs-12 col-sm-12 bg-color-gray no-padding">
+                <div class="col-xs-12 col-sm-12 bg-color-pure-black center font-large no-padding padding-top-5px padding-bottom-5px">
+                    My Connections
+                </div>
+                <div class="col-xs-12 col-sm-12 no-padding">
+                    <div class="col-xs-12 col-sm-12 margin-top-20px">
+                        {% for friend in friends  %}
+                            <div class="col-xs-12 col-sm-12 no-padding padding-10px sv-border-light-gray margin-bottom-20px" id="connection-id-{{ friend.id }}" >
+                                <a href="{% url 'user_wall' friend.slug %}" class="anchor-white">
+                                    <div class="col-xs-3 col-sm-3 no-padding">
+                                        <img src="{% if friend.display_picture.name %}{{ MEDIA_URL }}{{ friend.display_picture }}{% else %}{% static 'images/groups.png' %}{% endif %}" alt="" class="chat-display-pic">
+                                    </div>
+                                    <div class="col-xs-6 col-sm-6 no-padding">
+                                        <div class="col-xs-12 col-sm-12 no-padding" style="line-height: 36px;">
+                                            <strong>{{friend.name}}</strong>
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="col-xs-3 col-sm-3 no-padding">
+                                    <div class="col-xs-12 col-sm-12 no-padding" style="line-height: 36px;">
+                                        <a class="anchor-white-red-on-hover disconnect-popup-button" data-toggle="modal" data-target="#disconnect-request-popup" data-friend-id="{{ friend.id }}">Disconnect</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        {% empty %}
+                            <div class="col-xs-12 col-sm-12 no-padding padding-10px sv-border-light-gray margin-bottom-20px">
+                                <div class="col-xs-12 col-sm-12 no-padding center">
+                                    No Connections
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Modal -->
+    <div class="modal fade" id="disconnect-request-popup" tabindex="-1" role="dialog" aria-labelledby="">
+        <div class="modal-dialog sv-info-popup" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row margin-bottom-5px">
+                        <span class="col-xs-12 col-sm-12">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="color-white">&times;</span></button>
+                        </span>
+                    </div>
+                    <div class="row margin-bottom-15px color-white">
+                        <span class="col-xs-12 col-sm-12 center">Are you sure you want to disconnect?</span>
+                    </div>
+                    <div class="row margin-bottom-5px">
+                        <div class="col-xs-4 col-xs-offset-2 col-sm-4 col-sm-offset-2 sv-btn-circle sv-btn-circle-default-small">
+                            <center><button class="disconnect-yes-button" type="button" data-dismiss="modal" aria-label="Close" data-friend-id="" data-user-id="{{ request.user.id }}">Yes</button></center>
+                        </div>
+                        <div class="col-xs-4 col-sm-4 sv-btn-circle sv-btn-circle-default-small">
+                            <center><button type="button" data-dismiss="modal" aria-label="Close" >No</button></center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- END MODAL -->
+<div class="modal fade" id="disconnect-request-success-popup" tabindex="-1" role="dialog" aria-labelledby="">
+    <div class="modal-dialog sv-info-popup" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row margin-bottom-5px">
+                    <span class="col-xs-12 col-sm-12">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="color-white">&times;</span></button>
+                    </span>
+                </div>
+                <div class="row margin-bottom-15px color-white">
+                    <span class="col-xs-12 col-sm-12 center">Successfully disconnected.</span>
+                </div>
+                <div class="row margin-bottom-5px">
+                    <div class="col-xs-12 col-sm-12 sv-btn-circle sv-btn-circle-default-small center">
+                        <button type="button" data-dismiss="modal" aria-label="Close" >Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer  %}
+     {% include 'templates_mobile/m_footer.html' %}
+{% endblock %}
+
+{% block customscript %}
+<script type="text/javascript">
+    $('.disconnect-popup-button').click(function(){
+        var friendId = $(this).data('friend-id');
+        $("#disconnect-request-popup .disconnect-yes-button").data('friend-id',friendId);
+    });
+    $("#disconnect-request-popup .disconnect-yes-button").click(function(){
+        console.log("click");
+        var friendId = $(this).data('friend-id');
+        var userId = $(this).data('user-id');
+        unFriend(userId, friendId);
+    });
+</script>
+{% endblock %}

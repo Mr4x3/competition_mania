@@ -1,0 +1,1736 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block header  %}
+    {% include 'templates_mobile/header_after_complete_login.html' %}
+{% endblock %}
+
+{% block body %}
+<section class="container-fluid no-padding bg-color-pure-black">
+<div class="col-xs-12 col-sm-12" id="#sample-team-profile-wrapper">
+        <div class="row">
+            <div class="col-md-12 textcolor" style="position:absolute"><a href="{% url 'edit_user_profile' %}" style="color:white"><u>Edit</u></a></div>
+            <img src="{% if request.user.cover_picture.name %}{{ MEDIA_URL }}{{ request.user.cover_picture }}{% else %}{% static 'images/mywall.jpg' %}{% endif %}" id="profile-cover-pic"/>
+            <div class="col-xs-12 col-sm-12 no-padding" id="team-settings-menu-part">
+                <div class="col-xs-12 col-sm-12 no-padding">
+                    <div class="col-xs-offset-8 col-xs-4 col-sm-offset-8 col-sm-4 no-padding" style="z-index: 10">
+                            <div class="col-xs-12 col-sm-12 no-padding bg-color-pure-red padding-5px cursor-pointer center tour-step-3"  title="" data-content="(3/6) Played a great match recently? Add your personal stats here." data-toggle="modal" data-target="#user-performance-add-new-stats-modal">
+                                Add New Stats
+                            </div>
+                    </div>
+                </div>
+                <!-- <div class="modal fade" id="user-performance-add-new-stats-modal" tabindex="-1" role="dialog" aria-labelledby="">
+                    <div class="modal-dialog sv-info2-popup" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12 col-sm-12 center" id="addNewStatsData">
+                                        <div class="col-xs-12 col-sm-12 font-x-large bg-color-gray padding-5px margin-bottom-15px center">
+                                            Add New Match
+                                        </div>
+                                        <form action="" method="post">
+                                        <div class="col-xs-12 col-sm-12 margin-top-20px">
+                                            <div class="row center">
+                                                <div class="col-xs-12 col-sm-12 form-group sv-form-select-control" id="user-performance-add-stats-date-container" >
+                                                    <div class="display-none" >
+                                                        <input id="id_match-date" name="match_date" type="hidden">
+                                                    </div>
+                                                    <div class="col-xs-4 col-sm-4 year-wrapper">
+                                                        <select name="user_performance_add_stats_year" id="year" title="Year" onchange="setDays(month,day,this)">
+                                                            <option value="0" selected="">Year</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xs-4 col-sm-4 month-wrapper">
+                                                        <select name="user_performance_add_stats_month" id="month" title="Month" onchange="setDays(this,day,year)">
+                                                            <option value="01">Jan</option>
+                                                            <option value="02">Feb</option>
+                                                            <option value="03">Mar</option>
+                                                            <option value="04">Apr</option>
+                                                            <option value="05">May</option>
+                                                            <option value="06">Jun</option>
+                                                            <option value="07">Jul</option>
+                                                            <option value="08">Aug</option>
+                                                            <option value="09">Sep</option>
+                                                            <option value="10">Oct</option>
+                                                            <option value="11">Nov</option>
+                                                            <option value="12">Dec</option>
+                                                            <option value="0" selected="1">Month</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xs-4 col-sm-4 day-wrapper">
+                                                        <select name="user_performance_add_stats_day" id="day" title="Day" onchange="setDays(month,this,year)">
+                                                            <option value="01">1</option>
+                                                            <option value="02">2</option>
+                                                            <option value="03">3</option>
+                                                            <option value="04">4</option>
+                                                            <option value="05">5</option>
+                                                            <option value="06">6</option>
+                                                            <option value="07">7</option>
+                                                            <option value="08">8</option>
+                                                            <option value="09">9</option>
+                                                            <option value="10">10</option>
+                                                            <option value="11">11</option>
+                                                            <option value="12">12</option>
+                                                            <option value="13">13</option>
+                                                            <option value="14">14</option>
+                                                            <option value="15">15</option>
+                                                            <option value="16">16</option>
+                                                            <option value="17">17</option>
+                                                            <option value="18">18</option>
+                                                            <option value="19">19</option>
+                                                            <option value="20">20</option>
+                                                            <option value="21">21</option>
+                                                            <option value="22">22</option>
+                                                            <option value="23">23</option>
+                                                            <option value="24">24</option>
+                                                            <option value="25">25</option>
+                                                            <option value="26">26</option>
+                                                            <option value="27">27</option>
+                                                            <option value="28">28</option>
+                                                            <option value="29">29</option>
+                                                            <option value="30">30</option>
+                                                            <option value="31">31</option>
+                                                            <option value="0" selected="1">Day</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-12">
+                                                        <span class="text-error col-xs-12 col-sm-12" id="date-error"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-12 form-group sv-form-select-control" id="user-performance-add-stats-slot-container" >
+                                                    <select name="slot">
+                                                        <option value="M">Morning</option>
+                                                        <option value="A">Afternoon</option>
+                                                        <option value="E">Evening</option>
+                                                    </select>
+                                                    <div class="col-xs-12 col-sm-12">
+                                                        <span class="text-error col-xs-12 col-sm-12" id="slot-error" ></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-12 form-group sv-form-control" id="user-performance-add-stats-against-container" >
+                                                    <input type="text" name="against" placeholder="Vs">
+                                                    <div class="col-xs-12 col-sm-12">
+                                                        <span class="text-error col-xs-12 col-sm-12" id="against-error" ></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 no-padding padding-bottom-20px sv-border-red margin-top-10px margin-bottom-10px" id="add-user-performace-batting-data">
+                                                    <div class="col-xs-12 col-sm-12 bg-color-pure-red center font-large no-padding padding-top-5px padding-bottom-5px">
+                                                        Batting
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-12 no-padding left">
+                                                        <div class="col-xs-12 col-sm-12 margin-top-20px">
+                                                            <div class="col-xs-6 col-sm-6">
+                                                                Runs
+                                                            </div>
+                                                            <div class="col-xs-6 col-sm-6 sv-form-control sv-control-white mat">
+                                                                <input id="id_batting-runs" min="0" name="batting_runs" value="0" type="number">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-12 margin-top-10px">
+                                                            <div class="col-xs-6 col-sm-6">
+                                                                Balls
+                                                            </div>
+                                                            <div class="col-xs-6 col-sm-6 sv-form-control sv-control-white inn">
+                                                                <input id="id_batting-balls" min="0" name="batting_balls" value="0" type="number">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-12 margin-top-10px">
+                                                            <div class="col-xs-6 col-sm-6">
+                                                                4s
+                                                            </div>
+                                                            <div class="col-xs-6 col-sm-6 sv-form-control sv-control-white no">
+                                                                <input id="id_batting-fours" min="0" name="batting_fours" value="0" type="number">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-12 margin-top-10px">
+                                                            <div class="col-xs-6 col-sm-6">
+                                                                6s
+                                                            </div>
+                                                            <div class="col-xs-6 col-sm-6 sv-form-control sv-control-white runs">
+                                                                <input id="id_batting-sixes" min="0" name="batting_sixes" value="0" type="number">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-12 margin-top-10px">
+                                                            <div class="col-xs-6 col-sm-6">
+                                                                SR.
+                                                            </div>
+                                                            <div class="col-xs-6 col-sm-6 sv-form-control sv-control-white balls" id="batting_strickRate">
+                                                                00.00
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-12 margin-top-10px">
+                                                            <div class="col-xs-6 col-sm-6">
+                                                                Dismissal
+                                                            </div>
+                                                            <div class="col-xs-6 col-sm-6 sv-form-select-control sv-select-white">
+                                                                <select id="id_batting_dismissal_method" name="batting_dismissal_method">
+                                                                    <option value="" selected="selected">---------</option>
+                                                                    <option value="NO">Not Out</option>
+                                                                    <option value="C">Caught</option>
+                                                                    <option value="CB">Caught &amp; Bowled</option>
+                                                                    <option value="ST">Stumped</option>
+                                                                    <option value="B">Bowled</option>
+                                                                    <option value="RH">Retired Hurt</option>
+                                                                    <option value="LBW">LBW</option>
+                                                                    <option value="RO">Run Out</option>
+                                                                    <option value="HW">Hit Wicket</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-12 no-padding">
+                                                        <span class="col-xs-12 col-sm-12 no-padding" id="customize-performance-add-new-match-batting-error">
+
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 no-padding padding-bottom-20px sv-border-red margin-top-10px margin-bottom-10px" id="add-user-performace-bowling-data">
+                                                    <div class="col-xs-12 col-sm-12 bg-color-pure-red center font-large no-padding padding-top-5px padding-bottom-5px">
+                                                        Bowling
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-12 no-padding left">
+                                                        <div class="col-xs-12 col-sm-12 margin-top-20px">
+                                                            <div class="col-xs-6 col-sm-6">
+                                                                Overs
+                                                            </div>
+                                                            <div class="col-xs-6 col-sm-6 sv-form-control sv-control-white balls">
+                                                                <input id="id_bowling-overs" maxlength="5" name="bowling_overs" type="text" value="0">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-12 margin-top-10px">
+                                                            <div class="col-xs-6 col-sm-6">
+                                                                Maiden Overs
+                                                            </div>
+                                                            <div class="col-xs-6 col-sm-6 sv-form-control sv-control-white balls">
+                                                                <input id="id_bowling_maiden_overs" min="0" name="bowling_maiden_overs" value="0" type="number">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-12 margin-top-10px">
+                                                            <div class="col-xs-6 col-sm-6">
+                                                                Runs
+                                                            </div>
+                                                            <div class="col-xs-6 col-sm-6 sv-form-control sv-control-white balls">
+                                                                <input id="id_bowling-runs" min="0" name="bowling_runs" value="0" type="number">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-12 col-sm-12 margin-top-10px">
+                                                            <div class="col-xs-6 col-sm-6">
+                                                                Wickets
+                                                            </div>
+                                                            <div class="col-xs-6 col-sm-6 sv-form-control sv-control-white hs">
+                                                                <input id="id_bowling-wickets" min="0" name="bowling_wickets" value="0" type="number">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xs-12 col-sm-12 no-padding">
+                                                        <span class="col-xs-12 col-sm-12 no-padding" id="customize-performance-add-new-match-bowling-error">
+
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12 col-sm-12 center sv-btn-circle sv-btn-circle-default">
+                                                    <button type="button" id="user-performance-score-save-button" onclick="return userPerformanceAddnewStatsValidation(form)"><strong>Save </strong></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-sm-12 col-xs-12 center" id="addNewStatsLoader">
+                                        <img src="{% static 'images/loading-gallery.gif' %}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+
+                <div class="modal fade" id="userPerformanceAddNewStatsSuceessModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog sv-info-popup" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <div class="row margin-bottom-5px">
+                                    <span class="col-xs-12 col-sm-12">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="color-white">&times;</span></button>
+                                    </span>
+                                </div>
+                                <div class="row margin-bottom-15px color-white">
+                                    <span class="col-xs-12 col-sm-12 center font-large ">Stats Added</span>
+                                </div>
+                                <div class="row margin-bottom-5px">
+                                    <div class="col-xs-12 col-sm-12 sv-btn-circle sv-btn-circle-default-small">
+                                        <center><button type="button" data-dismiss="modal" aria-label="Close" >Ok</button></center>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-12 no-padding" id="team-profile-info-part-cotainer">
+                <div class="col-xs-12 col-sm-12 user-display-pic-preview-small user-display-pic-preview-center" id="user-wall-display-pic" >
+                    <!-- <img src="static/images/displayPic.png" id="profile-dp"/> -->
+                </div>
+                <div class="col-xs-12 col-sm-12 no-padding sv-bgcolor-t-black">
+                    <div id="medal-container" class="col-xs-3 col-sm-3 margin-top-5px">
+                        <div class="col-xs-6 col-sm-6 no-padding" id="medal-inner-container-0">
+                        </div>
+                        <div class="col-xs-6 col-sm-6 no-padding" id="medal-inner-container-2">
+
+                        </div>
+                    </div>
+                    <div id="team-profile-info-part" class="col-xs-12 col-sm-12 no-padding color-white bold font-large center capitalize margin-top-15px">
+                        {{ request.user.name }}
+                    </div>
+                    <div id="medal-container" class="col-xs-3 col-xs-offset-9 col-sm-3 col-sm-offset-9 margin-top-5px">
+                        <div class="col-xs-6 col-sm-6 no-padding" id="medal-inner-container-3">
+
+                        </div>
+                        <div class="col-xs-6 col-sm-6 no-padding" id="medal-inner-container-1" >
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row margin-bottom-15px bg-color-black" id="team-profile-stats-wrapper">
+            <div class="col-xs-12 col-sm-12 no-padding">
+                <div class="col-xs-6 col-sm-6 no-padding status-tile tour-step-6" data-content="(6/6) This will highlight your performance.">
+                    <div class="col-xs-11 col-xs-offset-1 no-padding">
+                        {% if request.user.cricketer.usp == 'BL' %}
+                            {% with overall_bowling=request.user.get_overall_bowling_career_stats %}
+                                <span class="col-xs-12 col-sm-12 no-padding">
+                                    <div class="col-xs-5 col-sm-5 no-padding">
+                                        <span class="col-xs-12 col-sm-12 no-padding margin-top-10px font-12px"><img src="{% static 'm_images/ball.png' %}" width="12px" height="12px" alt='ball' id="bat">&nbsp;USP&nbsp;</span>
+                                    </div>
+                                    <div class="col-xs-7 col-sm-7 no-padding">
+                                        {% if overall_bowling.economy %}
+                                            <span class="col-xs-12 col-sm-12 no-padding font-12px">Eco: {{overall_bowling.economy.1|floatformat:1}} <span class="bowling-tri-symbole"></span></span>
+                                        {% else %}
+                                            <span class="col-xs-12 col-sm-12 no-padding font-12px">Eco: ---</span>
+                                        {% endif %}
+                                        {% if overall_bowling.bowling_average %}
+                                            <span class="col-xs-12 col-sm-12 no-padding font-12px">Avg.: {{ overall_bowling.bowling_average.1|floatformat:1 }} <span class="bowling-avg-tri-symbole"></span></span>
+                                        {% else %}
+                                            <span class="col-xs-12 col-sm-12 no-padding" style="font-size: small">Avg.: ---</span>
+                                        {% endif %}
+                                    </div>
+                                </span>
+                            {% endwith %}
+                        {% else %}
+                            {% with overall_batting=request.user.get_overall_batting_career_stats %}
+                                <span class="col-xs-12 col-sm-12 no-padding">
+                                    <div class="col-xs-4 col-sm-4 no-padding">
+                                        <span class="col-xs-12 col-sm-12 no-padding margin-top-10px font-12px"><img src="{% static 'images/bat.png' %}" width="15px" height="15px" alt='bat' id="bat">&nbsp;USP&nbsp;</span>
+                                    </div>
+                                    <div class="col-xs-8 col-sm-8 no-padding">
+                                        {% if overall_batting.batting_strike_rate %}
+                                            <span class="col-xs-12 col-sm-12 no-padding font-12px">S.R.: {{ overall_batting.batting_strike_rate.1|floatformat:1 }}% <span class="batting-tri-symbole"></span></span>
+                                        {% else %}
+                                            <span class="col-xs-12 col-sm-12 no-padding font-12px">S.R.: --- </span>
+                                        {% endif %}
+
+                                        {% if overall_batting.batting_average %}
+                                            <span class="col-xs-12 col-sm-12 no-padding font-12px">Avg.: {{ overall_batting.batting_average.1|floatformat:1 }} <span class="batting-avg-tri-symbole"></span></span>
+                                        {% else %}
+                                            <span class="col-xs-12 col-sm-12 no-padding" style="font-size: small">Avg.: ---</span>
+                                        {% endif %}
+                                    </div>
+                                </span>
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-6 no-padding status-tile no-padding">
+                    <div class="col-xs-10 col-xs-offset-1 tour-step-5 font-12px" title="" data-content="(5/6) See your collective stats here.">
+                        <a href="{% url 'cricketer_career_performance' request.user.slug %}" title="My Performances" class="anchor-white">
+                            <span class="col-xs-12 col-sm-12 no-padding center">My</span>
+                            <span class="col-xs-12 col-sm-12 no-padding center">Performance</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 no-padding font-12px">
+                <div class="col-xs-6 col-sm-6 no-padding status-tile">
+                    <div class="col-xs-11 col-xs-offset-1">
+                        <span class="col-xs-12 col-sm-12 no-padding cursor-pointer" data-toggle="modal" data-target="#user-best-performance-modal">
+                            <span class="col-xs-12 col-sm-12 no-padding center">Best</span>
+                            <span class="col-xs-12 col-sm-12 no-padding center">Performance</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-6 no-padding status-tile font-12px">
+                    <div class="col-xs-10 col-xs-offset-1">
+                        <a class="anchor-white" href="{% url 'connections' %}">
+                            <span class="col-xs-12 col-sm-12 no-padding center">My Connections</span>
+                        </a>
+                        <span class="col-xs-12 col-sm-12 no-padding center">{{ friends_count }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-12 no-padding">
+                <div id="about-team-container" class="col-xs-12 col-sm-12">
+                    <span class="col-xs-12 col-sm-12 padding-5px center cursor-pointer bold">About</span>
+                    <div class="col-xs-12 col-sm-12 padding-15px" id="about-team-dropdown">
+                        {% with allcaptain=request.user.get_all_teams_captaining  %}
+                            {% if allcaptain %}
+                                <span class="col-xs-5 col-sm-5 no-padding bold capitalize">Captain</span><span class="col-xs-1 col-sm-1 no-padding">:</span>
+                                <span class="col-xs-6 col-sm-6 no-padding capitalize">
+
+                                    <span class="col-xs-12 col-sm-12 no-padding">
+                                        <span class="col-xs-2 col-sm-2 no-padding">
+                                            <img src="{% static 'm_images/hat.png' %}" width="20px" height="18px">
+                                        </span>
+                                        <span class="col-xs-10 col-sm-10 no-padding">
+                                            {% for captaining_team in allcaptain|slice:":2" %}
+                                                <span class="capitalize" style="" title="{{captaining_team.name}}">
+                                                    <a href="{% url "cricket_team_wall" slug=captaining_team.slug %}" class="anchor-white" >
+                                                        {{captaining_team.name}}
+                                                        {% if allcaptain|length >= 2 %}
+                                                            <span>,</span>
+                                                        {% endif %}
+                                                    </a>
+                                                </span>
+                                            {% endfor %}
+                                            {% if allcaptain|length >= 2 %}
+                                                <span data-toggle="tooltip" data-placement="right" title="{% for captaining_team in allcaptain|slice:"2:" %}{{captaining_team.name}}{% if not forloop.last %}, {% endif %}{% endfor %}" style="display: inline; cursor: default;" >...</span>
+                                            {% endif %}
+                                        </span>
+                                    </span>
+                                </span>
+                            {% endif %}
+                        {% endwith %}
+
+                        {% if request.user.cricketer.get_batting_profile_display_value %}
+                            <span class="col-xs-5 col-sm-5 no-padding bold capitalize">Batting</span><span class="col-xs-1 col-sm-1 no-padding">:</span><span class="col-xs-6 col-sm-6 no-padding capitalize">
+                                <span class="col-xs-2 col-sm-2 no-padding">
+                                    <img src="{% static 'm_images/bat.png' %}" width="20px" height="20px">
+                                </span>
+                                <span class="col-xs-10 col-sm-10 no-padding" title="{{ request.user.cricketer.get_batting_profile_display_value }}">
+                                    {{ request.user.cricketer.get_batting_profile_display_value }}
+                                </span>
+                            </span>
+                        {% endif %}
+
+                        {% if request.user.cricketer.get_bowling_profile_display_value %}
+                            <span class="col-xs-5 col-sm-5 no-padding bold capitalize">Bowling</span><span class="col-xs-1 col-sm-1 no-padding">:</span><span class="col-xs-6 col-sm-6 no-padding capitalize">
+                                <span class="col-xs-2 col-sm-2 no-padding">
+                                    <img src="{% static 'm_images/ball.png' %}" width="20px" height="20px">
+                                </span>
+                                <span class="col-xs-10 col-sm-10 no-padding" title="{{ request.user.cricketer.get_bowling_profile_display_value }}">
+                                    {{ request.user.cricketer.get_bowling_profile_display_value }}
+                                </span>
+                            </span>
+                        {% endif %}
+
+                        {% if request.user.cricketer.is_wicketkeeper %}
+                            <span class="col-xs-5 col-sm-5 no-padding bold capitalize">W.K</span><span class="col-xs-1 col-sm-1 no-padding">:</span><span class="col-xs-6 col-sm-6 no-padding capitalize">
+                                <span class="col-xs-2 col-sm-2 no-padding">
+                                    <img src="{% static 'm_images/wicketkeeper.png' %}" width="20px" height="20px">
+                                </span>
+                                <span class="col-xs-10 col-sm-10 no-padding" title="{{ request.user.cricketer.get_batting_profile_display_value }}">
+                                    Wicket Keeper
+                                </span>
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 textcolor margin-top-10px" align="center">
+                    <a href="{% url 'subscribe' %}" style="color:#fff">
+                        <span class="col-xs-12 col-sm-12 bg-color-pure-red padding-5px"><strong>Premium Services </strong></span>
+                    </a>
+                </div>
+                <div class="col-xs-12 col-sm-12 textcolor margin-top-10px" align="center">
+                    <a href="{% url 'top_players' %}" style="color:#fff">
+                        <span class="col-xs-12 col-sm-12 bg-color-pure-red padding-5px"><strong>Top Players </strong></span>
+                    </a>
+                </div>
+                <div class="col-xs-12 col-sm-12 textcolor margin-top-10px" align="center">
+                    <a href="{% url 'top_teams' %}" style="color:#fff">
+                        <span class="col-xs-12 col-sm-12 bg-color-pure-red padding-5px"><strong>Top Teams </strong></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- BEGIN BEST PERFORMANCE MODAL -->
+<div class="modal fade" id="user-best-performance-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog sv-info-popup" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                <div class="col-xs-12 col-sm-12 center">
+                <div class="col-xs-12 col-sm-12 font-x-large bg-color-gray padding-5px margin-bottom-15px center">
+                    Best Performance
+                </div>
+                {% with best_performance_stats=request.user.get_best_performance_stats %}
+                    {% if request.user.cricketer.profile_best_performance_display_type == 'BL' %}
+                       <div class="col-xs-12 col-sm-12">
+                            <div class="col-xs-12 font-large margin-top-10px no-padding">
+                                Bowler
+                            </div>
+                            <div class="col-xs-12 col-sm-12 margin-top-10px no-padding">
+                                <div class="col-xs-5 col-sm-5 no-padding">
+                                    Best Bowling
+                                </div>
+                                <div class="col-xs-1 col-sm-1">
+                                    :
+                                </div>
+                                {% if best_performance_stats.best_bowling_wickets or best_performance_stats.best_bowling_runs %}
+                                    <div class="col-xs-5 col-sm-5">
+                                        {{ best_performance_stats.best_bowling_wickets }}/ {{ best_performance_stats.best_bowling_runs }}
+                                    </div>
+                                {% else %}
+                                    <div class="col-xs-5 col-sm-5">
+                                        0 / 0
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-xs-12 col-sm-12 no-padding">
+                                <div class="col-xs-5 col-sm-5 no-padding">
+                                    3W
+                                </div>
+                                <div class="col-xs-1 col-sm-1">
+                                    :
+                                </div>
+                                {% if best_performance_stats.three_wicket_hauls %}
+                                    <div class="col-xs-5 col-sm-5">
+                                        {{ best_performance_stats.three_wicket_hauls }}
+                                    </div>
+                                {% else %}
+                                    <div class="col-xs-5 col-sm-5">
+                                        0
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-xs-12 col-sm-12 no-padding">
+                                <div class="col-xs-5 col-sm-5 no-padding">
+                                    5W
+                                </div>
+                                <div class="col-xs-1 col-sm-1">
+                                    :
+                                </div>
+                                {% if best_performance_stats.five_wicket_hauls %}
+                                    <div class="col-xs-5 col-sm-5">
+                                        {{ best_performance_stats.five_wicket_hauls }}
+                                    </div>
+                                {% else %}
+                                    <div class="col-xs-5 col-sm-5">
+                                        0
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="col-xs-12 col-sm-12 font-large">
+                            Batting
+                        </div>
+                        <div class="col-xs-12 col-sm-12 margin-top-10px no-padding">
+                            <div class="col-xs-5 no-padding">
+                                Highest Score
+                            </div>
+                            <div class="col-xs-1 col-sm-1">
+                                :
+                            </div>
+                            {% if best_performance_stats.highest_score_runs or best_performance_stats.highest_score_balls_played %}
+                                <div class="col-xs-5 col-sm-5">
+                                    {{ best_performance_stats.highest_score_runs }} ( {{ best_performance_stats.highest_score_balls_played }} )
+                                </div>
+                                {% else %}
+                                <div class="col-xs-5 col-sm-5">
+                                    0 ( 0 )
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-xs-12 col-sm-12 no-padding">
+                            <div class="col-xs-5 col-sm-5 no-padding">
+                                Max. 6s
+                            </div>
+                            <div class="col-xs-1 col-sm-1">
+                                :
+                            </div>
+                            {% if best_performance_stats.max_sixes %}
+                                <div class="col-xs-5 col-sm-5">
+                                   {{ best_performance_stats.max_sixes }}
+                                </div>
+                                {% else %}
+                                <div class="col-xs-5 col-sm-5">
+                                    0
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-xs-12 col-sm-12 no-padding">
+                            <div class="col-xs-5 col-sm-5 no-padding">
+                                Max. 4s
+                            </div>
+                            <div class="col-xs-1 col-sm-1">
+                                :
+                            </div>
+                            {% if best_performance_stats.max_fours %}
+                                <div class="col-xs-5 col-sm-5">
+                                    {{ best_performance_stats.max_fours }}
+                                </div>
+                                {% else %}
+                                  <div class="col-xs-5 col-sm-5">
+                                    0
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-xs-12 col-sm-12 no-padding">
+                            <div class="col-xs-5 col-sm-5 no-padding">
+                                50s
+                            </div>
+                            <div class="col-xs-1 col-sm-1">
+                                :
+                            </div>
+                            {% if best_performance_stats.fifties %}
+                                <div class="col-xs-5 col-sm-5">
+                                    {{ best_performance_stats.fifties }}
+                                </div>
+                                {% else %}
+                                <div class="col-xs-5 col-sm-5">
+                                    0
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-xs-12 col-sm-12 no-padding">
+                            <div class="col-xs-5 col-sm-5 no-padding">
+                                100s
+                            </div>
+                            <div class="col-xs-1 col-sm-1">
+                                :
+                            </div>
+                            {% if best_performance_stats.hundreds %}
+                                <div class="col-xs-5 col-sm-5">
+                                   {{ best_performance_stats.hundreds }}
+                                </div>
+                                {% else %}
+                                <div class="col-xs-5 col-sm-5">
+                                    0
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END BEST PERFORMANCE MODAL -->
+
+<section id="profile-feeds" class="container-fluid no-padding padding-5px color-gray light-white-background">
+    <div class="col-xs-12 col-sm-12 no-padding">
+        <div class="col-xs-12 col-sm-12 no-padding padding-10px bg-color-pure-white">
+            <span class="col-xs-1 col-sm-1 no-padding" >
+                <div id="status-type-selector" data-status-active-target="#post-type-1" class="margin-top-5px col-xs-12 col-sm-12 no-padding" style="background-color: #ff0000">
+                    <img src="{% static 'm_images/textIcon.png' %}">
+                    <i class="fa fa-sort-desc fa-lg color-white" id="post-arrow"></i>
+                </div>
+                <div id="status-type-selector-container" class="col-xs-12 col-sm-12 no-padding">
+                    <span class="col-xs-12 col-sm-12 no-padding margin-top-5px" data-status-type-selector-target="#post-type-1" >
+                        <img src="{% static 'm_images/textIcon.png' %}">
+                    </span>
+                    <span class="col-xs-12 col-sm-12 no-padding margin-top-5px hide-fileUpload" data-status-type-selector-target="#post-type-2">
+                        <img src="{% static  'm_images/attachmentIcon.png' %}">
+                        <input id="post-image-upload-button" type="file" class="upload" />
+
+                    </span>
+                    <span class="col-xs-12 col-sm-12 no-padding margin-top-5px" data-status-type-selector-target="#post-type-3"><img src="{% static  'm_images/positionIcon.png' %}"></span>
+
+                </div>
+            </span>
+            <span class="col-xs-9 col-sm-9" id="write-post-container">
+                <div id="post-type-1" class="col-xs-12 col-sm-12 no-padding active" >
+                    <textarea name="post-text" row="5" placeholder="Tell us how you performed today, via text or upload your picture?"></textarea>
+                </div>
+                <div id="post-type-2" class="col-xs-12 col-sm-12 no-padding" >
+                    <div class="col-xs-12 col-sm-12 no-padding">
+                        <textarea name="post-text" row="5" placeholder="Tell us how you performed today, via text or upload your picture?"></textarea>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 no-padding center">
+                        <img src="" style="width: 50%;">
+                    </div>
+                </div>
+                <div id="post-type-3" class="col-xs-12 col-sm-12 no-padding" >
+                    <textarea name="post-text" row="5" placeholder="Tell us how you performed today, via text or upload your picture?"></textarea>
+                    <input type="text" placeholder="Enter a location" id="pac-input" name="post-location" onkeyup="callMap()">
+                    <div id="map1"></div>
+                </div>
+            </span>
+            <span class="col-xs-2 col-sm-2 no-padding">
+                <span class="col-xs-12 col-sm-12 sv-btn-circle sv-btn-circle sv-btn-circle-default no-padding" id="post-button">
+                    <button type="submit" data-user-id="{{ request.user.id }}" data-user-name="{{ request.user.name }}" data-user-pic="{{ request.user.display_picture }}" data-user-slug="{{request.user.slug}}"  id="submit-post-button" >Post</button>
+                </span>
+            </span>
+        </div>
+
+
+
+        <!-- ERROR WHILE POST (SERVER ERROR) MODEL -->
+            <div class="modal fade" id="post-error" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog sv-info-popup" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="row margin-bottom-5px">
+                                <span class="col-xs-12 col-sm-12">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="color-white">&times;</span></button>
+                                </span>
+                            </div>
+                            <div class="row margin-bottom-15px color-white">
+                                <span class="col-xs-12 col-sm-12 center font-large ">Server Error!</span>
+                                <span class="col-xs-12 col-sm-12 center">Some went wrong while posting your post, Please post again.</span>
+                            </div>
+                            <div class="row margin-bottom-5px">
+                                <div class="col-xs-12 col-sm-12 sv-btn-circle sv-btn-circle-default-small">
+                                    <center><button type="button" data-dismiss="modal" aria-label="Close" >Ok</button></center>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- END ERROR WHILE POST (SERVER ERROR) MODEL -->
+
+        <!-- BLANK POST MODEL -->
+            <div class="modal fade" id="blank-post-error" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog sv-info-popup" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="row margin-bottom-5px">
+                                <span class="col-xs-12 col-sm-12">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="color-white">&times;</span></button>
+                                </span>
+                            </div>
+                            <div class="row margin-bottom-15px color-white">
+                                <span class="col-xs-12 col-sm-12 center font-large ">Error!</span>
+                                <span class="col-xs-12 col-sm-12 center">The Status Update appears to blank. Please Update your status!!</span>
+                            </div>
+                            <div class="row margin-bottom-5px">
+                                <div class="col-xs-12 col-sm-12 sv-btn-circle sv-btn-circle-default-small">
+                                    <center><button type="button" data-dismiss="modal" aria-label="Close" >Ok</button></center>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- END SV POPUP -->
+    </div>
+    <div id="post-loader" class="col-xs-12 col-sm-12">
+            <div class="row bg-color-pure-white display-none margin-bottom-10px margin-top-20px">
+                <center>
+                    <img src="../static/images/preloader.gif">
+                </center>
+            </div>
+        </div>
+    <div id="feeds-container" class="col-xs-12 col-sm-12 no-padding" >
+        {% if user_wall_posts %}
+            {% for wall_post in user_wall_posts %}
+                {% if not wall_post.team_id %}
+                    <!-- BEGIN #POST 1 -->
+                    <div class="col-xs-12 col-sm-12 padding-5px margin-top-10px bg-color-pure-white post-container" id="post-id-{{wall_post.id}}" >
+                        <div class="col-xs-12 col-sm-12 no-padding">
+                            <div class="col-xs-2 col-sm-2 no-padding">
+                                 <img src="{% if wall_post.owner.display_picture.name %}{{ MEDIA_URL }}{{ wall_post.owner.display_picture }}{% else %}{% static 'm_images/displayPic.png' %}{% endif %}" alt="user-image" class="chat-display-pic">
+                            </div>
+                            <div class="col-xs-9 col-sm-9 no-padding">
+                                <div class="col-xs-12 col-sm-12 no-padding">
+                                    <div class="col-xs-12 col-sm-12 no-padding capitalize">
+                                        <a href="{% url 'user_wall' slug=wall_post.owner.slug %}" class="anchor-black"><strong class="color-gray" >{{ wall_post.owner.name }}</strong></a>
+                                    </div>
+                                    {% if wall_post.post_type == 1 %}
+                                        <div class="col-xs-12 col-sm-12 color-light-gray no-padding">
+                                            {% autoescape off %}{{ wall_post.text }}{% endautoescape %}
+                                        </div>
+
+                                    {% elif wall_post.post_type == 3 %}
+                                        <div class="col-xs-12 col-sm-12 color-light-gray no-padding">
+                                            Checked in at {{ wall_post.location }}
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 color-gray no-padding">
+                                            {% autoescape off %}{{ wall_post.text }}{% endautoescape %}
+                                        </div>
+
+                                    {% elif wall_post.post_type == 2 %}
+                                         <div class="col-xs-12 col-sm-12 color-light-gray no-padding">
+                                            {% autoescape off %}{{ wall_post.text }}{% endautoescape %}
+                                        </div>
+
+                                        <div class="col-xs-12 col-sm-12 no-padding">
+                                            <img src="{{ MEDIA_URL }}{{ wall_post.post_image }}" alt='feeds-image-display' class="feeds-image-display">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if wall_post.owner.id == request.user.id %}
+                            <span class="col-xs-1 no-padding">
+                                <i class="fa fa-sort-desc trash cursor-pointer ">
+                                    <div class="col-xs-12 col-sm-12 no-padding display-none post-delete-drop-down">
+                                        <span class="col-xs-12 col-sm-12 no-padding margin-top-5px delete-post" data-post-id="{{wall_post.id}}"><i class="fa fa-trash"></i></span>
+                                    </div>
+                                </i>
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="col-xs-12 col-sm-12 no-padding padding-top-5px font-small">
+                            <span class="like-count-wappper" >
+                                {% if wall_post.likes.all.count > 0 %}
+                                    <span class="like-counter" data-like-count="{{ wall_post.likes.all.count }}" >{{ wall_post.likes.all.count }}{% if wall_post.likes.all.count == 1 %}&nbsp;Like{% else %}&nbsp;Likes{% endif %}</span>
+                                {% endif %}
+                            </span>
+                            <span class="comment-count-wappper" >
+                                {% if wall_post.user_wall_post_comments.all.count > 0 %}
+                                <span class="comment-counter" data-comment-count="{{ wall_post.user_wall_post_comments.all|length }}" >{{ wall_post.user_wall_post_comments.all|length }}{% if wall_post.user_wall_post_comments.all|length == 1 %}&nbsp;Comment{% else %}&nbsp;Comments{% endif %}</span>
+                                {% endif %}
+                            </span>
+                            <span class="pull-right">
+                                {% if wall_post.posted_on %}
+                                    <span>{{ wall_post.posted_on|date:'M j, Y' }} at {{ wall_post.posted_on|date:'g:i A' }}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 padding-5px color-light-gray comment-bar">
+                            <div class="row">
+                                <div class="col-xs-3 like-unlike-button cursor-pointer">
+                                    {% if request.user in wall_post.likes.all %}
+                                        <div class="unlike-button color-red" data-post-id="{{ wall_post.id }}">
+                                            <span><i class="fa fa-thumbs-up"></i>&nbsp;Liked</span>
+                                        </div>
+                                    {% else %}
+                                        <div class="like-button" data-post-id="{{ wall_post.id }}">
+                                            <span><i class="fa fa-thumbs-up"></i>&nbsp;Like</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-xs-5">
+                                    <div class="comments-button cursor-pointer" data-post-id="{{ wall_post.id }}" data-user-id="{{ request.user.id }}">
+                                        <span><i class="fa fa-commenting"></i>&nbsp;Comments</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="comment-wapper-of-post col-xs-12 col-sm-12 no-padding padding-top-10px">
+                                    <div class="loader col-xs-12 col-sm-12">
+                                    </div>
+                                    <span class="show-more-comment-wapper col-xs-12 col-sm-12">
+                                    </span>
+                                    <div class="no-comments-wraper col-xs-12 col-sm-12">
+                                    </div>
+                                    <div class="comment-wrapper">
+                                        <div class="hidden-comment-wraper">
+                                        </div>
+                                        <div class="show-comment-wraper">
+
+
+                                        </div>
+                                    </div>
+                                    <div class="comment-text-area-wappper col-xs-12 col-sm-12">
+                                        <div class="col-xs-9 col-xs-offset-2 no-padding col-sm-9 col-sm-offset-2">
+                                            <input class="comment-text-area" data-comment-box-id="{{ wall_post.id }}" placeholder="Write a comment" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END #POST 1 -->
+                {% else%}
+                    <!-- BEGIN #POST 1 -->
+
+                    <div class="col-xs-12 col-sm-12 padding-5px margin-top-10px bg-color-pure-white post-container" id="post-id-{{wall_post.id}}" >
+                        <div class="col-xs-12 col-sm-12 no-padding">
+                            <div class="col-xs-2 col-sm-2 no-padding">
+                                 <img src="{% if wall_post.posted_by.display_picture.name %}{{ MEDIA_URL }}{{ wall_post.posted_by.display_picture }}{% else %}{% static 'm_images/displayPic.png' %}{% endif %}" alt="user-image" class="chat-display-pic">
+                            </div>
+                            <div class="col-xs-9 col-sm-9 no-padding">
+                                <div class="col-xs-12 col-sm-12 no-padding">
+                                    <div class="col-xs-12 col-sm-12 no-padding capitalize">
+                                        <a href="{% url 'user_wall' slug=wall_post.posted_by.slug %}" class="anchor-black"><strong class="color-gray" >{{ wall_post.posted_by.name }}</strong></a> Via Team <a class="anchor-black" href="{% url 'cricket_team_wall' slug=wall_post.team.slug %}"><strong> {{wall_post.team.name}}</strong></a>
+                                    </div>
+                                    {% if wall_post.post_type == 1 %}
+                                        <div class="col-xs-12 col-sm-12 color-light-gray no-padding">
+                                            {% autoescape off %}{{ wall_post.text }}{% endautoescape %}
+                                        </div>
+
+                                    {% elif wall_post.post_type == 3 %}
+                                        <div class="col-xs-12 col-sm-12 color-light-gray no-padding">
+                                            Checked in at {{ wall_post.location }}
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 color-gray no-padding">
+                                            {% autoescape off %}{{ wall_post.text }}{% endautoescape %}
+                                        </div>
+
+                                    {% elif wall_post.post_type == 2 %}
+                                         <div class="col-xs-12 col-sm-12 color-light-gray no-padding">
+                                            {% autoescape off %}{{ wall_post.text }}{% endautoescape %}
+                                        </div>
+
+                                        <div class="col-xs-12 col-sm-12 no-padding">
+                                            <img src="{{ MEDIA_URL }}{{ wall_post.post_image }}" alt='feeds-image-display' class="feeds-image-display">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if wall_post.posted_by.id == request.user.id %}
+                            <span class="col-xs-1 no-padding">
+                                <i class="fa fa-sort-desc trash cursor-pointer ">
+                                    <div class="col-xs-12 col-sm-12 no-padding display-none post-delete-drop-down">
+                                        <span class="col-xs-12 col-sm-12 no-padding margin-top-5px team-wall-delete-post" data-team-id="{{ wall_post.team_id }}" data-post-id="{{wall_post.id}}" data-user-id="{{ request.user.id }}" ><i class="fa fa-trash"></i></span>
+                                    </div>
+                                </i>
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="col-xs-12 col-sm-12 no-padding padding-top-5px font-small">
+                            <span class="like-count-wappper" >
+                                {% if wall_post.likes.all.count > 0 %}
+                                    <span class="like-counter" data-like-count="{{ wall_post.likes.all.count }}" >{{ wall_post.likes.all.count }}{% if wall_post.likes.all.count == 1 %}&nbsp;Like{% else %}&nbsp;Likes{% endif %}</span>
+                                {% endif %}
+                            </span>
+                            <span class="comment-count-wappper" >
+                                {% if wall_post.cricket_team_wall_post_comments.all.count > 0 %}
+                                <span class="comment-counter" data-comment-count="{{ wall_post.cricket_team_wall_post_comments.all|length }}" > {{ wall_post.cricket_team_wall_post_comments.all|length }}{% if wall_post.cricket_team_wall_post_comments.all|length == 1 %}&nbsp;Comment{% else %}&nbsp;Comments{% endif %}</span>
+                                {% endif %}
+                            </span>
+                            <span class="pull-right">
+                                {% if wall_post.posted_on %}
+                                    <span>{{ wall_post.posted_on|date:'M j, Y' }} at {{ wall_post.posted_on|date:'g:i A' }}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 padding-5px color-light-gray comment-bar">
+                            <div class="row">
+                                <div class="col-xs-3 like-unlike-button cursor-pointer">
+                                    {% if request.user in wall_post.likes.all %}
+                                        <div class="team-post-unlike-button color-red" data-team-id="{{ wall_post.team_id }}" data-post-id="{{ wall_post.id }}" data-user-id="{{ request.user.id }}">
+                                            <span><i class="fa fa-thumbs-up"></i>&nbsp;Liked</span>
+                                        </div>
+                                    {% else %}
+                                        <div class="team-post-like-button" data-team-id="{{ wall_post.team_id }}" data-post-id="{{ wall_post.id }}" data-user-id="{{ request.user.id }}">
+                                            <span><i class="fa fa-thumbs-up"></i>&nbsp;Like</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-xs-5">
+                                    <div class="team-post-comments-button cursor-pointer" data-team-id="{{ wall_post.team_id }}" data-post-id="{{ wall_post.id }}" data-user-id="{{ request.user.id }}">
+                                        <span><i class="fa fa-commenting"></i>&nbsp;Comments</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="comment-wapper-of-post col-xs-12 col-sm-12 no-padding padding-top-10px">
+                                    <div class="loader col-xs-12 col-sm-12">
+                                    </div>
+                                    <span class="show-more-comment-wapper col-xs-12 col-sm-12">
+                                    </span>
+                                    <div class="no-comments-wraper col-xs-12 col-sm-12">
+                                    </div>
+                                    <div class="comment-wrapper">
+                                        <div class="hidden-comment-wraper">
+                                        </div>
+                                        <div class="show-comment-wraper">
+
+
+                                        </div>
+                                    </div>
+                                    <div class="comment-text-area-wappper col-xs-12 col-sm-12">
+                                        <div class="col-xs-9 col-xs-offset-2 no-padding col-sm-9 col-sm-offset-2">
+                                            <input class="team-comment-text-area" data-team-id="{{ wall_post.team_id }}" data-comment-box-id="{{ wall_post.id }}" placeholder="Write a comment" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END #POST 1 -->
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="post-container-no-post col-md-12 center">
+               <h2> There are currently no posts. </h2>
+            </div>
+        {% endif %}
+        <div class="col-sm-12 col-xs-12 center" id="paginationLoader">
+            <img src="{% static 'images/loading_bar.gif' %}">
+        </div>
+    </div>
+
+    <!-- SENSEX MODEL -->
+            <div class="modal fade" id="sensex-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog sv-info-popup sensex-outermodel-div modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body ">
+                            <div class="">
+                                <span class="">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="color-white">&times;</span></button>
+                                </span>
+                            </div>
+                            <div class="row color-white center margin-top-30px">
+                                <div class="row last-val">
+                                </div>
+                                <div class="row current-val">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- END  -->
+
+</section>
+{% endblock %}
+
+{% block footer  %}
+     {% include 'templates_mobile/m_footer.html' %}
+{% endblock %}
+
+{% block customscript %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUxs2NGNuoXTOBg8NvE6LNPVsKW_q4fHM&signed_in=true&libraries=places&callback"async defer></script>
+<script type='text/javascript' src="{% static 'js/geo-location.js' %}"></script>
+<script>
+    /*var d = new Date();
+        var currentYear = d.getFullYear();
+        var months = ['Jan','Feb','Mar','April','May','June','July','Aug','Sep','Oct','Nov','Dec'];
+        todaydate = d.getDate();
+        currentMonth = d.getMonth();
+        console.log("month "+currentMonth);
+
+         var monthChange = function(monthValue) {
+
+                var elementsDay = "";
+                MonthVal = monthValue || 0;
+                console.log("month " +MonthVal);
+                console.log("testing");
+                if (($('#year').val() == currentYear) && (MonthVal == currentMonth)) {
+                    var elementsDay = "";
+                   for(x = 1 ; x <= todaydate  ; x++) {
+                      elementsDay +='<option value='+x+'>'+x+'</option>';
+                   }
+                   $("#day").html(elementsDay);
+                   return elementsDay;
+                } else if(MonthVal == 0 || MonthVal == 2 || MonthVal== 4 || MonthVal == 6 || MonthVal == 7 || MonthVal == 9 || MonthVal == 11) {
+                    for (x = 1 ; x <= 31 ; x++){
+                        console.log("inside loop");
+                        elementsDay += '<option value='+x+'>'+x+'</option>';
+                    }
+                     $('#user-performance-add-stats-date-container #day').html(elementsDay);
+                } else if (($('#year').val()) % 4 == 0 && MonthVal == 1) {
+                    for (x = 1 ; x <= 29 ; x++){
+                        console.log("else part 29");
+                        elementsDay +='<option value='+x+'>'+x+'</option>';
+                      }
+                     $('#user-performance-add-stats-date-container #day').html(elementsDay);
+                } else if (MonthVal == 1) {
+                    for (x = 1 ; x <= 28 ; x++){
+                        console.log("else part");
+                        elementsDay +='<option value='+x+'>'+x+'</option>';
+                      }
+                     $('#user-performance-add-stats-date-container #day').html(elementsDay);
+                } else {
+                        for (x = 1 ; x <= 30 ; x++){
+                        console.log("else part");
+                        elementsDay +='<option value='+x+'>'+x+'</option>';
+                       }
+                     $('#user-performance-add-stats-date-container #day').html(elementsDay);
+                }
+                $('').html(elementsDay);
+                $('#user-performance-add-stats-date-container #day option:first-child').attr("selected", "selected");
+                var Sday = $('#user-performance-add-stats-date-container #day');
+                  var Smonth = $('#user-performance-add-stats-date-container #month');
+                  var Syear = $('#user-performance-add-stats-date-container #year');
+                  setDays(Smonth[0],Sday[0],Syear[0]);
+            }
+
+            $("#month").change(function() {
+                monthChange($(this).val());
+            });
+
+           $("#year").change(function(){
+            monthChange();
+             //var elementsMonth = "";
+                var yearVal = $(this).val();
+                console.log("year" +yearVal);
+                  if (currentYear == yearVal) {
+                    var elementsMonth = "";
+                        console.log("inside year")
+                        for(x = 0 ; x <= currentMonth  ; x++) {
+                             elementsMonth +='<option value='+x+'>'+months[x]+'</option>';
+                        }
+                        $("#month").html(elementsMonth);
+                  } else{
+                    for(month in months) {
+                        elementsMonth +='<option value='+month+'>'+months[month]+'</option>';
+
+                     }
+                  }
+             $("#month").html(elementsMonth);
+             $('#user-performance-add-stats-date-container #month option:first-child').attr("selected", "selected");
+                var Sday = $('#user-performance-add-stats-date-container #day');
+                  var Smonth = $('#user-performance-add-stats-date-container #month');
+                  var Syear = $('#user-performance-add-stats-date-container #year');
+                  setDays(Smonth[0],Sday[0],Syear[0]);
+           })
+
+
+            var numDays = {'01': 31, '02': 28, '03': 31, '04': 30, '05': 31, '06': 30,'07': 31, '08': 31, '09': 30, '10': 31, '11': 30, '12': 31};
+            function setDays(oMonthSel, oDaysSel, oYearSel) {
+                console.log("abc months hello: "+oMonthSel);
+                var nDays, oDaysSelLgth, opt, i = 1;
+                nDays = numDays[oMonthSel[oMonthSel.selectedIndex].value];
+                if (nDays == 28 && oYearSel[oYearSel.selectedIndex].value % 4 == 0)
+                  ++nDays;
+                oDaysSelLgth = oDaysSel.length;
+                if (nDays != oDaysSelLgth)
+                {
+                  if (nDays < oDaysSelLgth){
+                    oDaysSel.length = nDays;
+                  }else{
+                    for (i; i < nDays - oDaysSelLgth + 1; i++)
+                    {
+                      opt = new Option(oDaysSelLgth + i, oDaysSelLgth + i);
+                      oDaysSel.options[oDaysSel.length] = opt;
+                    }
+                  }
+                }
+                var oForm = oMonthSel.form;
+                var month = parseInt(oMonthSel.options[oMonthSel.selectedIndex].value)+1;
+                var day = oDaysSel.options[oDaysSel.selectedIndex].value;
+                var year = oYearSel.options[oYearSel.selectedIndex].value;
+                if(year != "" && month != "" && day != ""){
+                    oForm.match_date.value = year + '-' + month + '-' + day;
+                }
+            }
+
+            $(document).ready(function(){
+                var cDate = new Date();
+                var maxYear = cDate.getFullYear();
+                var minYear = cDate.getFullYear()-10;
+                var yearString = '';
+                for (i = maxYear; i>= minYear; i--)
+                {
+                  yearString = yearString+'<option value="'+i+'">'+i+'</option>';
+                }
+                // yearString = yearString+'<option value="0" selected="1">Year</option>';
+                // $("#year").html(yearString);
+                var oldDob = $("#user-performance-add-stats-date-container #id_match-date").val();
+                if (oldDob) {
+                    yearString = yearString+'<option value="0">Year</option>';
+                    $("#year").html(yearString);
+                  arr = oldDob.split(' ');
+                  arr2 = arr[0].split('-');
+                  var year = arr2[0];
+                  var month = arr2[1];
+                  var day = arr2[2];
+                  $('#user-performance-add-stats-date-container #day option[value="'+day+'"]').attr("selected","selected");
+                  $('#user-performance-add-stats-date-container #month option[value="'+month+'"]').attr("selected","selected");
+                  $('#user-performance-add-stats-date-container #year option[value="'+year+'"]').attr("selected","selected");
+
+                  var Sday = $('#user-performance-add-stats-date-container #day');
+                  var Smonth = $('#user-performance-add-stats-date-container #month');
+                  var Syear = $('#user-performance-add-stats-date-container #year');
+                  setDays(Smonth[0],Sday[0],Syear[0]);
+                }else{
+                    yearString = yearString+'<option value="0" selected="1">Year</option>';
+                    $("#year").html(yearString);
+                }
+            });*/
+
+            $(document).ready(function(){
+                $('#id_batting-runs, #id_batting-balls').change(function(){
+                    var runs = $("#id_batting-runs").val();
+                    var balls = $("#id_batting-balls").val();
+                    if(balls <= 0){
+                        $('#batting_strickRate').html("00.00");
+                    }else{
+                        var strickRate = (parseFloat(runs) / parseFloat(balls))*100;
+                        $('#batting_strickRate').html(strickRate.toFixed(2));
+                    }
+                });
+            });
+
+       /*function userPerformanceAddnewStatsValidation(oForm){
+            console.log(oForm);
+            var matchDate = oForm.match_date.value;
+            var slot = oForm.slot.value;
+            var against = oForm.against.value;
+            var battingRuns = oForm.batting_runs.value;
+            var battingBalls = oForm.batting_balls.value;
+            var battingFours = oForm.batting_fours.value;
+            var battingSixes = oForm.batting_sixes.value;
+            var battingDismissalMethod = oForm.batting_dismissal_method.value;
+            var bowlingOvers = oForm.bowling_overs.value;
+            var bowlingMaidenOvers = oForm.bowling_maiden_overs.value;
+            var bowlingRuns = oForm.bowling_runs.value;
+            var bowlingWickets = oForm.bowling_wickets.value;
+            check = 1;
+            if(!matchDate){
+                $("#user-performance-add-stats-date-container .text-error").html("field is required");
+                check = 0;
+            }
+            if(!slot){
+                $("#user-performance-add-stats-slot-container .text-error").html("field is required");
+                check = 0;
+            }
+            if(!against){
+                $("#user-performance-add-stats-against-container .text-error").html("field is required");
+                check = 0;
+            }
+            if(check == 0){
+                return false;
+            }else{
+                $("#user-performance-add-stats-date-container .text-error").html("");
+                $("#user-performance-add-stats-slot-container .text-error").html("");
+                $("#user-performance-add-stats-against-container .text-error").html("");
+                var sendData = {
+                    'match_date' : matchDate+"T00:00",
+                    'day_slot': slot,
+                    'against':against,
+                    'batting_stat.dismissal_method': battingDismissalMethod,
+                    'batting_stat.runs': battingRuns,
+                    'batting_stat.balls_played': battingBalls,
+                    'batting_stat.fours': battingFours,
+                    'batting_stat.sixes': battingSixes,
+                    'bowling_stat.overs': bowlingOvers,
+                    'bowling_stat.maiden_overs': bowlingMaidenOvers,
+                    'bowling_stat.runs': bowlingRuns,
+                    'bowling_stat.wickets': bowlingWickets,
+                };
+                // $("#userPerformanceAddNewStatsModal").modal('hide');
+                $("#addNewStatsLoader").addClass("z-index-up");
+                $("#addNewStatsData").css("opacity","0.9");
+
+                console.log(JSON.stringify(sendData));
+
+                $.ajax({
+                    type : "POST",
+                    url : host+"api/v1/cricket/match-stats/",
+                    data: sendData,
+                    // contentType: "application/json",
+                    // dataType: 'json',
+                    statusCode: {
+                     201: function(success) {
+                        console.log("succes");
+                        console.log("success"+JSON.stringify(success));
+                        $("#user-performance-add-new-stats-modal").modal('hide');
+                        $("#user-performance-add-new-stats-modal").on('hidden.bs.modal', function (e) {
+                            $("#userPerformanceAddNewStatsSuceessModal").modal('show');
+                        });
+                        // $("#userPerformanceAddNewStatsSuceessModal").modal('show');
+                     },
+                     400: function(error) {
+                        console.log("error");
+                        console.log("erroe"+JSON.stringify(error));
+                        $("#addNewStatsLoader").removeClass("z-index-up");
+                        $("#addNewStatsData").css("opacity","1");
+                        var batting ="";
+                        $.each(error.responseJSON.batting_stat, function(i, item) {
+                            batting = batting+"<li>"+i+" - "+item.toString().replace('""','')+"</li>";
+                        });
+                        $("#customize-performance-add-new-match-batting-error > ul").html(batting);
+
+                        var bowling ="";
+                        $.each(error.responseJSON.bowling_stat, function(i, item) {
+                            bowling = bowling+"<li>"+i+" - "+item.toString().replace('""','')+"</li>";
+                        });
+                        $("#customize-performance-add-new-match-bowling-error > ul").html(bowling);
+                     },
+                     500: function(error) {
+                            console.log("server error");
+                            console.log("error"+JSON.stringify(error));
+                            $("#addNewStatsLoader").removeClass("z-index-up");
+                            $("#addNewStatsData").css("opacity","1");
+                     }
+                    }
+                });
+            }
+        }*/
+        // ajax call for best bowling performance
+        $("#userPerformanceAddNewStatsSuceessModal").on('hidden.bs.modal', function (e) {
+            location.reload(true);
+        });
+
+
+        $(document).ready(function(){
+            var abc = "{% if request.user.display_picture.name %}{{ request.user.display_picture.url }}{% else %}{% static 'm_images/displayPic.png' %}{% endif%}";
+            $('#user-wall-display-pic').css('background-image','url("'+abc+'")');
+        });
+</script>
+
+<script>
+{% if request.user %}
+    var userSlug = '{{request.user.slug}}';
+    console.log("userSlug "+userSlug);
+{% endif %}
+
+var userId = '{{ request.user.id }}';
+var objectId = '{{ object.id }}';
+var ajaxUrl = host+"api/v1/accounts/user-posts/"+userSlug+"/?page=2";
+var urlFlag;
+var flagUrl;
+//ajax call for pagination
+function wallPostPagination(userSlug, userId, objectId, ajaxUrl) {
+    $("#paginationLoader").fadeIn();
+     console.log("url to hit"+ajaxUrl);
+     loadAgain = true;
+    $.ajax({
+        type : "GET",
+        url : ajaxUrl,
+        success : function(success){
+            console.log("success data"+JSON.stringify(success));
+            loadFinished = true;
+            // sessionStorage.setItem("nextUrl", success.next);
+            if(success.next != 'null') {
+                urlFlag = true;
+                flagUrl = success.next;
+                $("#paginationLoader").fadeOut();
+            }
+            for(wallPost in success.results) {
+                if(success.results[wallPost].if_team == true) {
+                    if(success.results[wallPost].display_picture) {
+                        teamUserImgPath = "/media/"+success.results[wallPost].display_picture+"";
+                    } else {
+                        teamUserImgPath = "/static/images/groups.png";
+                    }
+
+                    var teamWallPostType ="";
+                    if(success.results[wallPost].post_type == 1){
+                        teamWallPostType = '<div class="col-xs-12 col-sm-12 color-light-gray no-padding">'+success.results[wallPost].text+'</div>';
+                    }else if(success.results[wallPost].post_type == 2){
+                        teamWallPostType = '<div class="col-xs-12 col-sm-12 color-light-gray no-padding">'+success.results[wallPost].text+'</div><div class="col-xs-12 col-sm-12 no-padding"><img src="'+success.results[wallPost].post_image+'" alt="feeds-image-display" class="feeds-image-display"></div>';
+                    }else if(success.results[wallPost].post_type == 3){
+                        teamWallPostType = '<div class="col-xs-12 col-sm-12 color-light-gray no-padding">Checked in at '+success.results[wallPost].location+'</div><div class="col-xs-12 col-sm-12 color-gray no-padding">'+success.results[wallPost].text+'</div>';
+                    }
+
+
+                    if(success.results[wallPost].posted_by_id == userId) {
+                        var TeamwallTrashDiv = '<span class="col-xs-1 no-padding"><i class="fa fa-sort-desc trash cursor-pointer "><div class="col-xs-12 col-sm-12 no-padding display-none post-delete-drop-down"><span class="col-xs-12 col-sm-12 no-padding margin-top-5px team-wall-delete-post" data-team-id="'+success.results[wallPost].team_id+'" data-post-id="'+success.results[wallPost].id+'" data-user-id="'+userId+'" ><i class="fa fa-trash"></i></span></div></i></span>'
+                    } else {
+                        TeamwallTrashDiv = '';
+                    }
+
+                    if (success.results[wallPost].self_like) {
+                        teamlikedDiv = '<div class="unlike-button" onclick="teamPostUnlikeButton('+success.results[wallPost].team_id+','+success.results[wallPost].id+')"><span><i class="fa fa-thumbs-up"></i>&nbsp;Liked</span></div>';
+                        teamlikedDiv = '<div class="team-post-unlike-button color-red" data-team-id="'+success.results[wallPost].team_id+'" data-post-id="'+success.results[wallPost].id+'" data-user-id="'+userId+'"><span><i class="fa fa-thumbs-up"></i>&nbsp;Liked</span></div>'
+                    }else {
+                        teamlikedDiv = '<div class="like-button" onclick="teamPostLikeButton('+success.results[wallPost].team_id+','+success.results[wallPost].id+')" ><span><i class="fa fa-thumbs-up"></i>&nbsp;Like</span></div>';
+                        teamlikedDiv = '<div class="team-post-like-button" data-team-id="'+success.results[wallPost].team_id+'" data-post-id="'+success.results[wallPost].id+'" data-user-id="'+userId+'"><span><i class="fa fa-thumbs-up"></i>&nbsp;Like</span></div>'
+                    }
+
+                    if (success.results[wallPost].likes) {
+                        if(success.results[wallPost].likes == 1 || success.results[wallPost].likes == 0){
+                            TeamLikeCountDiv = '<span class="like-counter" data-like-count="'+success.results[wallPost].likes.length+'" >'+success.results[wallPost].likes.length+'&nbsp;Like</span>';
+                        }else{
+                            TeamLikeCountDiv = '<span class="like-counter" data-like-count="'+success.results[wallPost].likes.length+'" >'+success.results[wallPost].likes.length+'&nbsp;Likes</span>';
+                        }
+                    } else {
+                        TeamLikeCountDiv = '';
+                    }
+
+                    if (success.results[wallPost].no_of_comments) {
+                        if(success.results[wallPost].no_of_comments == 1 || success.results[wallPost].no_of_comments == 0){
+                            TeamCommentCountDiv = '<span class="comment-counter" data-comment-count="'+success.results[wallPost].no_of_comments+'" > '+success.results[wallPost].no_of_comments+'&nbsp;Comment</span>';
+                        }else{
+                            TeamCommentCountDiv = '<span class="comment-counter" data-comment-count="'+success.results[wallPost].no_of_comments+'" > '+success.results[wallPost].no_of_comments+'&nbsp;Comments</span>';
+                        }
+                    } else {
+                        TeamCommentCountDiv = '';
+                    }
+
+                    var teamPostOn = new Date(success.results[wallPost].posted_on);
+                    var team_date = getDateFormate(teamPostOn)
+                    var team_time = getTimeFormate(teamPostOn);
+                    team_timeStamp = team_date+" at "+team_time;
+
+                    $("#feeds-container").append('<div class="col-xs-12 col-sm-12 padding-5px margin-top-10px bg-color-pure-white post-container" id="post-id-'+success.results[wallPost].id+'" ><div class="col-xs-12 col-sm-12 no-padding"><div class="col-xs-2 col-sm-2 no-padding"><img src="'+teamUserImgPath+'" alt="user-image" class="chat-display-pic"></div><div class="col-xs-9 col-sm-9 no-padding"><div class="col-xs-12 col-sm-12 no-padding"><div class="col-xs-12 col-sm-12 no-padding capitalize"><a href="href="/profile/'+success.results[wallPost].user_slug+' class="anchor-black"><strong class="color-gray" >'+success.results[wallPost].posted_by+'</strong></a> Via Team <a class="anchor-black" href="/cricket/teams/'+success.results[wallPost].team_slug+'"><strong> '+success.results[wallPost].team_name+'</strong></a></div>'+teamWallPostType+'</div></div>'+TeamwallTrashDiv+'</div><div class="col-xs-12 col-sm-12 no-padding padding-top-5px font-small"><span class="like-count-wappper" >'+TeamLikeCountDiv+'</span><span class="comment-count-wappper" >'+TeamCommentCountDiv+'</span><span class="pull-right" >'+team_timeStamp+'</span></div><div class="col-xs-12 col-sm-12 padding-5px color-light-gray comment-bar"><div class="row"><div class="col-xs-3 like-unlike-button cursor-pointer">'+teamlikedDiv+'</div><div class="col-xs-5"><div class="team-post-comments-button cursor-pointer" data-team-id="'+success.results[wallPost].team_id+'" data-post-id="'+success.results[wallPost].id+'" data-user-id="'+userId+'"><span><i class="fa fa-commenting"></i>&nbsp;Comments</span></div></div></div><div class="row"><div class="comment-wapper-of-post col-xs-12 col-sm-12 no-padding padding-top-10px"><div class="loader col-xs-12 col-sm-12"></div><span class="show-more-comment-wapper col-xs-12 col-sm-12"></span><div class="no-comments-wraper col-xs-12 col-sm-12"></div><div class="comment-wrapper"><div class="hidden-comment-wraper"></div><div class="show-comment-wraper"></div></div><div class="comment-text-area-wappper col-xs-12 col-sm-12"><div class="col-xs-9 col-xs-offset-2 no-padding col-sm-9 col-sm-offset-2"><input class="team-comment-text-area" data-team-id="'+success.results[wallPost].team_id+'" data-comment-box-id="'+success.results[wallPost].id+'" placeholder="Write a comment" type="text"></div></div></div></div></div></div>');
+
+                } else {
+                    var wallPostType ="";
+                    if(success.results[wallPost].post_type == 1){
+                        wallPostType = '<div class="col-xs-12 col-sm-12 color-light-gray no-padding">'+success.results[wallPost].text+'</div>';
+                    }else if(success.results[wallPost].post_type == 2){
+                        wallPostType = '<div class="col-xs-12 col-sm-12 color-light-gray no-padding">'+success.results[wallPost].text+'</div><div class="col-xs-12 col-sm-12 no-padding"><img src="'+success.results[wallPost].post_image+'" alt="feeds-image-display" class="feeds-image-display"></div>';
+                    }else if(success.results[wallPost].post_type == 3){
+                        wallPostType = '<div class="col-xs-12 col-sm-12 color-light-gray no-padding">Checked in at '+success.results[wallPost].location+'</div><div class="col-xs-12 col-sm-12 color-gray no-padding">'+success.results[wallPost].text+'</div>';
+                    }
+
+                    if(success.results[wallPost].display_picture) {
+                        wallUserImgPath = '/media/'+success.results[wallPost].display_picture+'';
+                    } else {
+                        wallUserImgPath = "/static/images/groups.png";
+                    }
+
+
+                    if(success.results[wallPost].owner_id == userId) {
+                        var wallTrashDiv = '<span class="col-xs-1 no-padding"><i class="fa fa-sort-desc trash cursor-pointer "><div class="col-xs-12 col-sm-12 no-padding display-none post-delete-drop-down"><span class="col-xs-12 col-sm-12 no-padding margin-top-5px delete-post" data-post-id="'+success.results[wallPost].id+'"><i class="fa fa-trash"></i></span></div></i></span>';
+                    } else {
+                        wallTrashDiv = '';
+                    }
+
+                    if (success.results[wallPost].likes) {
+                        likedDiv = '<div class="unlike-button color-red" data-post-id="'+success.results[wallPost].id+'"><span><i class="fa fa-thumbs-up"></i>&nbsp;Liked</span></div>';
+                        }
+                        else {
+                            likedDiv = '<div class="like-button" data-post-id="'+success.results[wallPost].id+'"><span><i class="fa fa-thumbs-up"></i>&nbsp;Like</span></div>';
+                        }
+
+                        var userPostOn = new Date(success.results[wallPost].posted_on);
+                        var user_date = getDateFormate(userPostOn)
+                        var user_time = getTimeFormate(userPostOn);
+                        user_timeStamp = user_date+" at "+user_time;
+
+                        if (success.results[wallPost].likes) {
+                            if(success.results[wallPost].likes == 1 || success.results[wallPost].likes == 0){
+                                userLikeCountDiv = '<span class="like-counter" data-like-count="'+success.results[wallPost].likes.length+'" >'+success.results[wallPost].likes.length+'&nbsp;Like</span>';
+                            }else{
+                                userLikeCountDiv = '<span class="like-counter" data-like-count="'+success.results[wallPost].likes.length+'" >'+success.results[wallPost].likes.length+'&nbsp;Likes</span>';
+                            }
+                        } else {
+                            userLikeCountDiv = '';
+                        }
+
+                        if (success.results[wallPost].no_of_comments) {
+                            if(success.results[wallPost].no_of_comments == 1 || success.results[wallPost].no_of_comments == 0){
+                                userCommentDiv ='<span class="comment-counter" data-comment-count="'+success.results[wallPost].no_of_comments+'" > '+success.results[wallPost].no_of_comments+'&nbsp;Comment</span>';
+                            }else{
+                                userCommentDiv ='<span class="comment-counter" data-comment-count="'+success.results[wallPost].no_of_comments+'" > '+success.results[wallPost].no_of_comments+'&nbsp;Comments</span>';
+                            }
+                        } else {
+                            userCommentDiv = '';
+                        }
+
+                        var userPostOn = new Date(success.results[wallPost].posted_on);
+                        var user_date = getDateFormate(userPostOn)
+                        var user_time = getTimeFormate(userPostOn);
+                        user_timeStamp = user_date+" at "+user_time;
+
+                    $("#feeds-container").append('<div class="col-xs-12 col-sm-12 padding-5px margin-top-10px bg-color-pure-white post-container" id="post-id-'+success.results[wallPost].id+'" ><div class="col-xs-12 col-sm-12 no-padding"><div class="col-xs-2 col-sm-2 no-padding"><img src="'+wallUserImgPath+'" alt="user-image" class="chat-display-pic"></div><div class="col-xs-9 col-sm-9 no-padding"><div class="col-xs-12 col-sm-12 no-padding"><div class="col-xs-12 col-sm-12 no-padding capitalize"><a class="anchor-black" href="/profile/'+success.results[wallPost].user_slug+'/"><strong>'+success.results[wallPost].owner+'</strong></a></div>'+wallPostType+'</div></div>'+wallTrashDiv+'</div><div class="col-xs-12 col-sm-12 no-padding padding-top-5px font-small"><span class="like-count-wappper" >'+userLikeCountDiv+'</span><span class="comment-count-wappper" >'+userCommentDiv+'</span><span class="pull-right" >'+user_timeStamp+'</span></div><div class="col-xs-12 col-sm-12 padding-5px color-light-gray comment-bar"><div class="row"><div class="col-xs-3 like-unlike-button cursor-pointer">'+likedDiv+'</div><div class="col-xs-5"><div class="comments-button cursor-pointer" data-post-id="'+success.results[wallPost].id+'" data-user-id="'+userId+'"><span><i class="fa fa-commenting"></i>&nbsp;Comments</span></div></div></div><div class="row"><div class="comment-wapper-of-post col-xs-12 col-sm-12 no-padding padding-top-10px"><div class="loader col-xs-12 col-sm-12"></div><span class="show-more-comment-wapper col-xs-12 col-sm-12"></span><div class="no-comments-wraper col-xs-12 col-sm-12"></div><div class="comment-wrapper"><div class="hidden-comment-wraper"></div><div class="show-comment-wraper"></div></div><div class="comment-text-area-wappper col-xs-12 col-sm-12"><div class="col-xs-9 col-xs-offset-2 no-padding col-sm-9 col-sm-offset-2"><input class="comment-text-area" data-comment-box-id="'+success.results[wallPost].id+'" placeholder="Write a comment" type="text"></div></div></div></div></div></div>');
+
+                }
+            }
+        },
+
+        error : function(error) {
+            console.log("There is some error for pagination post"+JSON.stringify(error));
+            $("#paginationLoader").fadeOut();
+            loadFinished = true;
+        }
+    });
+}
+//end of ajax call
+
+//GET TIME IN FROMATE HH:MM AM/PM
+function getTimeFormate(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    var strTime = hours + ':' + minutes + '' + ampm;
+    return strTime;
+}
+//END OF GET TIME
+
+//GET DATE FROMATE IN MMM DD, YYYY EX: Jun 13, 1994
+function getDateFormate(date) {
+    var month =["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
+    var MMM = month[date.getMonth()];
+    var DD = date.getDate();
+    var YYYY = date.getFullYear();
+    var settime = MMM+" "+DD+", "+YYYY;
+    return settime;
+}
+//END OF DATE FROMATE
+
+
+// window.onload = wallPostPagination(userSlug, userId, objectId);
+// call function on the end of scroll page
+var loadFinished = true;
+$(window).scroll(function () {
+    if (loadFinished && $(window).scrollTop() >= $(document).height() - $(window).height() - 600) {
+        loadFinished = false;
+        if (urlFlag == true && flagUrl != 'null'){
+            ajaxUrl = flagUrl;
+        }
+        {% if user_wall_posts|length >= 10 %}
+            if (ajaxUrl != null) {
+                wallPostPagination(userSlug, userId, objectId, ajaxUrl);
+            }
+        {% endif %}
+    }
+});
+
+$(document).ready(function(){
+    count = [];
+    {% if man_of_the_matches_count %}
+        count.push({'title': 'MOM: {{ man_of_the_matches_count }}', 'img':'{% static "images/mom-icon.png" %}'});
+    {% endif %}
+    {% if best_batsman_matches_count %}
+        count.push({'title': 'Best Batsman: {{ best_batsman_matches_count }}', 'img':'{% static "images/batsman-icon.png" %}'});
+    {% endif %}
+    {% if best_bowler_matches_count %}
+        count.push({'title': 'Best Bowler: {{ best_bowler_matches_count }}', 'img':'{% static "images/bowler-icon.png" %}'});
+    {% endif %}
+    {% if best_fielder_matches_count %}
+        count.push({'title': 'Best Fielder: {{ best_fielder_matches_count }}', 'img':'{% static "images/fielder-icon.png" %}'});
+    {% endif %}
+    for(i=0; i<count.length; i++){
+        $('#medal-inner-container-'+i).html('<img class="tooltip-large" title="'+count[i].title+'" src="'+count[i].img+'">');
+    }
+    $('.tooltip-large').tooltip({
+        template: '<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner large"></div></div>'
+    });
+});
+
+</script>
+
+<script>
+    var normalHelpPopover = function(){
+        $('.normal-help-popover').popover({
+            // template: "<div class='popover tour'><div class='arrow'></div><div class='popover-title'></div><div class='popover-content'></div></div>",
+            template: "<div class='popover tour'><div class='arrow'></div><div class='popover-content'></div></div>",
+            placement: 'right',
+            trigger: 'hover',
+            container: 'body',
+        });
+    }
+
+    /***************************************************
+     * SOURCE: http://bootstraptour.com/
+     **************************************************/
+    tour = new Tour({
+        name:'tour1',
+        steps: [{
+            element: ".tour-player-suggestion",
+            placement: "right",
+            onShow: function(){
+                $("#menu-info-dropdown").show();
+            },
+            onHidden: function(){
+                $("#menu-info-dropdown").hide();
+            }
+        },
+        {
+            element: ".tour-create-team",
+            placement: "right",
+            onShow: function(){
+                $("#menu-info-dropdown").show();
+            },
+            onHidden: function(){
+                $("#menu-info-dropdown").hide();
+            }
+        },
+        {
+            element: ".tour-step-3",
+            placement: "bottom",
+        },
+        {
+            element: ".tour-step-world-search",
+            placement: "bottom"
+        },
+        {
+            element: ".tour-step-5",
+            placement: "left"
+        },
+        {
+            element: ".tour-step-6",
+            template: "<div class='popover tour'><div class='arrow'></div><div class='popover-content'></div><div class='popover-navigation'><a data-role='end'><u>Got it</u></a></div></div>",
+            placement: "right"
+        }],
+        backdrop: true,
+        storage: window.sessionStorage,
+        placement: 'right',
+        // template: "<div class='popover tour'><div class='arrow'></div><div class='popover-content'></div><div class='popover-navigation'><a data-role='prev'>« Prev</a><a data-role='next'>Next »</a><a data-role='end'>Close</a></div></div>",
+        template: "<div class='popover tour col-xs-12 col-sm-12'><div class='arrow'></div><div class='popover-content col-xs-12 col-sm-12'></div><div class='popover-navigation col-xs-12 col-sm-12'><span class='col-xs-12 col-sm-12 textcolor center no-padding'><a data-role='next'><u>Next</u></a></span><span class='col-xs-12 col-sm-12 center color-white no-padding margin-top-5px'><a class='disable-tour' style='float:center'><u>Never Show me Tour</u></a></span></div></div>",
+        onShown: function (tour){
+            // $('.tour-backdrop').html('<button class="disable-tour">Never Show me Tour</button>');
+        },
+        onEnd: function(tour){
+            normalHelpPopover();
+        },
+    });
+
+
+    $.ajax({
+        url : host+"api/v1/accounts/tour-completed-status/{{ request.user.id }}/",
+        type : "GET",
+        statusCode: {
+            201: function(success) {
+                console.log("success"+JSON.stringify(success));
+                if(success.status == true){
+                    tour.init();
+                    tour.start();
+                    if(tour.ended()){
+                        normalHelpPopover();
+                    }
+                }else{
+                    tour.end();
+                    normalHelpPopover();
+                }
+            },
+            400: function(error) {
+                console.log("error"+JSON.stringify(error));
+            }
+        }
+    });
+
+    $(document).on('click','.disable-tour',function(){
+        $.ajax({
+            url : host+"api/v1/accounts/tour-completed/{{ request.user.id }}/",
+            type : "GET",
+            statusCode: {
+                201: function(success) {
+                    console.log("success toggle: "+JSON.stringify(success));
+                    if(success.status == false){
+                        tour.end();
+                        normalHelpPopover();
+                    }
+                },
+                400: function(error) {
+                    console.log("error toggle: "+JSON.stringify(error));
+                }
+            }
+        });
+    });
+
+    $('.show-mobile-tour').click(function() {
+        $.ajax({
+            url : host+"api/v1/accounts/tour-completed/{{ request.user.id }}/",
+            type : "GET",
+            statusCode: {
+                201: function(success) {
+                    console.log("success toggle: "+JSON.stringify(success));
+                    if(success.status == false){
+                        tour.end();
+                        normalHelpPopover();
+                    }else {
+                        if('tour1_current_step' in sessionStorage) {
+                            sessionStorage.removeItem('tour1_current_step');
+                            sessionStorage.removeItem('tour1_end');
+                        }
+                        if('tour1_end' in sessionStorage) {
+                            sessionStorage.removeItem('tour1_end');
+                        }
+                        tour.init();
+                        tour.start();
+                    }
+                },
+                400: function(error) {
+                    console.log("error toggle: "+JSON.stringify(error));
+                }
+            }
+        });
+    });
+
+    u = setInterval(function(){
+        if(tour.ended()){
+            console.log("request");
+            normalHelpPopover();
+            clearInterval(u);
+        }
+    },1000);
+
+    if(tour) {
+        $(".show-mobile-tour").show();
+    }else {
+        $(".show-mobile-tour").hide();
+    }
+</script>
+
+<script>
+    {% with overall_batting=request.user.get_overall_batting_career_stats %}
+         SR0 = '{{ overall_batting.batting_strike_rate.0 }}';
+         SR1 = '{{ overall_batting.batting_strike_rate.1 }}';
+         AV0 = '{{ overall_batting.batting_average.0 }}';
+         AV1 = '{{ overall_batting.batting_average.1 }}';
+    {% endwith %}
+
+    SR0 = parseFloat(SR0).toFixed(1);
+    SR1 = parseFloat(SR1).toFixed(1);
+    if(parseFloat(SR1) > parseFloat(SR0)) {
+        $(".batting-tri-symbole").html('<i class="fa fa-caret-up green-tri-icon cursor-pointer" aria-hidden="true" title="Last Strike Rate: '+SR0+', Current Strike Rate: '+SR1+'"></i>');
+    } else if(SR1 == SR0) {
+        $(".batting-tri-symbole").html('<i class="fa fa-minus cursor-pointer color-white white-sensex-arror" aria-hidden="true" title="Last Strike Rate: '+SR0+' , Current Strike Rate: '+SR1+'></i>');
+    } else {
+        $(".batting-tri-symbole").html('<i class="fa fa-caret-down red-tri-icon cursor-pointer" aria-hidden="true" title="Last Strike Rate: '+SR0+', Current Strike Rate: '+SR1+'"></i>');
+    }
+
+    if(parseFloat(AV1) > parseFloat(AV0)) {
+        $(".batting-avg-tri-symbole").html('<i class="fa fa-caret-up green-tri-icon cursor-pointer" aria-hidden="true" title="Last Average: '+parseFloat(AV0).toFixed(1)+', Current Average: '+parseFloat(AV1).toFixed(1)+'"></i>');
+    }else if(AV1 == AV0) {
+        $(".batting-avg-tri-symbole").html('<i class="fa fa-minus cursor-pointer white-sensex-arror" aria-hidden="true" title="Last Average: '+parseFloat(AV0).toFixed(1)+' , Current Average: '+parseFloat(AV1).toFixed(1)+'></i>');
+    } else {
+        $(".batting-avg-tri-symbole").html('<i class="fa fa-caret-down red-tri-icon cursor-pointer" aria-hidden="true" title="Last Average: '+parseFloat(AV0).toFixed(2)+', Current Average: '+parseFloat(AV1).toFixed(2)+'"></i>');
+    }
+
+
+     {% with overall_bowling=request.user.get_overall_bowling_career_stats %}
+            BEC0 = '{{ overall_bowling.economy.0 }}';
+            BEC1 = '{{ overall_bowling.economy.1 }}';
+            BAV0 = '{{ overall_bowling.bowling_average.0 }}';
+            BAV1 = '{{ overall_bowling.bowling_average.1 }}';
+     {% endwith %}
+
+    if(parseFloat(BEC1) > parseFloat(BEC0)) {
+        $(".bowling-tri-symbole").html('<i class="fa fa-caret-up red-tri-icon cursor-pointer" aria-hidden="true" title="Last Economy Rate: '+parseFloat(BEC0).toFixed(1)+', Current Economy Rate: '+parseFloat(BEC1).toFixed(1)+'"></i>');
+    } else if(BEC1 == BEC0) {
+             $(".bowling-tri-symbole").html('<i class="fa fa-minus cursor-pointer color-white white-sensex-arror" aria-hidden="true" title="Last Economy Rate: '+parseFloat(BEC0).toFixed(1)+' , Current Economy Rate: '+parseFloat(BEC1).toFixed(1)+'"></i>');
+    } else {
+        $(".bowling-tri-symbole").html('<i class="fa fa-caret-down green-tri-icon cursor-pointer" aria-hidden="true" title="Last Economy Rate: '+parseFloat(BEC0).toFixed(1)+', Current Economy Rate: '+parseFloat(BEC1).toFixed(1)+'"></i>');
+    }
+
+    if(parseFloat(BAV1) > parseFloat(BAV0)) {
+        $(".bowling-avg-tri-symbole").html('<i class="fa fa-caret-up  red-tri-icon cursor-pointer" aria-hidden="true" title="Last Average: '+parseFloat(BAV0).toFixed(1)+', Current Average: '+parseFloat(BAV1).toFixed(1)+'"></i>');
+    }else if(BAV1 == BAV0) {
+            $(".bowling-avg-tri-symbole").html('<i class="fa fa-minus cursor-pointer color-white white-sensex-arror" aria-hidden="true" title="Last Average: '+parseFloat(BAV0).toFixed(1)+' , Current Average: '+parseFloat(BAV1).toFixed(1)+'"></i>');
+    } else {
+        $(".bowling-avg-tri-symbole").html('<i class="fa fa-caret-down green-tri-icon cursor-pointer" aria-hidden="true" title="Last Average: '+parseFloat(BAV0).toFixed(1)+', Current Average: '+parseFloat(BAV1).toFixed(1)+'"></i>');
+    }
+
+
+    // $(function() {
+    //     $(".red-tri-icon, .green-tri-icon").tooltip();
+    //  });
+
+
+
+    $('.red-tri-icon').click(function () {
+            var title = $(this).prop('title');
+            title = title.split(',');
+            $(".last-val").html(title[0]);
+            $(".current-val").html(title[1]);
+            $('#sensex-modal').modal('show');
+        });
+
+       $('.green-tri-icon').click(function () {
+            var title = $(this).prop('title');
+            title = title.split(',');
+            console.log("title "+title);
+            $(".last-val").html(title[0]);
+            $(".current-val").html(title[1]);
+            $('#sensex-modal').modal('show');
+        });
+
+       $('.white-sensex-arror').click(function () {
+            var title = $(this).prop('title');
+            title = title.split(',');
+            console.log("title "+title);
+            $(".last-val").html(title[0]);
+            $(".current-val").html(title[1]);
+            $('#sensex-modal').modal('show');
+        });
+</script>
+{% endblock %}

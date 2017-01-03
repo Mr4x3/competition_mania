@@ -1,0 +1,419 @@
+{% extends 'accounts/my_wall.html' %}
+
+{% load staticfiles %}
+
+{% block customstyle %}
+<style type="text/css">
+#middle-first-part {
+    min-height: 60vh;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<body class="body-background">
+    <section class="container-fluid no-padding">
+        <div class=" col-md-offset-2 col-md-8" id="middle-part">
+            <!-- content part -->
+            <div class="col-md-12" id="middle-first-part">
+                <div class="col-md-12 margin-top-20px" id="status-third-part">
+                    {% if post %}
+                        <div class="col-md-12 post-container" id="post-id-{{post.id}}">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <img src="{% if post.owner.display_picture.name %}{{ MEDIA_URL }}{{ post.owner.display_picture }}{% else %}{% static 'images/groups.png' %}{% endif %}" alt='user-image' idg="logo-tag" class="chat-display-pic">
+                                </div>
+                                <div class="col-md-9 no-padding">
+                                    <div class="col-md-12 no-padding">
+                                        <div class="col-md-12 no-padding capitalize">
+                                            <a href="{% url "user_wall" post.owner.slug %}"> <strong> {{ post.owner.name }} </strong></a>
+                                        </div>
+                                        {% if post.post_type == 1 %}
+                                            <div class="col-md-12 no-padding" id="post-text-area">
+                                                {% autoescape off %}{{ post.text }}{% endautoescape %}
+                                            </div>
+                                        {% elif post.post_type == 3 %}
+                                        <span class="col-md-12 gray-text-color">
+                                            Checked in at {{ post.location }}
+                                        </span>
+                                        <div class="col-md-12 no-padding" id="post-text-area">
+                                            {% autoescape off %}{{ post.text }}{% endautoescape %}
+                                        </div>
+                                        {% elif post.post_type == 2 %}
+                                            <div class="col-md-12 no-padding" id="post-text-area">
+                                                {% autoescape off %}{{ post.text }}{% endautoescape %}
+                                            </div>
+                                            <div class="col-md-12">
+                                                <img src="{{ MEDIA_URL }}{{ post.post_image }}" alt='posted-img' class="posted-img">
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% if post.owner.id == request.user.id %}
+                                    <span class="col-md-1 no-padding">
+                                        <i class="fa fa-sort-desc trash">
+                                            <span class="col-md-12 lgall-font no-padding" id="delete-post" onclick="deletePost({{post.id}},1)">Delete</span>
+                                        </i>
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div id="like-comment-counter-wraper" class="row">
+                                <div class="col-md-12">
+                                    <span id="like-count-wappper" >
+                                        {% if post.likes.all.count > 0 %}
+                                            <span id="like-counter" data-like-count="{{ post.likes.all.count }}">{{ post.likes.all.count }}{% if post.likes.all.count == 1 %}&nbsp;Like{% else %}&nbsp;Likes{% endif %}</span>
+                                        {% endif %}
+                                    </span>
+                                    <span id="comment-count-wappper" >
+                                        {% if post.user_wall_post_comments.all.count > 0 %}
+                                            <span id="comment-counter" data-comment-count="{{ post.user_wall_post_comments.all|length }}">{{ post.user_wall_post_comments.all|length }}{% if post.user_wall_post_comments.all|length == 1 %}&nbsp;Comment{% else %}&nbsp;Comments{% endif %}</span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="pull-right">
+                                        {% if post.posted_on %}
+                                            <span>{{ post.posted_on|date:'M j, Y' }} at {{ post.posted_on|date:'g:i A' }}</span>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div id="comment-bar" class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-2 like-unlike-button">
+                                            {% if request.user in post.likes.all %}
+                                                <div class="unlike-button" onclick="unlikeButton({{ post.id }})" >
+                                                    <span>
+                                                        <i class="fa fa-thumbs-up"></i>&nbsp;Liked
+                                                    </span>
+                                                </div>
+                                            {% else %}
+                                                <div class="like-button" onclick="likeButton({{ post.id }})">
+                                                    <span>
+                                                        <i class="fa fa-thumbs-up"></i>&nbsp;Like
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="comments-button" data-post-id="{{ post.id }}" data-user-id="{{ request.user.id }}" >
+                                                <span><i class="fa fa-commenting"></i>&nbsp;Comments</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="comment-wapper-of-post col-md-12">
+                                            <div class="loader">
+                                            </div>
+                                            <span class="show-more-comment-wapper">
+                                            </span>
+                                            <div class="no-comments-wraper">
+                                            </div>
+                                            <div class="comment-wrapper">
+                                                <div class="hidden-comment-wraper">
+                                                </div>
+                                                <div class="show-comment-wraper">
+                                                </div>
+                                            </div>
+                                            <div class="comment-text-area-wappper">
+                                                <div class="col-md-10 col-md-offset-1">
+                                                    <input type="text" class="comment-text-area" data-comment-box-id="{{ post.id }}" placeholder="Write a comment">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="post-container-no-post col-md-12 center">
+                           <h2> There are currently no posts. </h2>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-12 center" id="paginationLoader">
+                <img src="{% static 'images/loading_bar.gif' %}">
+            </div>
+       </div>
+    </section>
+
+    <!-- new message popup  -->
+    <div id="newmessageModal1" class="modal">
+        <div class="modal-content">
+                <span class="close">x</span>
+                <div id="message-popup">
+                    <div class="margin-top-10px">
+                        <input type="hidden" id="sender-message-hidden12" name="sender" value="{{ request.user.id }}">
+                        <input id="recipient-message-hidden12" type="hidden" name="recipient" value="{{ object.id }}">
+                        <input class="capitalize" type="text" id="recipients-name" placeholder="Recipients" readonly="readonly" value="{{ object.name }}">
+                    </div>
+                    <textarea placeholder="Enter Your message here..." id="chat-textarea12"></textarea>
+                <div>
+                    <button type="button" id="recipients-send" onclick="newMessage()">
+                        <h4 id="chat-send"><strong>Send</strong></h4>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end of message popup -->
+
+    <!-- send message success popup -->
+    <div class="modal fade" id="NewMessageSendConformModel" role="dialog" tabindex="-1" aria-labelledby="create-team-stop-popup">
+        <div class="modal-dialog">
+            <div class="modal-content margin-top-100px tranzy-background3 center">
+                <h5 class="textcolor margin-top-30px">Message sent to {{ object.name }}.</h5>
+                <div class="padding-20px row popup-circle-button-container" style="padding-top: 0px;">
+                    <span>
+                        <button type="button" class="popup-circle-button" data-dismiss="modal">Ok</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
+
+{% block customscript %}
+
+<!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9S97FQa0ZREnvPDm0Uh4O1EKqItcxjvc&signed_in=true&libraries=places&callback"async defer></script>
+<script type='text/javascript' src="{% static 'js/geo-location.js' %}"></script>-->
+
+<script>
+    //COMMENT AJAX CALL
+    $(document).on('keypress', '.comment-text-area', function(event){
+        if (event.which == 13) {
+            event.preventDefault();
+            var postId = $(this).data("commentBoxId");
+            var commentData = $(this).val();
+            $.ajax({
+                type : "POST",
+                url : host+"api/v1/accounts/user-wall-posts/"+postId+"/comments/",
+                data : {
+                    "comment":commentData,
+                },
+                statusCode: {
+                    201: function(success) {
+                        var d = new Date();
+                        var commentDate = new Date(success.commented_on);
+                        var timeStamp = "";
+                        if(d.toDateString() != commentDate.toDateString()) {
+                            var date = getDateFormate(commentDate)
+                            var time = getTimeFormate(commentDate);
+                            timeStamp = date+" at "+time;
+                        }else{
+                            var time = getTimeFormate(commentDate);
+                            timeStamp = time;
+                        }
+
+                        var userPic = success.comment_by_user_display_picture || "../../static/images/groups.png";
+                        $("#post-id-"+postId+" .show-comment-wraper").append('<div id="comment-id-'+success.id+'" class="col-md-12 commnet-block" onmouseenter="showCommentDelete('+success.id+');" onmouseleave="hideCommentDelete('+success.id+');"><div class="row"><div class="col-md-1 comment-by-pic-wapper"><img src="'+userPic+'" class="chat-display-pic-in-comment"></div><div class="col-md-10 comment-by-and-comment-text-wappper"><a href="/profile/'+success.comment_by_user_slug+'/"><span class="comment-by">'+success.comment_by_user_name+'</span></a><span class="comment-text" id="comment-text">'+success.comment+'</span><div class="row"><div class="col-md-12 comment-status-container"><span class="comment-like-button-wapper"><span class="comment-like-button" onclick="commentLike('+success.id+');">Like</span></span><span class="comment-like-counter-wapper"></span><span class="comment-date-time"><span>'+timeStamp+'</span></span></div></div></div><div class="col-md-1 no-padding commentRightSection"><div class="col-md-offset-5"><span class="deleteCommentDropdownButton" title="Delete comment" onclick="deleteCommentDropdownToggle('+success.id+');" ><i class="fa fa-times"></i></span></div><div class="deleteCommentDropdown"><span onclick="deleteComment('+success.id+');">Delete</sapn></div></div></div></div>');
+                        $("#post-id-"+postId+" .comment-text-area").val("");
+                        var commentCount = $("#post-id-"+postId+" #comment-counter").data("commentCount");
+                        if (!commentCount) {
+                            commentCount = 0;
+                        }
+                        commentCount = commentCount+1;
+                        if(commentCount == 1 || commentCount == 0){
+                            $("#post-id-"+postId+" #comment-count-wappper").html('<span id="comment-counter" data-comment-count="'+commentCount+'">'+commentCount+'&nbsp;Comment</span>');
+                        }else{
+                            $("#post-id-"+postId+" #comment-count-wappper").html('<span id="comment-counter" data-comment-count="'+commentCount+'">'+commentCount+'&nbsp;Comments</span>');
+                        }
+                        $("#post-id-"+postId+" .no-comments-wraper").html("");
+                    },
+                    400: function(error) {
+                    },
+                    500: function(error) {
+                    }
+                }
+            });
+        }
+    });
+    //END OF COMMENT AJAX CALL
+
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        {% if clicked_friend_messages %}
+            {% if clicked_friend_messages.0.sender.id != request.user.id %}
+                var pic = "";
+                if("{{ clicked_friend_messages.0.sender.display_picture }}"){
+                    pic = "../../media/{{ clicked_friend_messages.0.sender.display_picture }}";
+                }else{
+                    pic = "../../static/images/groups.png";
+                }
+                var name = "{{ clicked_friend_messages.0.sender.name }}";
+                var id= "{{ clicked_friend_messages.0.sender.id }}";
+            {% else %}
+                var pic = "";
+                if("{{ clicked_friend_messages.0.recipient.display_picture }}"){
+                    pic = "../../media/{{ clicked_friend_messages.0.recipient.display_picture }}";
+                }else{
+                    pic = "../../static/images/groups.png";
+                }
+                var name = "{{ clicked_friend_messages.0.recipient.name }}";
+                var id= "{{ clicked_friend_messages.0.recipient.id }}";
+            {% endif %}
+        {% else %}
+            {% if last_messaged_friend_messages.0.sender.id != request.user.id %}
+                var pic = "";
+                if("{{ last_messaged_friend_messages.0.sender.display_picture }}")
+                    pic = "../media/{{ last_messaged_friend_messages.0.sender.display_picture }}";
+                else
+                    pic = "../static/images/groups.png";
+                var name = "{{ last_messaged_friend_messages.0.sender.name }}";
+                var id= "{{ last_messaged_friend_messages.0.sender.id }}";
+            {% else %}
+                var pic = "";
+                if("{{ last_messaged_friend_messages.0.recipient.display_picture }}")
+                    pic = "../media/{{ last_messaged_friend_messages.0.recipient.display_picture }}";
+                else
+                    pic = "../static/images/groups.png";
+                var name = "{{ last_messaged_friend_messages.0.recipient.name }}";
+                var id= "{{ last_messaged_friend_messages.0.recipient.id }}";
+            {% endif %}
+        {% endif %}
+        $("#message-type > #hidden-recipient-input").val(id);
+    });
+</script>
+
+<script>
+
+
+  // ajax call
+
+function newMessage() {
+    var senderId = $('#sender-message-hidden12').val();
+    var recipientId = $('#recipient-message-hidden12').val();
+    var textMessage = $('#chat-textarea12').val();
+    dataToSend={
+            'sender' : senderId,
+            'recipient' : recipientId,
+            'text' : textMessage
+        };
+    if (senderId != "" && recipientId != "" && textMessage != "") {
+        dataToSend={
+            'sender' : senderId,
+            'recipient' : recipientId,
+            'text' : textMessage
+        };
+        $.ajax({
+            type : "POST",
+            url : host+"api/v1/accounts/messages/",
+            data: dataToSend,
+            success : function(success){
+                $("#chat-textarea12").val("");
+                $("#newmessageModal").hide();
+                $('#NewMessageSendConformModel').modal('show');
+                // $('#NewMessageSendConformModel').on('hidden.bs.modal', function (e) {
+                //     window.location.href = "/messages/";
+                // });
+            },
+            error : function (error) {
+            }
+        });
+    }
+    $("#newmessageModal1").hide();
+}
+</script>
+
+<script>
+    function markFriendRequest() {
+   var pendingFriendRequestid  =[];
+    {% for pendingRequest in latest_friend_requests %}
+        pendingFriendRequestid.push({{pendingRequest.id}});
+    {% endfor %}
+   // console.log("request "+ {{pending_friend_request}})
+    var data_to_send  = pendingFriendRequestid
+    $.ajax({
+        type : "POST",
+        url : host+"api/v1/accounts/friend-requests/mark-viewed/",
+        data : {
+            "friend_requests_viewed": data_to_send,
+        },
+        success : function(success){
+        },
+        error : function(error) {
+        }
+    });
+}
+
+
+function markReadMessage() {
+   var latest_message_id =[];
+    {% for latest_message in latest_received_messages %}
+        latest_message_id.push({{latest_message.sender.id}});
+    {% endfor %}
+    var data_to_send = {'message_sender_ids': latest_message_id}
+    //console.log(JSON.stringify(data_to_send));
+    //console.log("message_read "+latest_message_id);
+    $.ajax({
+        type : "POST",
+        url : host+"api/v1/accounts/messages/mark-read/",
+        data : data_to_send,
+        success : function(success){
+        },
+        error : function(error) {
+        }
+    });
+}
+
+
+function markReadNotifications() {
+   var user_notifications_viewed = [];
+    {% for user_notification in latest_user_notifications %}
+        user_notifications_viewed.push({{ user_notification.id }});
+    {% endfor %}
+    var data_to_send = {'user_notifications_viewed': user_notifications_viewed}
+    //console.log("notification_read "+latest_user_notifications);
+    $.ajax({
+        type : "POST",
+        url : host+"api/v1/accounts/notifications/mark-viewed/",
+        data : data_to_send,
+        success : function(success){
+        },
+        error : function(error) {
+        }
+    });
+}
+</script>
+
+<script>
+
+//GET TIME IN FROMATE HH:MM AM/PM
+function getTimeFormate(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    var strTime = hours + ':' + minutes + '' + ampm;
+    return strTime;
+}
+//END OF GET TIME
+
+//GET DATE FROMATE IN MMM DD, YYYY EX: Jun 13, 1994
+function getDateFormate(date) {
+    var month =["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
+    var MMM = month[date.getMonth()];
+    var DD = date.getDate();
+    var YYYY = date.getFullYear();
+    var settime = MMM+" "+DD+", "+YYYY;
+    return settime;
+}
+//END OF DATE FROMATE
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        postId = $(".comments-button").data('post-id');
+        userId = $(".comments-button").data('user-id');
+        showComments(postId, userId);
+    });
+</script>
+
+{% endblock %}

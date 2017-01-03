@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block header  %}
+    {% include 'templates_mobile/header_after_complete_login.html' %}
+{% endblock %}
+
+{% block body %}
+<section class="container-fluid no-padding bg-color-gray">
+    {% if not clicked_friend_messages %}
+        <div id="chat-for-view" class="margin-top-10px">
+            {% for friend in all_friends_messaged %}
+            <a href="{% url 'user_messages' %}{{friend.slug}}" class="anchor-white" >
+                <div class="col-xs-12 col-sm-12 padding-15px sv-border-bottom-light-gray">
+                    <div class="col-xs-2 col-sm-2 no-padding chat-user-pic">
+                         <img src="{% if friend.display_picture %}{{MEDIA_URL}}{{ friend.display_picture }}{% else %}{% static 'm_images/displayPic.png' %}{% endif%}" alt="user-image" class="chat-display-pic">
+                    </div>
+                    <div class="col-xs-8 col-sm-8 no-padding chat-user-info">
+                        <span class="col-xs-12 col-sm-12 no-padding bold capitalize"> {{ friend.name }}</span>
+                        <span class="col-xs-12 col-sm-12 no-padding justify show-some">
+                           <!-- Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                        tempor incididunt ut labore et dolore magna aliqua.-->
+                        </span>
+                    </div>
+                    <div class="col-xs-2 col-sm-2 vertical-align-middle">
+                        <!--Mon-->
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+
+            <!-- send message box -->
+            <div class="col-xs-12 col-sm-12 no-padding margin-top-10px">
+                <a class="bold anchor-white center"><span id="new-message-button" class="col-xs-6 col-sm-12 no-padding bg-color-pure-red" data-toggle="modal" data-target="#send-message-modal">New Message</span></a>
+                <form>
+                    <span class="col-xs-6 col-sm-6 no-padding color-white bg-color-pure-red" id="seach-user-chat">
+                        <span class="col-xs-offset-1 col-xs-9 col-sm-offset-1 col-sm-9 no-padding bg-color-pure-red"><input type="text" palaceholder="Search..."/></span>
+                        <span class="col-xs-1 col-sm-1 no-padding"><i class="fa fa-search"></i></span>
+                    </span>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div id="" class="margin-top-10px">
+            <div id="message-wapper" class="col-xs-12 col-sm-12 no-padding">
+                {% for last_message in clicked_friend_messages %}
+                    <div class="col-xs-12 col-sm-12 padding-10px message {% if request.user == last_message.sender %}message-right{% else %}message-left{% endif %}">
+                        <div class="col-xs-2 col-sm-2 no-padding message-user-pic">
+                             <img src="{% if last_message.display_picture %}{{MEDIA_URL}}{{ last_message.display_picture }}{% else %}{% static 'm_images/displayPic.png' %}{% endif%}" alt="user-image" class="chat-display-pic">
+                        </div>
+                        <div class="col-xs-10 col-sm-10 no-padding message-user-info">
+                            <a class="anchor-white message-user-slug" href="" >
+                            <span class="col-xs-12 col-sm-12 no-padding bold message-user-name">{{last_message.name}}</span>
+                            </a>
+                            <span class="col-xs-12 col-sm-12 no-padding"> {{ last_message.text }} </span>
+                            <span class="col-xs-12 col-sm-12 no-padding margin-top-5px">{{ last_message.sent_on|date:"M j, Y" }} at {{ last_message.sent_on|date:"g:iA" }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- send message box -->
+            <div class="col-xs-12 col-sm-12 padding-10px margin-top-10px color-black">
+                <form name="chat-message-form">
+                    <input id="hidden-user-input" type="hidden" name="sender" value="{{ request.user.id }}">
+                    <input id="hidden-recipient-input" type="hidden" name="recipient" value="">
+                    <span class="col-xs-10 col-sm-10" id="new-message-text-area" >
+                        <textarea class="red-border color-white" name="" row="5" placeholder="Write your message..."></textarea>
+                    </span>
+                    <span class="col-xs-2 col-sm-2 no-padding">
+                        <span class="col-xs-12 col-sm-12 sv-btn-circle sv-btn-circle sv-btn-circle-default-medium no-padding">
+                            <button type="button" id="chat-message-send-button" data-user-name="0" data-user-pic="0" data-friend-name="0" data-friend-pic="0" >Send</button>
+                        </span>
+                    </span>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block footer  %}
+     {% include 'templates_mobile/m_footer.html' %}
+{% endblock %}
+
+{% block customscript %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        {% if clicked_friend_messages %}
+            {% if clicked_friend_messages.0.sender.id != request.user.id %}
+                var fpic = "";
+                if("{{ clicked_friend_messages.0.sender.display_picture }}"){
+                    fpic = "../../media/{{ clicked_friend_messages.0.sender.display_picture }}";
+                }else{
+                    fpic = "../../static/m_images/displayPic.png";
+                }
+                var fname = "{{ clicked_friend_messages.0.sender.name }}";
+                var fid= "{{ clicked_friend_messages.0.sender.id }}";
+                var fslug = "{{ clicked_friend_messages.0.sender.slug }}";
+                var uname = "{{ clicked_friend_messages.0.recipient.name }}";
+                var uid= "{{ clicked_friend_messages.0.recipient.id }}";
+                var uslug = "{{ clicked_friend_messages.0.recipient.slug }}";
+                var upic = "";
+                if("{{ clicked_friend_messages.0.recipient.display_picture }}"){
+                    upic = "../../media/{{ clicked_friend_messages.0.recipient.display_picture }}";
+                }else{
+                    upic = "../../static/m_images/displayPic.png";
+                }
+            {% else %}
+                var fpic = "";
+                if("{{ clicked_friend_messages.0.recipient.display_picture }}"){
+                    fpic = "../../media/{{ clicked_friend_messages.0.recipient.display_picture }}";
+                }else{
+                    fpic = "../../static/m_images/displayPic.png";
+                }
+                var fname = "{{ clicked_friend_messages.0.recipient.name }}";
+                var fid= "{{ clicked_friend_messages.0.recipient.id }}";
+                var fslug = "{{ clicked_friend_messages.0.recipient.slug }}";
+                var uname = "{{ clicked_friend_messages.0.sender.name }}";
+                var uid= "{{ clicked_friend_messages.0.sender.id }}";
+                var uslug = "{{ clicked_friend_messages.0.sender.slug }}";
+                var upic = "";
+                if("{{ clicked_friend_messages.0.sender.display_picture }}"){
+                    upic = "../../media/{{ clicked_friend_messages.0.sender.display_picture }}";
+                }else{
+                    upic = "../../static/m_images/displayPic.png";
+                }
+            {% endif %}
+            $(".message-right .message-user-pic img").attr("src",upic);
+            $(".message-left .message-user-pic img").attr("src",fpic);
+            $(".message-right .message-user-info .message-user-name").html(uname);
+            $(".message-left .message-user-info .message-user-name").html(fname);
+            $(".message-right .message-user-info .message-user-slug").attr('href','/profile/'+uslug+'/');
+            $(".message-left .message-user-info .message-user-slug").attr('href','/profile/'+fslug+'/');
+            $("#hidden-recipient-input").val(fid);
+            $("#chat-message-send-button").data('user-name',uname);
+            $("#chat-message-send-button").data('friend-name',fname);
+            $("#chat-message-send-button").data('user-pic',upic);
+            $("#chat-message-send-button").data('friend-pic',fpic);
+        {% endif %}
+
+        /*$("#chat-name-recent").html(name);
+        $("#message-active-user-pic").attr("src",pic);
+        $("#delete-coversation-button-yes-container").html('<button type="button" class="delete-coversation-button" onclick="DeleteConversatopnOfFriend('+id+');" data-dismiss="modal">Yes</button>');
+        $("#message-type > #hidden-recipient-input").val(id);
+        $(".messagelist-div").removeClass('messagelist-div-active');
+        $("#messagelist-div-id-"+id).addClass('messagelist-div-active');*/
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+{% block header  %}
+<header>
+<section class="container-fluid no-padding bg-color-pure-black">
+    <div class="col-xs-12 col-sm-12 sv-bgcolor-t-black">
+        <div class="row">
+            <div class="col-xs-6 col-sm-6">
+                <a href="{% url 'homepage' %}">
+                   <img src="{% static 'images/sportsvitaelogogrey.png' %}" alt="logo" height="70px">
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+</header>
+{% endblock %}
+
+{% block body %}
+
+<section class="container-fluid no-padding bg-color-pure-black">
+
+    <div class="col-xs-12 col-sm-12 margin-top-20px">
+        <div class="row center">
+            <form id="logout-login-form" action="{% url 'logout' %}" method="post" name="loginForm">
+               {% csrf_token %}
+               <input type="hidden" name="form_type" value="login">
+                <div class="col-xs-12 col-sm-12 form-group sv-form-control">
+                    {{ form.email }}
+                    <div class="col-xs-12 col-sm-12 text-error" id="error-mail1">
+                          {% if form.errors.email %}
+                               {{ form.errors.email.0 }}
+                           {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 form-group sv-form-control">
+                    {{ form.password }}
+                    <div class="col-xs-12 col-sm-12 text-error" id="error-password1">
+                        {% if form.errors.password %}
+                            {{ form.errors.password.0 }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 margin-top-10">
+                    <button type="button" data-toggle="modal" data-target="#ForgotPasswordModal" id="forget-password">Forgot password?</button>
+                </div>
+                <div class="col-xs-12 col-sm-12 margin-top-20px form-group sv-btn-circle sv-btn-circle-default">
+                    <center><button type="submit">Login</button></center>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="comingsoon" class="col-xs-12 col-sm-12 no-padding" align="center">
+        <div id="comingsoon1">
+            Thanks for Visiting
+        </div>
+        <div id="comingsoon2">
+            Sports Vitae
+        </div>
+        <div id="comingsoon3">
+            See You Soon!
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 no-padding margin-top-10px" id="comingsoon4" align="center">
+      <a class="anchor-red" href="{% url 'homepage' %}"><span class="color-pure-red">Create a New Sport's Profile</span> </a>
+    </div>
+
+
+    <!-- Modal -->
+
+
+<div class="modal fade" id="ForgotPasswordModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog sv-info-popup" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row margin-bottom-5px">
+                    <span class="col-xs-12 col-sm-12">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" class="color-white">&times;</span></button>
+                    </span>
+                </div>
+                <div class="row margin-bottom-10px color-white">
+                    <span class="col-xs-12 col-sm-12 center font-large ">Forgot Password?</span>
+                    <span id="forgot-ajax-status" class=" col-xs-12 col-sm-12 margin-top-10px text-error center"></span>
+                     <div class="col-xs-12 col-sm-12 form-group sv-form-control margin-top-10px">
+                        <input name="email-id" id="email-id" type="email" placeholder="Email ID" required>
+                     </div>
+                </div>
+                <div class="row margin-bottom-5px">
+                    <div class="col-xs-12 col-sm-12 sv-btn-circle sv-btn-circle-default-medium center">
+                        <button type="button" id="forgot-password-submit" onclick="forgotPasswordLink()">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+{% endblock %}
+
+{% block footer  %}
+     {% include 'templates_mobile/m_footer.html' %}
+{% endblock %}
+
+{% block customscript %}
+
+
+{% endblock %}
